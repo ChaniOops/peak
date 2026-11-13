@@ -137,12 +137,12 @@ end $$;
 
 -- ---------------------------------------------------------------------------
 -- Demo account history: an unbroken daily streak (not yet active today), and this week's
--- Everest sitting 600 steps short of the 53,000-step summit.
+-- Everest sitting 35 steps (a ~25 m walk) short of the 53,000-step summit.
 -- ---------------------------------------------------------------------------
 do $$
 declare
   demo   uuid := '00000000-0000-4000-a000-000000000001';
-  gap    int  := 600;                                    -- steps left to summit
+  gap    int  := 35;                                     -- steps left to summit
   today  date := public.campus_date();
   wk     date := public.campus_date(public.campus_week_start());
   n_days int  := greatest(today - wk, 0);               -- full days this week before today
@@ -284,7 +284,8 @@ end $$;
 
 drop table seed_bg;
 
--- Department Step Summit: CSE sits 400 steps short (a demo walk completes it for the whole team);
+-- Department Step Summit: CSE sits 25 steps short, so the same ~35-step demo walk completes it
+-- (+50 to every joined CSE member who contributed steps this week);
 -- other departments get the same round target.
 do $$
 declare
@@ -294,7 +295,7 @@ declare
   filler uuid;
 begin
   update public.challenges set target = tgt where id = c.id;
-  -- Top up one joined CSE teammate's latest walk this week so CSE is exactly 400 short.
+  -- Top up one joined CSE teammate's latest walk this week so CSE is exactly 25 short.
   select a.id into filler
     from public.activities a
     join public.challenge_members m on m.user_id = a.user_id and m.challenge_id = c.id
@@ -302,13 +303,14 @@ begin
    where a.type = 'walk' and a.started_at >= c.starts_at and a.user_id <> '00000000-0000-4000-a000-000000000001'
    order by a.started_at desc limit 1;
   if filler is not null then
-    update public.activities set steps = steps + (tgt - 400 - p)::int where id = filler;
+    update public.activities set steps = steps + (tgt - 25 - p)::int where id = filler;
     perform private.sync_activity_points(filler);
   end if;
 end $$;
 
--- Leaderboard drama: one rival clearly #1, another just ahead of the demo account, so the
--- live demo walk (base points + CSE team bonus) visibly overtakes them. Rivals are outside CSE
+-- Leaderboard drama: one rival clearly #1, another 30 points ahead of the demo account. The ~35-step
+-- demo walk earns 0 base points but completes the CSE team challenge (+50), which overtakes them
+-- on finish. Rivals are outside CSE
 -- so the Department Step Summit gap stays exact. Top-ups only add steps to existing walks.
 do $$
 declare

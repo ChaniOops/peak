@@ -39,11 +39,11 @@ const home0 = (await phone.rpc('get_home')).data
 
 const { data: act, error: e1 } = await phone.rpc('start_activity', { p_type: 'walk' })
 check(!e1 && act.status === 'live', 'start_activity -> live walk')
-await sleep(4000)
-const { data: pushed, error: e2 } = await phone.rpc('push_activity', { p_activity_id: act.id, p_steps: 12, p_active_s: 4 })
-check(!e2 && pushed.steps === 12, `push_activity accepted cumulative steps (${pushed?.steps})`)
+await sleep(12000) // ~a 25 m walk: enough wall-clock time for 40 steps under the cadence clamp
+const { data: pushed, error: e2 } = await phone.rpc('push_activity', { p_activity_id: act.id, p_steps: 40, p_active_s: 12 })
+check(!e2 && pushed.steps === 40, `push_activity accepted cumulative steps (${pushed?.steps})`)
 const { data: clamped } = await phone.rpc('push_activity', { p_activity_id: act.id, p_steps: 99999, p_active_s: 5 })
-check(clamped.steps < 100, `cadence clamp holds (${clamped.steps} steps after ~5 s)`)
+check(clamped.steps < 100, `cadence clamp holds (${clamped.steps} steps after ~13 s)`)
 await sleep(1500)
 
 check(liveEvents.length >= 2, `laptop got ${liveEvents.length} realtime activity events`)
@@ -51,6 +51,7 @@ check(leaked.length === 0, 'other student received none of demo\'s activity rows
 const home1 = (await laptop.rpc('get_home')).data
 check(home1.live_activity?.id === act.id, 'get_home shows live activity on second device')
 check(home1.everest.current_steps === home0.everest.current_steps + clamped.steps, `Everest moved live: ${home0.everest.current_steps} -> ${home1.everest.current_steps}`)
+check(home0.everest.summit_count === 0 && home1.everest.summit_count === 1, 'seeded demo: a ~40-step walk crosses the summit live')
 
 const { data: other_acts } = await other.from('activities').select('id').eq('user_id', demoId)
 check(other_acts.length === 0, 'RLS: other student cannot read demo activities')
@@ -72,6 +73,11 @@ if (!process.env.E2E_FULL) {
   const { error: eD } = await phone.rpc('discard_activity', { p_activity_id: act.id })
   const home2 = (await phone.rpc('get_home')).data
   check(!eD && home2.live_activity === null && home2.points.week === home0.points.week, 'discarded walk leaves no points behind')
+  check(home2.everest.current_steps === home0.everest.current_steps && home2.everest.summit_count === 0, 'discard: Everest back below summit')
+  const badges2 = (await phone.rpc('get_badges')).data
+  check(!badges2.find((b) => b.id === 'summit').earned, 'discard: no Summit badge')
+  const dept2 = (await phone.rpc('get_challenges')).data.find((c) => c.slug === 'dept-step-summit')
+  check(!dept2.completed, 'discard: Department Step Summit not completed')
   console.log(failures ? `\n${failures} FAILED` : '\nALL PASSED (demo-safe mode)')
   process.exit(failures ? 1 : 0)
 }
