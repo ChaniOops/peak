@@ -46,7 +46,7 @@ export function Leaderboard({ entries, unit }: { entries: LeaderboardEntry[]; un
       <div className={s.head} aria-hidden>
         <span className={s.hRank}>#</span>
         <span className={s.hName}>Name</span>
-        <span className={s.hPts}>{unit}</span>
+        <span className={s.hPts}>Points</span>
       </div>
       <LayoutGroup>
         <ol className={s.list}>

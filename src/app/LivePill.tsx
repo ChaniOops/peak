@@ -32,7 +32,7 @@ export function LivePill() {
         >
           <Link to="/track" className={`${s.pill} pg-float`} aria-label="Return to live session">
             <span className={`${s.dot} ${paused ? s.paused : ''}`} />
-            <span className="eyebrow" style={{ color: 'var(--pg-ink-2)' }}>
+            <span className={s.tag}>
               <BlurReplace id={paused ? 'p' : 'l'}>
                 {ACTIVITY_LABEL[st.type]} {paused ? 'paused' : 'live'}
               </BlurReplace>

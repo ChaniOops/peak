@@ -1,37 +1,40 @@
 :root {
   color-scheme: dark;
 
-  /* Surfaces — true neutral near-black (Polar/Vercel discipline) */
-  --bg: #080808;
+  /* Surfaces — black. No blue, green or teal tint anywhere. */
+  --bg: #090909;
   --surface-1: #0d0d0d; /* card */
-  --surface-2: #111111; /* raised: inputs, nested panels */
-  --surface-3: #171717; /* hover, wells, tracks */
-  --surface-4: #1f1f1f;
+  --surface-2: #141414; /* raised: inputs, nested panels */
+  --surface-3: #191919; /* hover, wells, tracks */
+  --surface-4: #202020;
   --line: rgba(255, 255, 255, 0.08);
-  --line-strong: rgba(255, 255, 255, 0.13);
-  --line-focus: rgba(255, 255, 255, 0.32);
+  --line-strong: rgba(255, 255, 255, 0.14);
+  --line-focus: rgba(255, 255, 255, 0.34);
   /* top-edge sheen that lifts flat cards off the background */
   --highlight: inset 0 1px 0 rgba(255, 255, 255, 0.045);
 
   /* Text */
-  --text: #f5f5f5;
-  --text-2: #a1a1a1;
+  --text: #eeeeee;
+  --text-2: #a0a0a0;
   --text-3: #666666;
 
-  /* Peak acid-lime: meaningful active/action states only */
-  --accent: #c8f169;
-  --accent-hover: #d4f586;
-  --accent-ink: #0c1004;
-  --accent-soft: rgba(200, 241, 105, 0.1);
-  --accent-line: rgba(200, 241, 105, 0.32);
+  /*
+   * Emphasis is lightness, not hue. The old lime accent and the ice/ember
+   * semantics now resolve to whites and greys; colour is reserved for
+   * Everest, errors and external brand marks.
+   */
+  --accent: #eeeeee;
+  --accent-hover: #ffffff;
+  --accent-ink: #0a0a0a;
+  --accent-soft: rgba(255, 255, 255, 0.08);
+  --accent-line: rgba(255, 255, 255, 0.22);
 
-  /* Semantic, used sparingly */
-  --ice: #8cd2f0; /* verified, info */
-  --ice-soft: rgba(140, 210, 240, 0.1);
-  --ember: #f5a25d; /* pending, streak */
-  --ember-soft: rgba(245, 162, 93, 0.1);
-  --danger: #ff6f61;
-  --danger-soft: rgba(255, 111, 97, 0.1);
+  --ice: #e6e6e6; /* verified: bright neutral */
+  --ice-soft: rgba(255, 255, 255, 0.08);
+  --ember: #9a9a9a; /* pending, streak: mid grey */
+  --ember-soft: rgba(255, 255, 255, 0.05);
+  --danger: #d9695e; /* muted red: errors and destructive only */
+  --danger-soft: rgba(217, 105, 94, 0.1);
 
   /* Type */
   --font-body: 'Geist', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;

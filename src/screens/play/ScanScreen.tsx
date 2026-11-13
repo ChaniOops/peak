@@ -59,10 +59,7 @@ export function ScanScreen() {
         <Link to="/play" className={`${s.back} pg-tile`} aria-label="Back to Play">
           <ChevronLeft size={18} />
         </Link>
-        <div>
-          <div className="eyebrow">Play</div>
-          <h1 className={`display ${s.scanTitle}`}>Check in</h1>
-        </div>
+        <h1 className={`display ${s.scanTitle}`}>Check in</h1>
       </div>
 
       {phase.kind === 'scan' && (

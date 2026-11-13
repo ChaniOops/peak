@@ -13,10 +13,7 @@
   height: 34px;
   padding: 0 14px;
   border-bottom: 1px solid var(--line);
-  font-family: var(--font-mono);
-  font-size: 10px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  font-size: 11.5px;
   color: var(--text-3);
 }
 
@@ -55,10 +52,10 @@
   }
 }
 
-/* current user: restrained lime cue, no fill flood */
+/* current user: a slightly brighter row and a thin white edge */
 .me,
 .me:hover {
-  background: linear-gradient(90deg, rgba(200, 241, 105, 0.06), rgba(200, 241, 105, 0) 70%), var(--surface-1);
+  background: #121212;
 }
 
 .me::before {
@@ -69,7 +66,7 @@
   bottom: 12px;
   width: 2px;
   border-radius: 0 2px 2px 0;
-  background: var(--accent);
+  background: var(--text);
 }
 
 .rank {
@@ -86,7 +83,7 @@
 }
 
 .me .rank {
-  color: var(--accent);
+  color: var(--text);
 }
 
 .who {
@@ -114,8 +111,8 @@
   flex: none;
   padding: 1px 5px;
   border-radius: 4px;
-  background: var(--accent-soft);
-  box-shadow: inset 0 0 0 1px rgba(200, 241, 105, 0.22);
+  background: rgba(255, 255, 255, 0.08);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.18);
   font-family: var(--font-mono);
   font-size: 9px;
   font-weight: 500;
@@ -151,14 +148,14 @@
   background: repeating-linear-gradient(90deg, var(--text-3) 0 2px, transparent 2px 6px);
 }
 
-/* a row that just moved: one soft celadon wash */
+/* a row that just moved: one faint white flash */
 .moved {
   animation: movedWash 1.8s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 @keyframes movedWash {
   0% {
-    background-color: rgba(70, 220, 190, 0.16);
+    background-color: rgba(255, 255, 255, 0.06);
   }
   100% {
     background-color: transparent;
@@ -179,9 +176,9 @@
 }
 
 .up {
-  color: #8fe6d3;
-  background: rgba(70, 220, 190, 0.12);
-  box-shadow: inset 0 0 0 1px rgba(70, 220, 190, 0.24);
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.08);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.16);
 }
 
 .down {

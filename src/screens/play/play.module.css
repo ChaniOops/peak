@@ -13,14 +13,14 @@
   width: 46px;
   height: 46px;
   border-radius: 14px;
-  color: #b8f2e4;
+  color: #eeeeee;
   background:
     radial-gradient(circle at 10px 8px, rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0) 3px),
-    linear-gradient(180deg, #1a5266 0%, #0b3144 100%);
+    linear-gradient(180deg, #232323 0%, #0e0e0e 100%);
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.28),
-    inset 0 0 0 1px rgba(170, 240, 228, 0.18),
-    0 4px 10px -4px rgba(2, 30, 44, 0.6);
+    inset 0 1px 0 rgba(255, 255, 255, 0.22),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.08),
+    0 4px 10px -4px rgba(25, 25, 25, 0.6);
 }
 
 .scanText {
@@ -82,8 +82,7 @@
 }
 
 .scanTitle {
-  margin-top: 4px;
-  font-size: 28px;
+  font-size: 26px;
 }
 
 .back {
@@ -137,8 +136,8 @@
   color: var(--ember);
   background:
     radial-gradient(circle at 30% 22%, rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0) 40%),
-    linear-gradient(180deg, rgba(245, 162, 93, 0.22), rgba(245, 162, 93, 0.08));
-  box-shadow: inset 0 0 0 1px rgba(245, 162, 93, 0.3);
+    linear-gradient(180deg, rgba(175, 175, 175, 0.22), rgba(175, 175, 175, 0.08));
+  box-shadow: inset 0 0 0 1px rgba(175, 175, 175, 0.3);
 }
 
 /* waiting: a single comet arc orbiting the disc (transform only) */
@@ -146,7 +145,7 @@
   position: absolute;
   inset: -5px;
   border-radius: 50%;
-  background: conic-gradient(from 0deg, rgba(245, 162, 93, 0) 0deg, rgba(245, 162, 93, 0) 250deg, rgba(245, 162, 93, 0.9) 350deg, rgba(245, 162, 93, 0) 360deg);
+  background: conic-gradient(from 0deg, rgba(175, 175, 175, 0) 0deg, rgba(255, 255, 255, 0) 250deg, rgba(255, 255, 255, 0.85) 350deg, rgba(175, 175, 175, 0) 360deg);
   -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 2.5px), #000 calc(100% - 2px));
   mask: radial-gradient(farthest-side, transparent calc(100% - 2.5px), #000 calc(100% - 2px));
   animation: orbit 1.4s linear infinite;
@@ -160,14 +159,14 @@
 
 .verifiedIcon {
   background: var(--ice);
-  color: #07141a;
-  box-shadow: 0 0 0 6px rgba(140, 210, 240, 0.1);
+  color: #121212;
+  box-shadow: 0 0 0 6px rgba(197, 197, 197, 0.1);
 }
 
 .rejectedIcon {
   background: var(--danger-soft);
   color: var(--danger);
-  box-shadow: inset 0 0 0 1px rgba(255, 111, 97, 0.22);
+  box-shadow: inset 0 0 0 1px rgba(217, 105, 94, 0.22);
 }
 
 .resultTitle {
@@ -179,7 +178,7 @@
   font-weight: 550;
 }
 
-/* verified points: a positive moment, the lime number */
+/* verified points: the positive moment, carried by size and weight */
 .resultPoints {
   display: flex;
   align-items: baseline;
@@ -223,8 +222,8 @@
   width: 12px;
   height: 12px;
   border-radius: 50%;
-  background: #0a2c3e;
-  box-shadow: inset 0 0 0 1.5px rgba(170, 240, 228, 0.28);
+  background: #262626;
+  box-shadow: inset 0 0 0 1.5px rgba(224, 224, 224, 0.28);
   transition:
     background 0.4s var(--ease-out),
     box-shadow 0.4s var(--ease-out),
@@ -237,14 +236,14 @@
   right: 50%;
   width: 100%;
   height: 2px;
-  background: rgba(170, 240, 228, 0.16);
+  background: rgba(224, 224, 224, 0.16);
   overflow: hidden;
 }
 
 .stepLine span {
   display: block;
   height: 100%;
-  background: linear-gradient(90deg, #4fd2b9, #9be8d8);
+  background: linear-gradient(90deg, #b4b4b4, #d6d6d6);
   transform-origin: left;
   transition: transform 0.6s cubic-bezier(0.65, 0, 0.35, 1);
 }
@@ -257,8 +256,8 @@
 }
 
 .stepDone .stepNode {
-  background: linear-gradient(180deg, #b8f0e2, #59cbb4);
-  box-shadow: 0 0 0 3px rgba(89, 203, 180, 0.18);
+  background: linear-gradient(180deg, #e3e3e3, #b1b1b1);
+  box-shadow: 0 0 0 3px rgba(177, 177, 177, 0.18);
 }
 
 .stepDone .stepLabel,
@@ -268,23 +267,23 @@
 
 .stepActive .stepNode {
   background: var(--ember);
-  box-shadow: 0 0 0 0 rgba(245, 162, 93, 0.5);
+  box-shadow: 0 0 0 0 rgba(175, 175, 175, 0.5);
   animation: stepPulse 1.6s ease-out infinite;
 }
 
 @keyframes stepPulse {
   100% {
-    box-shadow: 0 0 0 9px rgba(245, 162, 93, 0);
+    box-shadow: 0 0 0 9px rgba(175, 175, 175, 0);
   }
 }
 
 .stepFailed .stepNode {
   background: var(--danger);
-  box-shadow: 0 0 0 3px rgba(255, 111, 97, 0.18);
+  box-shadow: 0 0 0 3px rgba(217, 105, 94, 0.18);
 }
 
 .stepFailed .stepLabel {
-  color: #ffa69b;
+  color: #e2a49c;
 }
 
 .dots {

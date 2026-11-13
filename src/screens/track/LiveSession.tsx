@@ -118,10 +118,10 @@ export function LiveSession() {
             </motion.div>
           )}
         </AnimatePresence>
-        {/* one control that changes material: white glass to pause, live lime to resume */}
+        {/* one white-glass control; the icon morphs between pause and resume */}
         <IconButton
           label={paused ? 'Resume' : 'Pause'}
-          variant={paused ? 'live' : 'contrast'}
+          variant="contrast"
           size={80}
           className={s.ctlMain}
           onClick={paused ? st.resume : st.pause}

@@ -80,7 +80,7 @@
 }
 
 /* ── Buttons: Peak glass ────────────────────────────────────────────
- * One material, several tints. Every button is a small pane of glass:
+ * One material, several lightnesses (no hue). Every button is a small pane of glass:
  * a body gradient, a bright top rim, a darker bottom lip, a faint warm/cyan
  * rim split (dispersion), the field's specular dot, and a pointer-tracked
  * light on hover. All gradients/shadows — no blur, no WebGL — so dozens can
@@ -211,56 +211,56 @@
   width: 100%;
 }
 
-/* primary: pale celadon glass — the main way forward on any screen */
+/* primary: off-white glass, dark ink — the one way forward on a screen */
 .primary {
-  --light-a: 0.45;
-  color: #05293b;
+  --light-a: 0.5;
+  color: #0d0d0d;
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.55) 0%, rgba(255, 255, 255, 0) 46%),
-    linear-gradient(180deg, #dcf7f1 0%, #b6e7dd 58%, #97d5cb 100%);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.95),
-    inset 0 -1px 0 rgba(4, 60, 70, 0.22),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.32),
-    inset 1px 0 0 rgba(255, 176, 136, 0.28),
-    inset -1px 0 0 rgba(110, 220, 255, 0.34),
-    0 1px 2px rgba(0, 0, 0, 0.45),
-    0 10px 24px -14px rgba(60, 210, 180, 0.5);
-}
-
-/* contrast: clear white glass, for one strong action over teal glass */
-.contrast {
-  --light-a: 0.6;
-  color: #062030;
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.7) 0%, rgba(255, 255, 255, 0) 50%),
-    linear-gradient(180deg, #ffffff 0%, #e6f3f1 100%);
+    linear-gradient(180deg, rgba(255, 255, 255, 0.6) 0%, rgba(255, 255, 255, 0) 46%),
+    linear-gradient(180deg, #f2f2f2 0%, #dedede 60%, #cacaca 100%);
   box-shadow:
     inset 0 1px 0 #fff,
-    inset 0 -1px 0 rgba(4, 40, 60, 0.18),
-    inset 1px 0 0 rgba(255, 176, 136, 0.3),
-    inset -1px 0 0 rgba(110, 220, 255, 0.36),
-    0 1px 2px rgba(0, 0, 0, 0.45),
-    0 12px 26px -14px rgba(0, 0, 0, 0.8);
+    inset 0 -1px 0 rgba(0, 0, 0, 0.18),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.3),
+    inset 1px 0 0 rgba(255, 176, 136, 0.12),
+    inset -1px 0 0 rgba(110, 220, 255, 0.14),
+    0 1px 2px rgba(0, 0, 0, 0.5),
+    0 10px 22px -14px rgba(0, 0, 0, 0.9);
 }
 
-/* secondary: smoked teal glass */
-.secondary {
-  --spec-a: 0.55;
-  color: var(--pg-ink);
+/* contrast: clear white glass, for the single strongest action */
+.contrast {
+  --light-a: 0.6;
+  color: #0a0a0a;
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0) 50%),
-    linear-gradient(180deg, #194a5d 0%, #0d3042 100%);
+    linear-gradient(180deg, rgba(255, 255, 255, 0.7) 0%, rgba(255, 255, 255, 0) 50%),
+    linear-gradient(180deg, #ffffff 0%, #e8e8e8 100%);
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.2),
-    inset 0 0 0 1px rgba(170, 240, 228, 0.15),
+    inset 0 1px 0 #fff,
+    inset 0 -1px 0 rgba(0, 0, 0, 0.16),
     inset 1px 0 0 rgba(255, 176, 136, 0.12),
-    inset -1px 0 0 rgba(110, 220, 255, 0.16),
+    inset -1px 0 0 rgba(110, 220, 255, 0.14),
+    0 1px 2px rgba(0, 0, 0, 0.5),
+    0 12px 26px -14px rgba(0, 0, 0, 0.85);
+}
+
+/* secondary: smoked black glass, white ink */
+.secondary {
+  --spec-a: 0.5;
+  color: var(--text);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0) 50%),
+    linear-gradient(180deg, #1f1f1f 0%, #131313 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.16),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.1),
+    inset 1px 0 0 rgba(255, 176, 136, 0.05),
+    inset -1px 0 0 rgba(110, 220, 255, 0.06),
     0 8px 18px -12px rgba(0, 0, 0, 0.9);
 }
 
 .ghost {
-  color: var(--pg-ink-2);
+  color: var(--text-2);
   --light-a: 0.08;
   --spec-a: 0;
 }
@@ -269,46 +269,28 @@
   opacity: 0;
 }
 
-/* danger: smoked red glass */
+/* danger: smoked glass with a muted red ink — destructive actions only */
 .danger {
-  --spec-a: 0.4;
-  color: #ffa69b;
+  --spec-a: 0.35;
+  color: #e2a49c;
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0) 50%),
-    linear-gradient(180deg, rgba(120, 40, 36, 0.55), rgba(70, 22, 22, 0.6));
+    linear-gradient(180deg, #221616 0%, #170f0f 100%);
   box-shadow:
-    inset 0 1px 0 rgba(255, 200, 190, 0.16),
-    inset 0 0 0 1px rgba(255, 111, 97, 0.26);
-}
-
-/* live: lime glass — reserved for live activity and success moments */
-.live {
-  --light-a: 0.4;
-  color: #10200a;
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0) 46%),
-    linear-gradient(180deg, #def8a4 0%, #c3ec6c 60%, #a9d64e 100%);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.9),
-    inset 0 -1px 0 rgba(40, 70, 10, 0.24),
-    inset 1px 0 0 rgba(255, 176, 136, 0.25),
-    inset -1px 0 0 rgba(110, 220, 255, 0.3),
-    0 1px 2px rgba(0, 0, 0, 0.45),
-    0 10px 24px -14px rgba(200, 241, 105, 0.5);
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    inset 0 0 0 1px rgba(217, 105, 94, 0.24);
 }
 
 @media (hover: hover) {
   .secondary:hover:not(:disabled) {
     box-shadow:
-      inset 0 1px 0 rgba(255, 255, 255, 0.26),
-      inset 0 0 0 1px rgba(170, 240, 228, 0.26),
-      inset 1px 0 0 rgba(255, 176, 136, 0.14),
-      inset -1px 0 0 rgba(110, 220, 255, 0.2),
+      inset 0 1px 0 rgba(255, 255, 255, 0.22),
+      inset 0 0 0 1px rgba(255, 255, 255, 0.18),
       0 10px 22px -12px rgba(0, 0, 0, 0.9);
   }
   .ghost:hover:not(:disabled) {
-    background: rgba(170, 240, 228, 0.08);
-    color: var(--pg-ink);
+    background: rgba(255, 255, 255, 0.06);
+    color: var(--text);
   }
 }
 
@@ -319,13 +301,11 @@
   align-items: center;
   gap: 6px;
   height: 22px;
-  padding: 0 8px;
+  padding: 0 9px;
   border-radius: var(--r-pill);
-  font-family: var(--font-mono);
-  font-size: 10px;
+  font-size: 11.5px;
   font-weight: 500;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
+  letter-spacing: -0.005em;
   white-space: nowrap;
   box-shadow: inset 0 0 0 1px var(--chip-line, var(--line-strong));
 }
@@ -341,36 +321,34 @@
   background: rgba(255, 255, 255, 0.03);
   color: var(--text-2);
 }
-.tone_accent {
-  background: var(--accent-soft);
-  color: var(--accent);
-  --chip-line: rgba(200, 241, 105, 0.2);
-}
+/* states differ by lightness, not hue: bright = done/verified, dim = waiting */
+.tone_accent,
 .tone_ice {
-  background: var(--ice-soft);
-  color: var(--ice);
-  --chip-line: rgba(140, 210, 240, 0.2);
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text);
+  --chip-line: rgba(255, 255, 255, 0.22);
 }
 .tone_ember {
-  background: var(--ember-soft);
-  color: var(--ember);
-  --chip-line: rgba(245, 162, 93, 0.2);
+  background: transparent;
+  color: var(--text-3);
+  --chip-line: rgba(255, 255, 255, 0.1);
 }
 .tone_danger {
   background: var(--danger-soft);
   color: var(--danger);
-  --chip-line: rgba(255, 111, 97, 0.22);
+  --chip-line: rgba(217, 105, 94, 0.22);
 }
 
 /* for pills floating over maps/imagery */
 /* pills floating over maps/imagery: small teal glass (see styles/glass.css) */
 .glass {
-  background-image: linear-gradient(180deg, rgba(22, 78, 96, 0.8), rgba(6, 36, 54, 0.88));
-  backdrop-filter: blur(10px) saturate(1.3);
-  -webkit-backdrop-filter: blur(10px) saturate(1.3);
+  background-image: none;
+  background-color: rgba(14, 14, 14, 0.78);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.18),
-    inset 0 0 0 1px rgba(170, 240, 228, 0.18);
+    inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.1);
 }
 
 .glass.tone_neutral {
@@ -452,11 +430,11 @@
   background:
     radial-gradient(circle at 9px 7px, rgba(255, 255, 255, 0.75), rgba(255, 255, 255, 0) 3px),
     radial-gradient(120% 140% at 25% 0%, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0) 60%),
-    linear-gradient(180deg, #1b5468, #0c3549);
+    linear-gradient(180deg, #262626, #181818);
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.26),
-    inset 0 0 0 1px rgba(170, 240, 228, 0.18),
-    0 4px 12px -6px rgba(2, 24, 40, 0.9);
+    inset 0 1px 0 rgba(255, 255, 255, 0.2),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.11),
+    0 4px 12px -6px rgba(0, 0, 0, 0.9);
 }
 
 .segmentLabel {
@@ -475,20 +453,12 @@
   border-radius: 2px;
   transition: width 0.8s var(--ease-out);
 }
-.fill_accent {
-  background: var(--accent);
-  box-shadow: 0 0 10px rgba(200, 241, 105, 0.45);
+/* in progress: grey; complete: white — lightness, not hue */
+.fill_complete {
+  background: var(--text);
 }
-/* in-progress: celadon glass light; lime is kept for completion */
-.fill_celadon {
-  background: linear-gradient(90deg, #2a9f8e, #6fdcc8);
-  box-shadow: 0 0 8px rgba(70, 220, 190, 0.35);
-}
-.fill_ice {
-  background: var(--ice);
-}
-.fill_ember {
-  background: var(--ember);
+.fill_progress {
+  background: #8a8a8a;
 }
 .fill_neutral {
   background: var(--text-2);
@@ -583,7 +553,7 @@
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.075), rgba(255, 255, 255, 0.045));
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.09),
-    inset 0 0 0 1.5px rgba(200, 241, 105, 0.7),
+    inset 0 0 0 1.5px rgba(222, 222, 222, 0.7),
     0 1px 2px rgba(0, 0, 0, 0.4),
     0 12px 26px -18px rgba(0, 0, 0, 0.95);
 }
@@ -592,7 +562,7 @@
 .fieldError .inputWrap:focus-within {
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.07),
-    inset 0 0 0 1.5px rgba(255, 111, 97, 0.6),
+    inset 0 0 0 1.5px rgba(217, 105, 94, 0.6),
     0 12px 26px -20px rgba(0, 0, 0, 0.9);
 }
 
@@ -708,8 +678,8 @@
 }
 
 .notice_danger {
-  background: rgba(255, 111, 97, 0.05);
-  box-shadow: inset 0 0 0 1px rgba(255, 111, 97, 0.2);
+  background: rgba(217, 105, 94, 0.05);
+  box-shadow: inset 0 0 0 1px rgba(217, 105, 94, 0.2);
 }
 .notice_danger .noticeIcon {
   color: var(--danger);

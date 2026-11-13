@@ -1,6 +1,6 @@
 /*
  * Liquid glass reveal shaders, from zanwei/glass-icon-reveal (index.html).
- * Peak changes: the dark-scene rim and halo colours only (marked below).
+ * Peak changes: the dark-scene rim and halo colours only, made neutral (marked below).
  *
  * MIT License
  *
@@ -230,7 +230,7 @@ void main() {
   // The droplet's soft shadow: about 3 % at its edge and still half that a droplet radius away.
   float shadowFall = max(sd, 0.0) / (0.9 * uPlateScale);
   bg *= 1.0 - uShadow * 0.03 * exp(-shadowFall * shadowFall) * step(0.0, sd);
-  vec3 haloCol = mix(vec3(0.42, 0.78, 0.76), vec3(1.0), uLightScene); // Peak: teal halo
+  vec3 haloCol = mix(vec3(0.5, 0.51, 0.54), vec3(1.0), uLightScene); // Peak: smoke halo
   bg = mix(bg, haloCol, clamp(uHalo * (0.30 * exp(-outside / (0.025 * uPlateScale)) + 0.07 * exp(-outside / (0.12 * uPlateScale))), 0.0, 1.0) * step(0.0, sd));
 
   vec3 col = bg;
@@ -313,7 +313,7 @@ void main() {
     // lingers as an empty outline.
     float glassAmt = pow(1.0 - uDissolve, 1.5);
     float lit = uSpec * glassAmt;
-    vec3 rimCol = mix(vec3(0.76, 0.96, 0.92), vec3(1.0), uLightScene); // Peak: celadon-white rim
+    vec3 rimCol = mix(vec3(0.86, 0.87, 0.9), vec3(1.0), uLightScene); // Peak: neutral silver rim
 
     // Light backdrop, fitted to luminance profiles measured across the reference capture's rim.
     // The thick rounded edge scatters the light of the surroundings, so it glows softly white over a

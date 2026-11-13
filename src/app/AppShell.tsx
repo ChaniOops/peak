@@ -27,8 +27,6 @@ export function AppShell() {
 
   return (
     <div className={styles.frame}>
-      {/* static aurora from the glass field: gradients only, never repainted */}
-      <div className="pg-atmosphere" aria-hidden="true" />
       <main className={styles.main}>
         {/* enter-only transition: instant tab switches, no exit wait */}
         <motion.div
@@ -67,9 +65,6 @@ export function AppShell() {
               )}
             </NavLink>
           ))}
-        </div>
-        <div className={styles.railFoot}>
-          <span className="eyebrow">FitConnect</span>
         </div>
       </nav>
     </div>

@@ -30,7 +30,7 @@ export function PlayScreen() {
 
   return (
     <div>
-      <ScreenHeader eyebrow="Verified on campus" title="Play" />
+      <ScreenHeader title="Play" />
 
       <Link to="/play/scan" className={buttonClass({ variant: 'primary', size: 'xl', block: true }, s.scanCta)}>
         <span className={s.scanIcon}>

@@ -3,7 +3,7 @@ import { Footprints, Bike, Activity, Smartphone, Satellite, Sun, Play, FlaskConi
 import type { TrackedActivityType } from '../../api/types'
 import { api } from '../../api'
 import { useSession, USES } from '../../tracking/sessionStore'
-import { Button, Chip, List, ListRow, Notice, ScreenHeader, type Tone } from '../../components/ui/ui'
+import { Button, List, ListRow, Notice, ScreenHeader } from '../../components/ui/ui'
 import { motionSupported } from '../../sensors/motion'
 import { geolocationSupported } from '../../sensors/geolocation'
 import { ACTIVITY_LABEL } from '../../lib/format'
@@ -16,11 +16,11 @@ const TYPES: Array<{ type: TrackedActivityType; label: string; hint: string; Ico
   { type: 'cycle', label: 'Cycle', hint: 'GPS · speed', Icon: Bike },
 ]
 
-const PLAN_TONE: Record<'primary' | 'bonus' | 'optional' | 'off', Tone> = {
-  primary: 'ice',
-  bonus: 'neutral',
-  optional: 'neutral',
-  off: 'neutral',
+const PLAN_LABEL: Record<'primary' | 'bonus' | 'optional' | 'off', string> = {
+  primary: 'Primary',
+  bonus: 'Bonus',
+  optional: 'Optional',
+  off: 'Off',
 }
 
 export function TrackSetup() {
@@ -38,7 +38,7 @@ export function TrackSetup() {
 
   return (
     <div>
-      <ScreenHeader eyebrow="Live activity" title="Track" />
+      <ScreenHeader title="Track" />
 
       <div className={s.types} role="radiogroup" aria-label="Activity type">
         {TYPES.map(({ type: t, label, hint, Icon }) => {
@@ -62,13 +62,13 @@ export function TrackSetup() {
           leading={<span className={s.sensorIcon}><Smartphone size={16} strokeWidth={1.8} /></span>}
           title="Motion"
           meta={uses.motion ? 'Counts your steps' : 'Not used for cycling'}
-          trailing={<Chip tone={PLAN_TONE[motionState]}>{motionState}</Chip>}
+          trailing={<span className={`label ${s.planState}`}>{PLAN_LABEL[motionState]}</span>}
         />
         <ListRow
           leading={<span className={s.sensorIcon}><Satellite size={16} strokeWidth={1.8} /></span>}
           title="GPS"
           meta={uses.gpsPrimary ? 'Distance, pace and route' : 'Draws your route if allowed'}
-          trailing={<Chip tone={PLAN_TONE[gpsState]}>{gpsState}</Chip>}
+          trailing={<span className={`label ${s.planState}`}>{PLAN_LABEL[gpsState]}</span>}
         />
       </List>
 
@@ -91,7 +91,7 @@ export function TrackSetup() {
       </Button>
 
       <div className={s.gap}>
-        <Notice icon={<Sun size={15} />}>Keep the screen on while tracking. Phones pause browser sensors when the screen locks.</Notice>
+        <Notice icon={<Sun size={15} />}>Keep the screen on while tracking.</Notice>
       </div>
 
       {offerSimulation && (

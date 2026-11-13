@@ -18,7 +18,7 @@ export interface RouteMapProps {
 // dependency pre-bundling breaks. The worker file is self-contained, so point at it directly.
 setWorkerUrl(workerUrl)
 
-const ACCENT = '#c8f169'
+const ACCENT = '#eeeeee' // the route: white over the dark map
 
 function toGeoJSON(route: GeoPoint[]) {
   const coords = route.map((p) => [p.lng, p.lat])

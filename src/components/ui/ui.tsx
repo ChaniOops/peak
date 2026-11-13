@@ -213,7 +213,7 @@ export function Segmented<T extends string>({
   )
 }
 
-export function ProgressBar({ value, tone = 'celadon' }: { value: number; tone?: 'accent' | 'celadon' | 'ice' | 'ember' | 'neutral' }) {
+export function ProgressBar({ value, tone = 'progress' }: { value: number; tone?: 'complete' | 'progress' | 'neutral' }) {
   const pct = Math.max(0, Math.min(1, value)) * 100
   return (
     <div className={s.bar} role="progressbar" aria-valuenow={Math.round(pct)} aria-valuemin={0} aria-valuemax={100}>

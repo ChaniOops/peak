@@ -17,7 +17,7 @@ export function CompeteScreen() {
 
   return (
     <div>
-      <ScreenHeader eyebrow="This week" title="Compete" />
+      <ScreenHeader title="Compete" />
 
       {summit.data ? (
         <SummitCard summit={summit.data} />

@@ -1,6 +1,6 @@
 import s from './ui.module.css'
 
-export type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'danger' | 'contrast' | 'live'
+export type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'danger' | 'contrast'
 export type ButtonSize = 'sm' | 'md' | 'lg' | 'xl'
 export type ButtonStyle = { variant?: ButtonVariant; size?: ButtonSize; block?: boolean }
 

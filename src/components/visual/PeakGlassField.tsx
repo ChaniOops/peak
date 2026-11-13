@@ -8,7 +8,7 @@ import s from './peakGlassField.module.css'
  * Adapted from the FeralUI "Glass ramune" pixel/glass renderer: same tile
  * construction (gap, corner radius, drop shadow, 128° tint, gloss, top
  * sheen, specular dot, inner shade, bevelled edge, veiled top rows, ragged
- * dropout, horizon glow) re-lit in Peak's smoked teal / petrol / celadon.
+ * dropout, horizon glow) as black optical glass under a silver light.
  *
  * Cost model, tuned for low-end Android:
  * - glass tiles are painted once per size on a static canvas (DPR ≤ 1.5);
@@ -21,16 +21,19 @@ import s from './peakGlassField.module.css'
 
 type Rgb = readonly [number, number, number]
 
-// palette sampled from the approved target (peak-glass-target.png)
-const SKY_TOP: Rgb = [64, 98, 122]
-const SKY_MID: Rgb = [62, 112, 134]
-const TEAL: Rgb = [16, 108, 122]
-const PETROL: Rgb = [4, 78, 108]
-const ABYSS: Rgb = [3, 46, 86]
-const CELADON: Rgb = [38, 204, 168]
-const GLOW: Rgb = [112, 214, 204]
-const EMERALD: Rgb = [40, 210, 156]
-const DEEP: Rgb = [2, 40, 74]
+// black optical glass: depth from lightness alone (no hue). The light is a
+// cool silver; the panes are smoke over black.
+const SKY_TOP: Rgb = [22, 22, 23]
+const SKY_MID: Rgb = [27, 27, 28]
+const BAND: Rgb = [34, 34, 36] // the brightest band, just under the crest
+const LOWER: Rgb = [15, 15, 16]
+const ABYSS: Rgb = [8, 8, 9]
+const SILVER: Rgb = [196, 198, 204] // silver curtain
+const GLOW: Rgb = [150, 152, 158]
+const SILVER_SOFT: Rgb = [170, 172, 178]
+const DEEP: Rgb = [3, 3, 4]
+/** monochrome light reads stronger than coloured light: keep it a whisper */
+const LIGHT = 0.42
 
 const GAP = 0.03 // Glass ramune uses 0.016; the target reads slightly airier
 const RADIUS = 0.19
@@ -159,7 +162,7 @@ function paintGlass(canvas: HTMLCanvasElement, L: Layout, dpr: number) {
     ctx.save()
     ctx.translate(t.x, t.y)
 
-    // body: thin at the crest so the aurora shows through, dense petrol below
+    // body: thin at the crest so the aurora shows through, dense black below
     roundRect(ctx, z, z, z * RADIUS)
     ctx.fillStyle = rgba(DEEP, 0.02 + 0.42 * Math.pow(t.depth, 1.6))
     ctx.fill()
@@ -167,17 +170,17 @@ function paintGlass(canvas: HTMLCanvasElement, L: Layout, dpr: number) {
     // veil on the upper rows (Glass ramune mixes toward white by `veil`)
     if (t.veil > 0.01) {
       const v = ctx.createLinearGradient(0, 0, 0, z)
-      v.addColorStop(0, `rgba(190,245,235,${0.1 * t.veil})`)
-      v.addColorStop(1, `rgba(190,245,235,${0.02 * t.veil})`)
+      v.addColorStop(0, `rgba(235,236,240,${0.1 * t.veil})`)
+      v.addColorStop(1, `rgba(235,236,240,${0.02 * t.veil})`)
       ctx.fillStyle = v
       ctx.fill()
     }
 
-    // 128° tint: cool light at top-left, petrol at bottom-right
+    // 128° tint: cool light at top-left, shadow at bottom-right
     const tint = ctx.createLinearGradient(z / 2 - vx * half, z / 2 - vy * half, z / 2 + vx * half, z / 2 + vy * half)
     // light end only: a long dark low-alpha ramp bands visibly at 8 bits
-    tint.addColorStop(0, `rgba(200,250,240,${0.07 * lift})`)
-    tint.addColorStop(0.45, 'rgba(200,250,240,0)')
+    tint.addColorStop(0, `rgba(240,241,245,${0.07 * lift})`)
+    tint.addColorStop(0.45, 'rgba(239, 239, 239,0)')
     ctx.fillStyle = tint
     ctx.fill()
 
@@ -213,12 +216,12 @@ function paintGlass(canvas: HTMLCanvasElement, L: Layout, dpr: number) {
     // specular dot (T) near the upper-left corner
     const dot = ctx.createRadialGradient(z * 0.2, z * 0.15, 0, z * 0.2, z * 0.15, z * 0.12)
     dot.addColorStop(0, 'rgba(255,255,255,0.8)')
-    dot.addColorStop(0.28, 'rgba(235,255,252,0.32)')
+    dot.addColorStop(0.28, 'rgba(251, 251, 251,0.32)')
     dot.addColorStop(1, 'rgba(255,255,255,0)')
     ctx.fillStyle = dot
     ctx.fill()
 
-    // bevelled edge: bright top-left, petrol bottom-right
+    // bevelled edge: bright top-left, shadow bottom-right
     const edge = ctx.createLinearGradient(0, 0, z, z)
     edge.addColorStop(0, 'rgba(255,255,255,0.42)')
     edge.addColorStop(0.42, 'rgba(255,255,255,0.12)')
@@ -235,10 +238,10 @@ function paintGlass(canvas: HTMLCanvasElement, L: Layout, dpr: number) {
   const top = L.horizon - L.cell * 1.4
   const bottom = L.horizon + L.cell * 1.3
   const band = ctx.createLinearGradient(0, top, 0, bottom)
-  band.addColorStop(0, 'rgba(160,240,226,0)')
-  band.addColorStop(0.45, 'rgba(160,240,226,0.1)')
-  band.addColorStop(0.7, 'rgba(160,240,226,0.04)')
-  band.addColorStop(1, 'rgba(160,240,226,0)')
+  band.addColorStop(0, 'rgba(222, 222, 222,0)')
+  band.addColorStop(0.45, 'rgba(222, 222, 222,0.1)')
+  band.addColorStop(0.7, 'rgba(222, 222, 222,0.04)')
+  band.addColorStop(1, 'rgba(222, 222, 222,0)')
   ctx.fillStyle = band
   ctx.fillRect(0, Math.max(0, top), L.w, bottom - Math.max(0, top))
 }
@@ -246,6 +249,7 @@ function paintGlass(canvas: HTMLCanvasElement, L: Layout, dpr: number) {
 /* ── animated light field (low-res) ─────────────────────────────────── */
 
 function softDot(ctx: CanvasRenderingContext2D, x: number, y: number, r: number, c: Rgb, a: number) {
+  a *= LIGHT
   const g = ctx.createRadialGradient(x, y, 0, x, y, r)
   g.addColorStop(0, rgba(c, a))
   g.addColorStop(0.5, rgba(c, a * 0.45))
@@ -272,6 +276,7 @@ function ribbon(
 ) {
   const S = Math.max(W, H)
   const [p0, p1, p2, p3] = pts.map(([x, y]) => [x * W, y * H] as const)
+  a *= LIGHT
   const fade = ctx.createLinearGradient(p0[0], p0[1], p3[0], p3[1])
   fade.addColorStop(0, rgba(c, 0))
   fade.addColorStop(0.28, rgba(c, a))
@@ -305,12 +310,12 @@ function ribbon(
 
 function paintLight(ctx: CanvasRenderingContext2D, W: number, H: number, L: Layout, time: number, scratch: HTMLCanvasElement) {
   const hz = L.horizon / L.h
-  // base: smoked slate sky falling into petrol and abyss beneath the glass
+  // base: smoked slate sky falling into shadow and abyss beneath the glass
   const base = ctx.createLinearGradient(0, 0, 0, H)
   base.addColorStop(0, rgba(SKY_TOP, 1))
   base.addColorStop(Math.max(0.05, hz - 0.12), rgba(SKY_MID, 1))
-  base.addColorStop(Math.min(0.95, hz + 0.08), rgba(TEAL, 1))
-  base.addColorStop(Math.min(0.97, hz + 0.4), rgba(PETROL, 1))
+  base.addColorStop(Math.min(0.95, hz + 0.08), rgba(BAND, 1))
+  base.addColorStop(Math.min(0.97, hz + 0.4), rgba(LOWER, 1))
   base.addColorStop(1, rgba(ABYSS, 1))
   ctx.globalCompositeOperation = 'source-over'
   ctx.fillStyle = base
@@ -331,7 +336,7 @@ function paintLight(ctx: CanvasRenderingContext2D, W: number, H: number, L: Layo
     [0.6 + 0.04 * sway(0.07, 4), hz + 0.22 - lift],
     [0.04 + 0.04 * sway(0.08, 3), hz + 0.3 - lift * 0.8 + 0.02 * sway(0.1, 5)],
   ]
-  ribbon(ctx, W, H, curtain, 0.15, CELADON, 0.5 + 0.05 * sway(0.17, 1))
+  ribbon(ctx, W, H, curtain, 0.15, SILVER, 0.5 + 0.05 * sway(0.17, 1))
   // curtain ridges: thinner parallel folds give the aurora its structure
   for (const [dx, dy, a] of [
     [0, 0, 0.62],
@@ -344,7 +349,7 @@ function paintLight(ctx: CanvasRenderingContext2D, W: number, H: number, L: Layo
       H,
       curtain.map(([x, y], i) => [x + dx * (i / 3) * (1 + 0.4 * sway(0.12, i)), y + dy * (i / 3)] as [number, number]),
       0.034,
-      [86, 232, 200],
+      [212, 214, 220],
       a + 0.08 * sway(0.21, dx * 40),
     )
   }
@@ -360,7 +365,7 @@ function paintLight(ctx: CanvasRenderingContext2D, W: number, H: number, L: Layo
       [0.56, hz + 0.04],
     ],
     0.08,
-    CELADON,
+    SILVER,
     0.22 + 0.04 * sway(0.11, 5),
   )
   // the curtain's bright fall over the right glass shoulder
@@ -375,10 +380,10 @@ function paintLight(ctx: CanvasRenderingContext2D, W: number, H: number, L: Layo
       [0.66 + 0.03 * sway(0.09, 2), hz + 0.32],
     ],
     0.05,
-    EMERALD,
+    SILVER_SOFT,
     0.6 + 0.05 * sway(0.14, 4),
   )
-  // emerald undercurrent through the upper-left glass rows
+  // secondary undercurrent through the upper-left glass rows
   ribbon(
     ctx,
     W,
@@ -390,15 +395,15 @@ function paintLight(ctx: CanvasRenderingContext2D, W: number, H: number, L: Layo
       [0.52 + 0.03 * sway(0.08, 0), hz + 0.3],
     ],
     0.075,
-    EMERALD,
+    SILVER_SOFT,
     0.72 + 0.06 * sway(0.15, 3),
   )
   // crisp streaks through the glass rows: what the panes refract
   const streaks: Array<[[number, number][], number, Rgb, number]> = [
-    [[[-0.05, hz + 0.42], [0.14, hz + 0.3], [0.3, hz + 0.21], [0.5, hz + 0.18]], 0.022, [64, 222, 176], 0.85],
-    [[[0.02, hz + 0.58], [0.18, hz + 0.47], [0.3, hz + 0.42], [0.46, hz + 0.4]], 0.026, EMERALD, 0.55],
-    [[[0.6, hz + 0.38], [0.74, hz + 0.27], [0.86, hz + 0.21], [1.03, hz + 0.15]], 0.022, [70, 226, 196], 0.75],
-    [[[0.66, hz + 0.52], [0.8, hz + 0.44], [0.9, hz + 0.4], [1.04, hz + 0.36]], 0.02, CELADON, 0.42],
+    [[[-0.05, hz + 0.42], [0.14, hz + 0.3], [0.3, hz + 0.21], [0.5, hz + 0.18]], 0.022, [202, 204, 210], 0.85],
+    [[[0.02, hz + 0.58], [0.18, hz + 0.47], [0.3, hz + 0.42], [0.46, hz + 0.4]], 0.026, SILVER_SOFT, 0.55],
+    [[[0.6, hz + 0.38], [0.74, hz + 0.27], [0.86, hz + 0.21], [1.03, hz + 0.15]], 0.022, [206, 208, 214], 0.75],
+    [[[0.66, hz + 0.52], [0.8, hz + 0.44], [0.9, hz + 0.4], [1.04, hz + 0.36]], 0.02, SILVER, 0.42],
   ]
   for (const [pts, w, c, a] of streaks) {
     const d = 0.02 * sway(0.09, pts[0][0] * 10)
@@ -409,7 +414,7 @@ function paintLight(ctx: CanvasRenderingContext2D, W: number, H: number, L: Layo
   const gx = 0.52
   const gy = L.valley ? hz + 0.06 : hz - 0.02
   softDot(ctx, gx * W, gy * H, Math.max(W, H) * (L.valley ? 0.3 : 0.4), GLOW, 0.42 + 0.05 * sway(0.2, 2))
-  softDot(ctx, gx * W, gy * H, Math.max(W, H) * 0.12, [170, 238, 230], 0.42)
+  softDot(ctx, gx * W, gy * H, Math.max(W, H) * 0.12, [222, 224, 228], 0.42)
   ctx.globalCompositeOperation = 'source-over'
 
   // refraction (Glass ramune: each pane shows the light field magnified by

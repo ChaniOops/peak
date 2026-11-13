@@ -35,7 +35,7 @@ export function HomeScreen() {
     <div>
       <header className={s.header}>
         <div className={s.hello}>
-          <div className="eyebrow">
+          <div className="label">
             {new Date().toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'short' })}
           </div>
           <h1 className={`display ${s.helloText}`}>
@@ -136,11 +136,7 @@ export function HomeScreen() {
       )}
 
       {/* backend has no campus-wide feed yet; in Supabase mode this is your own ledger */}
-      <Section title={api.mode === 'mock' ? 'Campus, live' : 'Your latest'} meta={
-          <span className={s.live}>
-            <i aria-hidden /> Live
-          </span>
-        }>
+      <Section title={api.mode === 'mock' ? 'Campus, live' : 'Your latest'}>
         {feed.data ? <FeedList items={feed.data} /> : <Skeleton h={240} />}
       </Section>
     </div>

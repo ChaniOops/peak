@@ -5,7 +5,7 @@
  *
  * Kept: the SDF logo field (exact Euclidean distance transform), the WebGL2
  * renderer and the spring-driven frameAt() timeline, verbatim in behaviour.
- * Peak changes: the logo is the Peak mark; the texture is 512² instead of
+ * Peak changes: the logo is the (monochrome) Peak mark; the texture is 512² instead of
  * 1024² (the mark is never shown larger than ~120 px, and the EDT is 4×
  * cheaper on low-end phones); the "dark" look re-coloured to Peak petrol;
  * the editor UI, presets, storage and export are dropped.
@@ -19,11 +19,11 @@ const BOX = 0.75
 
 export type LogoField = { canvas: HTMLCanvasElement; sdf: Float32Array }
 
-/** Peak mark: white massif + lime summit notch (matches PeakMark / favicon). */
+/** Peak mark: white massif + grey summit notch (matches PeakMark / favicon). */
 const PEAK_SVG =
   '<svg xmlns="http://www.w3.org/2000/svg" viewBox="5 10 22 14.5" width="1024" height="675">' +
   '<path fill="#ffffff" d="M5 24.5 13 10l4.6 7.4 2.8-3.7 6.6 10.8z"/>' +
-  '<path fill="#c8f169" d="M13 10l-2.4 4.3 2.4-1.3 2 1.5z"/></svg>'
+  '<path fill="#8c8c8c" d="M13 10l-2.4 4.3 2.4-1.3 2 1.5z"/></svg>'
 
 function loadImage(src: string) {
   return new Promise<HTMLImageElement>((resolve, reject) => {
@@ -279,7 +279,7 @@ export type Look = {
   logoColor: string
 }
 
-/** The source's "dark" look, re-coloured to Peak (petrol plate, midnight backdrop). */
+/** The source's "dark" look, in Peak monochrome (smoke plate, black backdrop). */
 export const PEAK_LOOK: Look = {
   logoScale: 0.72,
   finalScale: 1,
@@ -310,8 +310,8 @@ export const PEAK_LOOK: Look = {
   drift: 0.05,
   swell: 0.5,
   focus: 1,
-  background: '#061b29',
-  plateColor: '#0b3046',
+  background: '#0a0a0a',
+  plateColor: '#161617',
   logoColor: '#ffffff',
 }
 

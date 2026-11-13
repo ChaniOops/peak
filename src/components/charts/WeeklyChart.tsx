@@ -3,12 +3,12 @@ import type { DailyStat } from '../../api/types'
 import { formatDistance, formatNumber } from '../../lib/format'
 import s from './WeeklyChart.module.css'
 
-const OTHER = '#24343b' // dark teal-grey: the week, quietly
-const ACTIVE = '#3b5560'
+const OTHER = '#2a2a2a' // the week, quietly
+const ACTIVE = '#454545'
 
 /**
  * One question: how does today compare with my week? Seven bars, today in
- * celadon glass, a dashed average for the comparison, nothing else. Touch or
+ * white, a dashed average for the comparison, nothing else. Touch or
  * hover lights a bar and shows its day.
  */
 export function WeeklyChart({ days }: { days: DailyStat[] }) {
@@ -39,9 +39,8 @@ export function WeeklyChart({ days }: { days: DailyStat[] }) {
           <BarChart data={data} margin={{ top: 8, right: 0, bottom: 0, left: 0 }} barCategoryGap={6}>
             <defs>
               <linearGradient id="pk-today" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0" stopColor="#c9f5ea" />
-                <stop offset="0.35" stopColor="#6fdcc8" />
-                <stop offset="1" stopColor="#1f8f80" />
+                <stop offset="0" stopColor="#ffffff" />
+                <stop offset="1" stopColor="#d4d4d4" />
               </linearGradient>
             </defs>
             <XAxis
@@ -59,14 +58,14 @@ export function WeeklyChart({ days }: { days: DailyStat[] }) {
                     fontSize={11}
                     fontWeight={today ? 600 : 450}
                     fontFamily="Geist, system-ui, sans-serif"
-                    fill={today ? '#e6f7f4' : '#5f6a6d'}
+                    fill={today ? '#eeeeee' : '#666666'}
                   >
                     {payload.value}
                   </text>
                 )
               }}
             />
-            <ReferenceLine y={avg} stroke="rgba(214,240,238,0.28)" strokeDasharray="3 4" ifOverflow="extendDomain" />
+            <ReferenceLine y={avg} stroke="rgba(255, 255, 255, 0.22)" strokeDasharray="3 4" ifOverflow="extendDomain" />
             <Tooltip
               cursor={false}
               content={({ active, payload }) => {

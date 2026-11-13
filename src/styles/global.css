@@ -54,7 +54,7 @@ p {
 }
 
 ::selection {
-  background: rgba(200, 241, 105, 0.28);
+  background: rgba(222, 222, 222, 0.28);
   color: var(--text);
 }
 
@@ -142,7 +142,7 @@ p {
 }
 
 :focus-visible {
-  outline: 2px solid #8fe6d3;
+  outline: 2px solid #d2d2d2;
   outline-offset: 2px;
 }
 

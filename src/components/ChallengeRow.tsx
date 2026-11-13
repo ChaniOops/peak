@@ -53,7 +53,7 @@ export function ChallengeRow({ c, onJoin }: { c: Challenge; onJoin?: (id: string
               )}
             </BlurReplace>
           </div>
-          <ProgressBar value={c.progress / c.target} tone={done ? 'accent' : 'celadon'} />
+          <ProgressBar value={c.progress / c.target} tone={done ? 'complete' : 'progress'} />
         </div>
       ) : (
         onJoin && (
