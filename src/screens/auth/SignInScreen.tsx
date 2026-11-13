@@ -6,11 +6,12 @@ import { useAuth } from '../../app/auth'
 import { Button, Field, IconButton } from '../../components/ui/ui'
 import { BlurReplace } from '../../components/ui/BlurReplace'
 import { PeakMark } from '../../components/brand/PeakMark'
+import { PeakGlassField } from '../../components/visual/PeakGlassField'
 import { POP_EASE, SOFT } from '../../lib/motion'
 import s from './signin.module.css'
 
 /**
- * FeralUI Screenery Login → Email flow, re-themed for Peak's black + lime.
+ * FeralUI Screenery Login → Email flow over the Peak glass field.
  * Google/GitHub go through Supabase OAuth; email and the demo account use the
  * existing signIn(email, password) / signInDemo() calls.
  */
@@ -20,6 +21,9 @@ export function SignInScreen() {
   const [step, setStep] = useState<Step>('welcome')
   return (
     <div className={s.page}>
+      <motion.div className={s.field} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.9, ease: SOFT }}>
+        <PeakGlassField dim={step === 'email'} />
+      </motion.div>
       <AnimatePresence mode="wait" initial={false}>
         <motion.div
           key={step}
@@ -95,13 +99,6 @@ function Welcome({ onEmail }: { onEmail: () => void }) {
 
   return (
     <>
-      <motion.div
-        className={s.glow}
-        initial={{ opacity: 0, y: 90 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.1, duration: 1.1, ease: SOFT }}
-        aria-hidden="true"
-      />
       <div className={s.copy}>
         <motion.div
           className={`${s.brand} glass`}
@@ -249,13 +246,6 @@ function EmailForm({ onBack }: { onBack: () => void }) {
 
   return (
     <>
-      <motion.div
-        className={s.emGlow}
-        initial={{ opacity: 0, y: 60 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.08, duration: 0.9, ease: SOFT }}
-        aria-hidden="true"
-      />
       <motion.div
         className={s.back}
         initial={{ opacity: 0, scale: 0.8 }}
