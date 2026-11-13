@@ -6,6 +6,7 @@ import { api, ApiError } from '../../api'
 import { useLive } from '../../api/useLive'
 import { QrScanner } from '../../components/qr/QrScanner'
 import { Button } from '../../components/ui/ui'
+import { EASE_OUT } from '../../lib/motion'
 import s from './play.module.css'
 
 type Phase =
@@ -51,12 +52,15 @@ export function ScanScreen() {
 
   return (
     <div className={s.scanPage}>
-      <Link to="/play" className={s.back}>
-        <ChevronLeft size={18} /> Play
-      </Link>
-      <h1 className="display" style={{ fontSize: 40 }}>
-        Check in
-      </h1>
+      <div className={s.scanHead}>
+        <Link to="/play" className={s.back} aria-label="Back to Play">
+          <ChevronLeft size={18} />
+        </Link>
+        <div>
+          <div className="label">Play</div>
+          <h1 className={`display ${s.scanTitle}`}>Check in</h1>
+        </div>
+      </div>
 
       {phase.kind === 'scan' && (
         <>
@@ -132,7 +136,7 @@ function CheckInStatus({ checkInId, eventId }: { checkInId: string; eventId: str
         initial={{ opacity: 0, scale: 0.96 }}
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.98 }}
-        transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+        transition={{ duration: 0.36, ease: EASE_OUT }}
       >
         {status === 'pending' && (
           <>

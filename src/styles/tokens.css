@@ -1,44 +1,58 @@
 :root {
   color-scheme: dark;
 
-  /* Surfaces — near-black with a faint moss tint, like shadowed rock */
-  --bg: #0a0c0b;
-  --surface-1: #111413;
-  --surface-2: #171b19;
-  --surface-3: #1f2421;
-  --line: rgba(226, 233, 228, 0.08);
-  --line-strong: rgba(226, 233, 228, 0.16);
+  /* Surfaces — true neutral near-black (Polar/Vercel discipline) */
+  --bg: #080808;
+  --surface-1: #0d0d0d; /* card */
+  --surface-2: #111111; /* raised: inputs, nested panels */
+  --surface-3: #171717; /* hover, wells, tracks */
+  --surface-4: #1f1f1f;
+  --line: rgba(255, 255, 255, 0.08);
+  --line-strong: rgba(255, 255, 255, 0.13);
+  --line-focus: rgba(255, 255, 255, 0.32);
+  /* top-edge sheen that lifts flat cards off the background */
+  --highlight: inset 0 1px 0 rgba(255, 255, 255, 0.045);
 
   /* Text */
-  --text: #e9eee9;
-  --text-2: #a1aaa4;
-  --text-3: #69716c;
+  --text: #f5f5f5;
+  --text-2: #a1a1a1;
+  --text-3: #666666;
 
-  /* Restrained accents: one primary, three semantic */
-  --accent: #c8f169; /* lichen — progress, primary action */
-  --accent-ink: #11160a;
-  --accent-soft: rgba(200, 241, 105, 0.12);
+  /* Peak acid-lime: meaningful active/action states only */
+  --accent: #c8f169;
+  --accent-hover: #d4f586;
+  --accent-ink: #0c1004;
+  --accent-soft: rgba(200, 241, 105, 0.1);
+  --accent-line: rgba(200, 241, 105, 0.32);
+
+  /* Semantic, used sparingly */
   --ice: #8cd2f0; /* verified, info */
-  --ice-soft: rgba(140, 210, 240, 0.12);
-  --ember: #f5a25d; /* streaks, pending */
-  --ember-soft: rgba(245, 162, 93, 0.12);
+  --ice-soft: rgba(140, 210, 240, 0.1);
+  --ember: #f5a25d; /* pending, streak */
+  --ember-soft: rgba(245, 162, 93, 0.1);
   --danger: #ff6f61;
-  --danger-soft: rgba(255, 111, 97, 0.12);
+  --danger-soft: rgba(255, 111, 97, 0.1);
 
   /* Type */
-  --font-body: 'Archivo', system-ui, -apple-system, 'Segoe UI', sans-serif;
-  --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+  --font-body: 'Geist', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  --font-mono: 'Geist Mono', ui-monospace, 'SF Mono', Menlo, monospace;
 
   /* Shape & space */
+  --r-xs: 8px;
   --r-sm: 10px;
-  --r-md: 16px;
-  --r-lg: 22px;
+  --r-md: 14px;
+  --r-lg: 18px;
   --r-pill: 999px;
   --gutter: 16px;
-  --tabbar-h: 64px;
+  --tabbar-h: 60px;
   --max-w: 480px;
+  --content-w: 560px;
 
-  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  /* Motion (values from the FeralUI ClimbScreen source) */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-soft: cubic-bezier(0.22, 1, 0.3, 1);
+  --ease-press: cubic-bezier(0.34, 1.56, 0.64, 1);
+
   --safe-bottom: env(safe-area-inset-bottom, 0px);
   --safe-top: env(safe-area-inset-top, 0px);
 }

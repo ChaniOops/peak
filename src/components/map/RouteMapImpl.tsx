@@ -65,7 +65,7 @@ export default function RouteMapImpl({ route, follow = false, emptyLabel = 'Wait
         source: 'route',
         filter: ['==', ['get', 'kind'], 'line'],
         layout: { 'line-cap': 'round', 'line-join': 'round' },
-        paint: { 'line-color': '#0a0c0b', 'line-width': 9, 'line-opacity': 0.7 },
+        paint: { 'line-color': '#080808', 'line-width': 9, 'line-opacity': 0.7 },
       })
       map.addLayer({
         id: 'route-line',
@@ -82,8 +82,8 @@ export default function RouteMapImpl({ route, follow = false, emptyLabel = 'Wait
         filter: ['==', ['get', 'kind'], 'start'],
         paint: {
           'circle-radius': 5,
-          'circle-color': '#0a0c0b',
-          'circle-stroke-color': '#e9eee9',
+          'circle-color': '#080808',
+          'circle-stroke-color': '#f5f5f5',
           'circle-stroke-width': 2,
         },
       })
@@ -102,7 +102,7 @@ export default function RouteMapImpl({ route, follow = false, emptyLabel = 'Wait
         paint: {
           'circle-radius': 6.5,
           'circle-color': ACCENT,
-          'circle-stroke-color': '#0a0c0b',
+          'circle-stroke-color': '#080808',
           'circle-stroke-width': 2.5,
         },
       })

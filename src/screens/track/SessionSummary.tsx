@@ -1,10 +1,10 @@
 import { motion } from 'framer-motion'
-import { Link } from 'react-router-dom'
-import { Award, Loader2 } from 'lucide-react'
+import { Award, Check, Mountain } from 'lucide-react'
 import { useSession, elapsedMs } from '../../tracking/sessionStore'
 import { ACTIVITY_LABEL, formatDuration, formatKm, formatNumber, formatPace } from '../../lib/format'
 import { AnimatedNumber } from '../../components/ui/AnimatedNumber'
-import { Button, Chip } from '../../components/ui/ui'
+import { Button, ButtonLink, Chip, Notice, Spinner } from '../../components/ui/ui'
+import { EASE_OUT } from '../../lib/motion'
 import { RouteMap } from '../../components/map/RouteMap'
 import s from './track.module.css'
 
@@ -15,7 +15,7 @@ export function SessionSummary() {
   if (st.phase === 'saving') {
     return (
       <div className={s.saving}>
-        <Loader2 className={s.spin} size={28} />
+        <Spinner size={24} />
         <div className="label">Saving to campus</div>
       </div>
     )
@@ -24,7 +24,9 @@ export function SessionSummary() {
   if (st.phase === 'error') {
     return (
       <div className={s.saving}>
-        <div className={s.warn}>{st.error}</div>
+        <Notice tone="danger">
+          <strong>Couldn’t save.</strong> {st.error}
+        </Notice>
         <p className="muted">Your session is kept on this phone until it saves.</p>
         <div className={s.row}>
           <Button variant="secondary" onClick={st.discard}>
@@ -42,15 +44,17 @@ export function SessionSummary() {
   return (
     <div className={s.summary}>
       <div className={s.summaryHead}>
-        <Chip tone="accent">{ACTIVITY_LABEL[st.type]} saved</Chip>
+        <Chip tone="accent">
+          <Check size={11} strokeWidth={3} /> {ACTIVITY_LABEL[st.type]} saved
+        </Chip>
         {st.simulated && <Chip tone="ember">Simulated</Chip>}
       </div>
 
       <motion.div
         className={s.pointsHero}
-        initial={{ opacity: 0, scale: 0.92 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, ease: EASE_OUT }}
       >
         <div className={`num ${s.pointsValue}`}>
           +<AnimatedNumber value={result?.pointsAwarded ?? 0} from={0} duration={1.2} />
@@ -106,23 +110,28 @@ export function SessionSummary() {
               className={s.badgeEarned}
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.6 + i * 0.15 }}
+              transition={{ delay: 0.6 + i * 0.12, duration: 0.45, ease: EASE_OUT }}
             >
-              <Award size={20} />
+              <span className={s.badgeIcon}>
+                <Award size={18} />
+              </span>
               <div>
                 <strong>{b.name}</strong>
                 <div className="muted">{b.description}</div>
               </div>
+              <span className="label">Badge</span>
             </motion.div>
           ))}
         </div>
       )}
 
       <div className={s.row}>
-        <Link to="/compete" onClick={st.discard} className={s.linkBtn}>
-          See summit
-        </Link>
-        <Button onClick={st.discard}>Done</Button>
+        <ButtonLink to="/compete" onClick={st.discard} variant="secondary" size="lg">
+          <Mountain size={16} /> See summit
+        </ButtonLink>
+        <Button size="lg" onClick={st.discard}>
+          Done
+        </Button>
       </div>
     </div>
   )

@@ -78,7 +78,10 @@ export function QrScanner({ onResult }: { onResult: (text: string) => void }) {
       <video ref={video} className={s.video} playsInline muted />
       {message ? (
         <div className={s.blocked}>
-          <CameraOff size={28} />
+          <span className={s.blockedIcon}>
+            <CameraOff size={20} />
+          </span>
+          <strong className={s.blockedTitle}>Camera needed</strong>
           <p>{message}</p>
         </div>
       ) : (
@@ -91,7 +94,7 @@ export function QrScanner({ onResult }: { onResult: (text: string) => void }) {
         </div>
       )}
       <div className={s.caption}>
-        <span className="label">{state === 'scanning' ? 'Point at the event QR' : state === 'starting' ? 'Starting camera…' : ''}</span>
+        <span className={s.captionPill}>{state === 'scanning' ? 'Point at the event QR' : state === 'starting' ? 'Starting camera…' : ''}</span>
       </div>
     </div>
   )

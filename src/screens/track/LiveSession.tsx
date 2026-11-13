@@ -3,10 +3,11 @@ import { Pause, Play, Square, Trash2 } from 'lucide-react'
 import { elapsedMs, useSession, USES } from '../../tracking/sessionStore'
 import { useNow } from '../../lib/useNow'
 import { ACTIVITY_LABEL, formatDuration, formatKm, formatNumber, formatPace, formatSpeed } from '../../lib/format'
-import { Chip, type Tone } from '../../components/ui/ui'
+import { Chip, IconButton, Notice, type Tone } from '../../components/ui/ui'
 import type { GpsStatus } from '../../sensors/geolocation'
 import type { MotionStatus } from '../../sensors/motion'
 import { RouteMap } from '../../components/map/RouteMap'
+import { SPRING_POP } from '../../lib/motion'
 import s from './track.module.css'
 
 export function LiveSession() {
@@ -45,12 +46,16 @@ export function LiveSession() {
       <div className={s.liveMap}>
         <RouteMap route={st.route} follow />
         <div className={s.liveChips}>
-          <Chip tone="accent" dot>
-            {ACTIVITY_LABEL[st.type]}
+          <Chip tone="accent" dot glass>
+            {ACTIVITY_LABEL[st.type]} · {paused ? 'paused' : 'live'}
           </Chip>
           {uses.gps && <GpsChip status={st.gps} accuracy={st.gpsAccuracy} />}
           {uses.motion && <MotionChip status={st.motion} />}
-          {st.simulated && <Chip tone="ember">Simulated</Chip>}
+          {st.simulated && (
+            <Chip tone="ember" glass>
+              Simulated
+            </Chip>
+          )}
         </div>
       </div>
 
@@ -84,35 +89,61 @@ export function LiveSession() {
       </div>
 
       {st.motion === 'denied' && uses.motion && (
-        <p className={s.warn}>Motion access was denied, so steps aren’t counted. GPS still records distance.</p>
+        <div className={s.gap}>
+          <Notice tone="ember">
+            <strong>Motion access denied.</strong> Steps aren’t counted; GPS still records distance.
+          </Notice>
+        </div>
       )}
       {st.gps === 'denied' && uses.gpsPrimary && (
-        <p className={s.warn}>Location access is off. Enable it in browser settings to record distance.</p>
+        <div className={s.gap}>
+          <Notice tone="ember">
+            <strong>Location is off.</strong> Enable it in browser settings to record distance.
+          </Notice>
+        </div>
       )}
 
       <div className={s.controls}>
+        <AnimatePresence initial={false}>
+          {paused && (
+            <motion.div key="discard" className={s.ctlSlot} {...sideIn(-1)}>
+              <IconButton label="Discard" variant="secondary" size={56} onClick={st.discard}>
+                <Trash2 size={19} />
+              </IconButton>
+            </motion.div>
+          )}
+        </AnimatePresence>
         {paused ? (
-          <>
-            <button className={s.ctlSide} onClick={st.discard} aria-label="Discard">
-              <Trash2 size={20} />
-            </button>
-            <motion.button whileTap={{ scale: 0.94 }} className={s.ctlMain} onClick={st.resume}>
-              <Play size={26} fill="currentColor" />
-            </motion.button>
-            <button className={`${s.ctlSide} ${s.ctlFinish}`} onClick={() => void st.finish()} aria-label="Finish">
-              <Square size={18} fill="currentColor" />
-            </button>
-          </>
+          <IconButton label="Resume" variant="primary" size={80} className={s.ctlMain} onClick={st.resume}>
+            <Play size={26} fill="currentColor" />
+          </IconButton>
         ) : (
-          <motion.button whileTap={{ scale: 0.94 }} className={s.ctlMain} onClick={st.pause} aria-label="Pause">
+          <IconButton label="Pause" variant="contrast" size={80} className={s.ctlMain} onClick={st.pause}>
             <Pause size={26} fill="currentColor" />
-          </motion.button>
+          </IconButton>
         )}
+        <AnimatePresence initial={false}>
+          {paused && (
+            <motion.div key="finish" className={s.ctlSlot} {...sideIn(1)}>
+              <IconButton label="Finish" variant="contrast" size={56} onClick={() => void st.finish()}>
+                <Square size={17} fill="currentColor" />
+              </IconButton>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
       <p className={s.ctlHint}>{paused ? 'Resume, finish, or discard' : 'Pause to finish'}</p>
     </div>
   )
 }
+
+/** paused-state side controls slide out from under the main button */
+const sideIn = (dir: -1 | 1) => ({
+  initial: { opacity: 0, x: -dir * 28, scale: 0.8 },
+  animate: { opacity: 1, x: 0, scale: 1 },
+  exit: { opacity: 0, x: -dir * 28, scale: 0.8, transition: { duration: 0.16 } },
+  transition: SPRING_POP,
+})
 
 function GpsChip({ status, accuracy }: { status: GpsStatus; accuracy: number | null }) {
   const map: Record<GpsStatus, [Tone, string]> = {
@@ -125,7 +156,7 @@ function GpsChip({ status, accuracy }: { status: GpsStatus; accuracy: number | n
   }
   const [tone, text] = map[status]
   return (
-    <Chip tone={tone} dot>
+    <Chip tone={tone} dot glass>
       {text}
     </Chip>
   )
@@ -141,7 +172,7 @@ function MotionChip({ status }: { status: MotionStatus }) {
   }
   const [tone, text] = map[status]
   return (
-    <Chip tone={tone} dot>
+    <Chip tone={tone} dot glass>
       {text}
     </Chip>
   )

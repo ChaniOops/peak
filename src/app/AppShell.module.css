@@ -1,39 +1,43 @@
 .frame {
+  --rail-w: 0px;
   position: relative;
-  max-width: var(--max-w);
   min-height: 100%;
-  margin: 0 auto;
   background: var(--bg);
 }
 
-@media (min-width: 520px) {
-  .frame {
-    border-left: 1px solid var(--line);
-    border-right: 1px solid var(--line);
-  }
-}
-
 .main {
-  padding: calc(var(--safe-top) + 12px) var(--gutter)
-    calc(var(--tabbar-h) + var(--safe-bottom) + 28px);
+  max-width: var(--max-w);
+  margin: 0 auto;
+  padding: calc(var(--safe-top) + 14px) var(--gutter) calc(var(--tabbar-h) + var(--safe-bottom) + 32px);
 }
 
-.tabbar {
+/* ── bottom tab bar (phones, tablets) ───────────────────────────────── */
+
+.nav {
   position: fixed;
   z-index: 40;
-  left: 50%;
+  left: 0;
+  right: 0;
   bottom: 0;
-  transform: translateX(-50%);
-  width: 100%;
-  max-width: var(--max-w);
-  height: calc(var(--tabbar-h) + var(--safe-bottom));
-  padding: 0 8px var(--safe-bottom);
+  padding-bottom: var(--safe-bottom);
+  background: rgba(8, 8, 8, 0.82);
+  backdrop-filter: blur(20px) saturate(160%);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
+  border-top: 1px solid var(--line);
+}
+
+.brand,
+.railFoot {
+  display: none;
+}
+
+.tabs {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
-  background: rgba(10, 12, 11, 0.86);
-  backdrop-filter: blur(18px) saturate(140%);
-  -webkit-backdrop-filter: blur(18px) saturate(140%);
-  border-top: 1px solid var(--line);
+  max-width: var(--max-w);
+  height: var(--tabbar-h);
+  margin: 0 auto;
+  padding: 0 6px;
 }
 
 .tab {
@@ -42,28 +46,150 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 4px;
+  gap: 3px;
   color: var(--text-3);
+  -webkit-tap-highlight-color: transparent;
   transition: color 0.2s var(--ease-out);
+}
+
+@media (hover: hover) {
+  .tab:hover {
+    color: var(--text-2);
+  }
 }
 
 .tab.active {
   color: var(--text);
 }
 
-.tabLabel {
-  font-family: var(--font-mono);
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
+.icon {
+  position: relative;
+  transition: scale 0.24s var(--ease-press);
 }
 
+.tab:active .icon {
+  scale: 0.86;
+  transition-duration: 0.08s;
+}
+
+.tabLabel {
+  position: relative;
+  font-size: 10.5px;
+  font-weight: 500;
+  letter-spacing: 0;
+}
+
+/* soft capsule behind the active icon; slides between tabs */
 .indicator {
   position: absolute;
-  top: -1px;
-  width: 28px;
-  height: 2px;
-  border-radius: 2px;
-  background: var(--accent);
+  top: 7px;
+  left: 50%;
+  width: 46px;
+  height: 28px;
+  margin-left: -23px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.07);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.06);
+}
+
+/* ── tablet: a slightly wider content column ────────────────────────── */
+
+@media (min-width: 640px) {
+  .main {
+    max-width: var(--content-w);
+    padding-left: 24px;
+    padding-right: 24px;
+  }
+}
+
+/* ── desktop: left rail + centred column ────────────────────────────── */
+
+@media (min-width: 1024px) {
+  .frame {
+    --rail-w: 232px;
+    padding-left: var(--rail-w);
+  }
+
+  .main {
+    max-width: 600px;
+    padding: 40px 32px 72px;
+  }
+
+  .nav {
+    top: 0;
+    right: auto;
+    width: var(--rail-w);
+    padding: 22px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+    background: var(--bg);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    border-top: 0;
+    border-right: 1px solid var(--line);
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 0 8px;
+  }
+
+  .wordmark {
+    font-size: 17px;
+    font-weight: 600;
+    letter-spacing: -0.03em;
+  }
+
+  .tabs {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    height: auto;
+    max-width: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .tab {
+    flex-direction: row;
+    justify-content: flex-start;
+    gap: 10px;
+    height: 38px;
+    padding: 0 10px;
+    border-radius: 10px;
+  }
+
+  .tabLabel {
+    font-size: 14px;
+  }
+
+  .indicator {
+    inset: 0;
+    width: auto;
+    height: auto;
+    margin: 0;
+    border-radius: 10px;
+  }
+
+  /* the one lime cue: a small marker riding with the active item */
+  .indicator::after {
+    content: '';
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    width: 6px;
+    height: 6px;
+    margin-top: -3px;
+    border-radius: 50%;
+    background: var(--accent);
+  }
+
+  .railFoot {
+    display: block;
+    margin-top: auto;
+    padding: 0 10px;
+  }
 }

@@ -3,6 +3,9 @@ import { motion } from 'framer-motion'
 import { House, Footprints, Ticket, Trophy, CircleUser } from 'lucide-react'
 import { Toaster } from './Toaster'
 import { LivePill } from './LivePill'
+import { ConnectionBanner } from './ConnectionBanner'
+import { PeakMark } from '../components/brand/PeakMark'
+import { EASE_OUT, SPRING_SLIDE } from '../lib/motion'
 import styles from './AppShell.module.css'
 
 // Frozen navigation — do not reorder or add items.
@@ -14,6 +17,10 @@ const TABS = [
   { to: '/you', label: 'You', icon: CircleUser },
 ] as const
 
+/**
+ * One nav, two layouts: a bottom tab bar on phones/tablets and a left rail on
+ * desktop, so the judge view reads as a product rather than a stretched phone.
+ */
 export function AppShell() {
   const location = useLocation()
   const section = '/' + (location.pathname.split('/')[1] ?? '')
@@ -24,38 +31,42 @@ export function AppShell() {
         {/* enter-only transition: instant tab switches, no exit wait */}
         <motion.div
           key={section}
-          initial={{ opacity: 0, y: 8 }}
+          initial={{ opacity: 0, y: 6 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.24, ease: [0.22, 1, 0.36, 1] }}
+          transition={{ duration: 0.36, ease: EASE_OUT }}
         >
           <Outlet />
         </motion.div>
       </main>
       <Toaster />
+      <ConnectionBanner />
       <LivePill />
-      <nav className={styles.tabbar} aria-label="Primary">
-        {TABS.map(({ to, label, icon: Icon }) => (
-          <NavLink
-            key={to}
-            to={to}
-            end={to === '/'}
-            className={({ isActive }) => `${styles.tab} ${isActive ? styles.active : ''}`}
-          >
-            {({ isActive }) => (
-              <>
-                {isActive && (
-                  <motion.span
-                    layoutId="tab-indicator"
-                    className={styles.indicator}
-                    transition={{ type: 'spring', stiffness: 500, damping: 40 }}
-                  />
-                )}
-                <Icon size={21} strokeWidth={isActive ? 2.3 : 1.8} />
-                <span className={styles.tabLabel}>{label}</span>
-              </>
-            )}
-          </NavLink>
-        ))}
+      <nav className={styles.nav} aria-label="Primary">
+        <div className={styles.brand}>
+          <PeakMark size={26} />
+          <span className={styles.wordmark}>Peak</span>
+        </div>
+        <div className={styles.tabs}>
+          {TABS.map(({ to, label, icon: Icon }) => (
+            <NavLink
+              key={to}
+              to={to}
+              end={to === '/'}
+              className={({ isActive }) => `${styles.tab} ${isActive ? styles.active : ''}`}
+            >
+              {({ isActive }) => (
+                <>
+                  {isActive && <motion.span layoutId="nav-active" className={styles.indicator} transition={SPRING_SLIDE} />}
+                  <Icon size={20} strokeWidth={isActive ? 2.1 : 1.7} className={styles.icon} />
+                  <span className={styles.tabLabel}>{label}</span>
+                </>
+              )}
+            </NavLink>
+          ))}
+        </div>
+        <div className={styles.railFoot}>
+          <span className="label">FitConnect</span>
+        </div>
       </nav>
     </div>
   )

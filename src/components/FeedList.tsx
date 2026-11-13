@@ -1,23 +1,27 @@
 import { AnimatePresence, motion } from 'framer-motion'
 import type { FeedItem } from '../api/types'
 import { timeAgo } from '../lib/format'
+import { EASE_OUT } from '../lib/motion'
 import { Avatar } from './ui/Avatar'
+import { EmptyState } from './ui/ui'
 import s from './FeedList.module.css'
 
 export function FeedList({ items }: { items: FeedItem[] }) {
+  if (!items.length) return <EmptyState title="Quiet for now" body="Activity from campus shows up here as it happens." />
   return (
     <ul className={s.list}>
       <AnimatePresence initial={false}>
         {items.map((f) => (
           <motion.li
             key={f.id}
-            layout
+            layout="position"
             className={s.item}
-            initial={{ opacity: 0, y: -10, backgroundColor: 'rgba(200,241,105,0.08)' }}
-            animate={{ opacity: 1, y: 0, backgroundColor: 'rgba(200,241,105,0)' }}
-            transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1], backgroundColor: { duration: 2 } }}
+            // new realtime rows slide in and wash out a faint highlight
+            initial={{ opacity: 0, y: -8, backgroundColor: 'rgba(255,255,255,0.05)' }}
+            animate={{ opacity: 1, y: 0, backgroundColor: 'rgba(255,255,255,0)' }}
+            transition={{ duration: 0.45, ease: EASE_OUT, backgroundColor: { duration: 1.8 } }}
           >
-            <Avatar name={f.actorName} size={34} />
+            <Avatar name={f.actorName} size={32} />
             <div className={s.body}>
               <div className={s.line}>
                 <strong>{f.actorName}</strong> {f.text}

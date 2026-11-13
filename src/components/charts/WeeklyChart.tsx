@@ -4,7 +4,7 @@ import { formatDistance, formatNumber } from '../../lib/format'
 import s from './WeeklyChart.module.css'
 
 const TODAY = '#c8f169'
-const OTHER = '#5d6661'
+const OTHER = '#3a3a3a'
 
 /** Single series: steps per day, last 7 days. Today is accented and labelled. */
 export function WeeklyChart({ days }: { days: DailyStat[] }) {
@@ -32,13 +32,13 @@ export function WeeklyChart({ days }: { days: DailyStat[] }) {
           <BarChart data={data} margin={{ top: 8, right: 0, bottom: 0, left: 0 }} barCategoryGap={6}>
             <XAxis
               dataKey="label"
-              axisLine={{ stroke: 'rgba(226,233,228,0.12)' }}
+              axisLine={{ stroke: 'rgba(255,255,255,0.08)' }}
               tickLine={false}
-              tick={{ fill: '#69716c', fontSize: 10, fontFamily: 'JetBrains Mono' }}
+              tick={{ fill: '#666666', fontSize: 10, fontFamily: 'Geist Mono, ui-monospace, monospace' }}
               interval={0}
             />
             <Tooltip
-              cursor={{ fill: 'rgba(226,233,228,0.05)' }}
+              cursor={{ fill: 'rgba(255,255,255,0.04)' }}
               content={({ active, payload }) => {
                 if (!active || !payload?.length) return null
                 const d = payload[0].payload as (typeof data)[number]
@@ -53,7 +53,7 @@ export function WeeklyChart({ days }: { days: DailyStat[] }) {
                 )
               }}
             />
-            <Bar dataKey="steps" radius={[4, 4, 0, 0]} isAnimationActive animationDuration={700}>
+            <Bar dataKey="steps" radius={[5, 5, 1, 1]} isAnimationActive animationDuration={700}>
               {data.map((d) => (
                 <Cell key={d.date} fill={d.isToday ? TODAY : OTHER} />
               ))}

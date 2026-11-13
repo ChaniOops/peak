@@ -4,6 +4,7 @@ import { api } from '../api'
 import type { UserProfile } from '../api/types'
 import { AuthContext, type AuthState } from './auth'
 import { SignInScreen } from '../screens/auth/SignInScreen'
+import { BootScreen } from './BootScreen'
 
 /**
  * Demo-first auth. In mock mode the seeded student is signed in by default;
@@ -55,7 +56,7 @@ export function AuthGate() {
 
   return (
     <AuthContext.Provider value={value}>
-      {status === 'loading' ? <div style={{ minHeight: '100vh' }} /> : status === 'signed-in' ? <Outlet /> : <SignInScreen />}
+      {status === 'loading' ? <BootScreen /> : status === 'signed-in' ? <Outlet /> : <SignInScreen />}
     </AuthContext.Provider>
   )
 }
