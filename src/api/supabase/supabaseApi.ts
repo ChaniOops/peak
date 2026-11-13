@@ -7,8 +7,8 @@
  * awards) are read from the backend; nothing here computes them.
  */
 import { createClient, type RealtimeChannel, type Session, type SupabaseClient } from '@supabase/supabase-js'
-import type { Api, OAuthProvider } from '../client'
-import { ApiError, OAUTH_LABEL } from '../client'
+import type { Api } from '../client'
+import { ApiError } from '../client'
 import type { Database, Json } from './database.types'
 import type {
   Activity,
@@ -331,29 +331,6 @@ export class SupabaseApi implements Api {
     if (error) throw toApiError(error)
     this.onSession(data.session)
     return this.getMe()
-  }
-
-  async signInWithOAuth(provider: OAuthProvider) {
-    const label = OAUTH_LABEL[provider]
-    const { data, error } = await this.sb.auth.signInWithOAuth({
-      provider,
-      options: { redirectTo: window.location.origin, skipBrowserRedirect: true },
-    })
-    if (error) throw toApiError(error)
-    if (!data.url) throw new ApiError(`Couldn’t start ${label} sign-in.`, 'oauth_failed')
-    // A provider that isn't enabled answers /authorize with a 400 instead of a
-    // redirect. Check first so nobody lands on a raw JSON error page. If the
-    // probe itself can't run, fall through to the normal redirect.
-    const probe = await fetch(data.url, { redirect: 'manual' }).catch(() => null)
-    if (probe && probe.type !== 'opaqueredirect' && !probe.ok) {
-      const body = (await probe.json().catch(() => null)) as { msg?: string; error_description?: string } | null
-      const msg = body?.msg ?? body?.error_description ?? ''
-      throw new ApiError(
-        /not enabled|unsupported provider|missing oauth/i.test(msg) ? `${label} sign-in isn’t enabled yet.` : msg || `${label} sign-in failed.`,
-        'oauth_unavailable',
-      )
-    }
-    window.location.assign(data.url)
   }
 
   async signOut() {

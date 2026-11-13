@@ -94,8 +94,9 @@
   z-index: 1;
   align-self: stretch;
   margin: auto 16px 16px;
-  padding: 14px;
-  border-radius: 28px;
+  /* one pill in a glass tray: radius = pill radius + padding (concentric) */
+  padding: 8px;
+  border-radius: 34px;
   background: linear-gradient(180deg, rgba(209, 209, 209, 0.16), rgba(34, 34, 34, 0.34));
   -webkit-backdrop-filter: blur(14px) saturate(1.35);
   backdrop-filter: blur(14px) saturate(1.35);
@@ -112,17 +113,23 @@
   display: none;
 }
 
-.btn {
+.btnEmail {
   appearance: none;
   height: 52px;
+  padding: 0 16px;
   border-radius: 26px;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 9px;
+  background: linear-gradient(180deg, #ffffff 0%, #f0f0f0 100%);
+  color: #1d1d1d;
   font-size: 15px;
   font-weight: 600;
   letter-spacing: -0.01em;
+  box-shadow:
+    0 14px 28px -20px rgba(14, 14, 14, 0.9),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
   transition:
     scale 0.22s var(--ease-press),
     box-shadow 0.22s ease,
@@ -130,67 +137,8 @@
   -webkit-tap-highlight-color: transparent;
 }
 
-.btn:active:not(:disabled) {
-  scale: 0.97;
-}
-
-.btn:disabled {
-  opacity: 0.6;
-  cursor: default;
-}
-
-.btn svg {
+.btnEmail svg {
   flex: none;
-  width: 18px;
-  height: 18px;
-}
-
-/* Feral .lo-btn-google: warm white, near-black ink */
-.btnGoogle {
-  background: linear-gradient(180deg, #ffffff 0%, #f0f0f0 100%);
-  color: #1d1d1d;
-  box-shadow:
-    0 14px 28px -20px rgba(14, 14, 14, 0.9),
-    inset 0 1px 0 rgba(255, 255, 255, 0.9);
-}
-
-/* Feral .lo-btn-apple: near-black with a top highlight */
-.btnGithub {
-  background: linear-gradient(180deg, rgba(27, 27, 27, 0.9), rgba(16, 16, 16, 0.94));
-  color: #ffffff;
-  box-shadow:
-    0 14px 28px -18px rgba(12, 12, 12, 0.9),
-    inset 0 1px 0 rgba(255, 255, 255, 0.16),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.07);
-}
-
-/* Feral .lo-email: the softer, translucent third action */
-.btnEmail {
-  appearance: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  height: 44px;
-  padding: 0 12px;
-  border: 1px solid rgba(255, 255, 255, 0.55);
-  border-radius: 999px;
-  background: rgba(239, 239, 239, 0.55);
-  color: #242424;
-  font-size: 14px;
-  font-weight: 600;
-  letter-spacing: -0.01em;
-  transition:
-    background 0.18s ease,
-    scale 0.2s var(--ease-press),
-    opacity 0.2s;
-  -webkit-tap-highlight-color: transparent;
-}
-
-@media (hover: hover) {
-  .btnEmail:hover:not(:disabled) {
-    background: rgba(244, 244, 244, 0.66);
-  }
 }
 
 .btnEmail:active:not(:disabled) {
@@ -204,7 +152,7 @@
 
 .sheetError {
   overflow: hidden;
-  padding: 0 6px;
+  padding: 0 12px 4px;
   font-size: 13px;
   font-weight: 500;
   text-align: center;
