@@ -3,9 +3,10 @@ import { animate, motion, useReducedMotion } from 'framer-motion'
 import s from './everestClimb.module.css'
 
 /**
- * Procedural WebGL Everest with a glowing route, adapted from the FeralUI
- * ClimbScreen. The route head is driven purely by steps / goalSteps — it is a
- * metaphor for the weekly step goal, never an altitude the user has reached.
+ * Procedural WebGL Everest with a glowing route — the FeralUI ClimbScreen
+ * visual, reframed for the wide SummitCard. The route head is driven purely by
+ * steps / goalSteps. The "You're here" altitude is a display-only
+ * Everest-equivalent of that progress; nothing else reads it.
  *
  * Terrain + route geometry are generated once per page load and cached.
  * Live step updates only tween the route head; the intro never replays.
@@ -20,15 +21,9 @@ export type EverestClimbProps = {
 const SOFT_EASE: [number, number, number, number] = [0.22, 1, 0.3, 1]
 /** seconds for the route head to glide to a new live value */
 const LIVE_TWEEN_S = 0.5
-/** route fractions marked as camps; match SummitCard's Camp I–III */
-const CAMPS = [0.25, 0.5, 0.75]
 
-// Peak palette (linear 0–1 for GL, "r, g, b" strings for canvas)
-const HAZE: [number, number, number] = [0x11 / 255, 0x14 / 255, 0x13 / 255] // --surface-1
-const LIME = '200, 241, 105' // --accent
-const LIME_PALE = '224, 250, 168'
-const LIME_WHITE = '246, 255, 228'
-const MIST = '233, 238, 233' // --text
+// FeralUI atmosphere (#0b1321)
+const HAZE: [number, number, number] = [0.043, 0.075, 0.13]
 
 // ---------------------------------------------------------------------------
 // Terrain (unchanged from the supplied implementation; CL_SUMMIT_M is only the
@@ -245,8 +240,19 @@ function clRoute(t: ClTerrain): ClRoute {
     }
   }
   pts.push([P[P.length - 1][0], P[P.length - 1][1], CL_SUMMIT_M])
+  // parameterise by on-screen length at the final card pose, so 78% of the
+  // goal reads as 78% of the visible climb (the steep summit push is
+  // foreshortened, and 3D arc length would overstate it)
+  const { mvp } = clView(1, 0, CL_ASPECT)
+  const scr = pts.map(([x, z, m]) => {
+    const y = ((m - CL_FLOOR_M) / CL_SUMMIT_M) * CL_VSCALE
+    const cx = mvp[0] * x + mvp[4] * y + mvp[8] * z + mvp[12]
+    const cy = mvp[1] * x + mvp[5] * y + mvp[9] * z + mvp[13]
+    const cw = mvp[3] * x + mvp[7] * y + mvp[11] * z + mvp[15]
+    return [(cx / cw) * CL_ASPECT, cy / cw]
+  })
   const len = [0]
-  for (let i = 1; i < pts.length; i++) len.push(len[i - 1] + Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1], ((pts[i][2] - pts[i - 1][2]) * CL_VSCALE) / CL_SUMMIT_M))
+  for (let i = 1; i < pts.length; i++) len.push(len[i - 1] + Math.hypot(scr[i][0] - scr[i - 1][0], scr[i][1] - scr[i - 1][1]))
   const total = len[len.length - 1]
   for (let i = 0; i < len.length; i++) len[i] /= total
   len[len.length - 1] = 1 // the summit is exactly 1, so progress 1 lands on it
@@ -282,7 +288,7 @@ void main() {
   gl_Position = u_mvp * vec4(p, 1.0);
 }`
 
-// Peak graphite/slate ramp with a restrained snow cap and faint contours
+// FeralUI shading: navy → cobalt → desaturated blue → icy snow, luminous contours
 const clFrag = (derivatives: boolean) => `${derivatives ? '#extension GL_OES_standard_derivatives : enable\n' : ''}precision highp float;
 varying float v_m;
 varying vec2 v_grad;
@@ -299,14 +305,14 @@ void main() {
   float lit = clamp(dot(n, normalize(vec3(-0.62, 0.66, 0.42))), 0.0, 1.0);
   float fill = clamp(dot(n, normalize(vec3(0.5, 0.6, -0.3))), 0.0, 1.0);
   float t = clamp((v_m - 2400.0) / 6449.0, 0.0, 1.0);
-  vec3 col = mix(vec3(0.070, 0.080, 0.077), vec3(0.135, 0.150, 0.146), smoothstep(0.0, 0.34, t));
-  col = mix(col, vec3(0.255, 0.275, 0.270), smoothstep(0.3, 0.56, t));
+  vec3 col = mix(vec3(0.06, 0.12, 0.22), vec3(0.14, 0.24, 0.37), smoothstep(0.0, 0.34, t));
+  col = mix(col, vec3(0.3, 0.39, 0.52), smoothstep(0.3, 0.56, t));
   float snow = smoothstep(0.54, 0.62, t + (n.y - 0.75) * 0.25) * smoothstep(0.4, 0.7, n.y);
-  col = mix(col, vec3(0.74, 0.78, 0.75), snow * 0.7);
-  col *= 0.22 + 1.0 * lit + 0.12 * fill;
+  col = mix(col, vec3(0.9, 0.94, 1.0), snow);
+  col *= 0.2 + 1.05 * lit + 0.12 * fill;
   float minor = contour(v_m / 250.0);
   float index = contour(v_m / 1000.0);
-  col = mix(col, vec3(0.80, 0.85, 0.81), minor * 0.07 + index * 0.2);
+  col = mix(col, vec3(0.86, 0.93, 1.0), minor * 0.22 + index * 0.5);
   float edge = smoothstep(0.0, 0.35, 1.3 - abs(v_world.x)) * smoothstep(0.0, 0.3, v_world.z + 1.28) * smoothstep(0.0, 0.3, 1.38 - v_world.z);
   float haze = smoothstep(5.2, 7.6, distance(v_world, u_eye));
   gl_FragColor = vec4(mix(u_haze, col, edge * (1.0 - haze)), 1.0);
@@ -410,6 +416,27 @@ function clMul(a: ClMat, b: ClMat): ClMat {
   return m
 }
 
+/**
+ * Final camera. The Feral scene was a tall portrait; the card is 3:2, so the
+ * camera yaws ~50° and the route runs corner to corner — base low-right,
+ * summit high-left — at close to the original scale. This side keeps the
+ * original key light on the faces toward the camera.
+ */
+const CL_CAM = { pitch: 28, dist: 2.6, yaw: -0.85, target: [-0.08, 0.34, -0.27], fov: 32 }
+/** the card's aspect; also the pose the route is parameterised in */
+const CL_ASPECT = 3 / 2
+
+/** camera at intro progress k (0 = top-down, 1 = final), with optional yaw drift */
+function clView(k: number, drift: number, aspect: number) {
+  const pitch = ((86 + (CL_CAM.pitch - 86) * k) * Math.PI) / 180
+  const yaw = -0.12 + (CL_CAM.yaw + 0.12) * k + drift
+  const dist = 4.8 + (CL_CAM.dist - 4.8) * k
+  const target = [0.02 + (CL_CAM.target[0] - 0.02) * k, CL_CAM.target[1] * k, -0.22 + (CL_CAM.target[2] + 0.22) * k]
+  const eye = [target[0] + Math.sin(yaw) * Math.cos(pitch) * dist, target[1] + Math.sin(pitch) * dist, target[2] - Math.cos(yaw) * Math.cos(pitch) * dist]
+  const mvp = clMul(clPerspective((CL_CAM.fov * Math.PI) / 180, aspect, 0.05, 20), clLookAt(eye, target))
+  return { eye, mvp }
+}
+
 /** intro timeline (s): camera tilt, route draw-in, pins */
 const CL_T = { tilt: 1.9, draw: 1.45, drawDur: 1.9, pin: 3.35 }
 
@@ -422,7 +449,6 @@ const clDrawEase = (t: number) => 1 - Math.pow(1 - t, 3)
 export function EverestClimb({ steps, goalSteps = 53000, className }: EverestClimbProps) {
   const rawProgress = goalSteps > 0 ? steps / goalSteps : 0
   const progress = Math.min(1, Math.max(0, Number.isFinite(rawProgress) ? rawProgress : 0))
-  const reached = progress >= 1
 
   const reduce = !!useReducedMotion()
   const rootRef = useRef<HTMLDivElement | null>(null)
@@ -438,10 +464,8 @@ export function EverestClimb({ steps, goalSteps = 53000, className }: EverestCli
   const bumpRef = useRef(0)
   /** paints a single frame; used when no rAF loop is running (reduced motion) */
   const redrawRef = useRef<(() => void) | null>(null)
+  const altRef = useRef<HTMLSpanElement | null>(null)
   const [noGl, setNoGl] = useState(false)
-  // a summit reached live gets its flag as soon as the head arrives; one
-  // reached on mount waits for the intro draw-in
-  const [reachedOnMount] = useState(reached)
 
   // live updates: glide only the route head, never rebuild the scene
   useEffect(() => {
@@ -505,14 +529,8 @@ export function EverestClimb({ steps, goalSteps = 53000, className }: EverestCli
       const relief = 0.05 + 0.95 * k
       const drift = reduce ? 0 : Math.sin(Math.max(0, t - CL_T.tilt) * 0.12) * 0.16 * Math.min(1, Math.max(0, t - CL_T.tilt) / 3)
 
-      // framed for a wide card: the whole route, base to summit, stays in view
-      const pitch = ((86 - 48 * k) * Math.PI) / 180
-      const yaw = -0.12 + drift
-      const dist = 4.8 - 0.9 * k
-      const target = [0.02, 0.2 * k, -0.22]
-      const eye = [target[0] + Math.sin(yaw) * Math.cos(pitch) * dist, target[1] + Math.sin(pitch) * dist, target[2] - Math.cos(yaw) * Math.cos(pitch) * dist]
-      const proj = clPerspective((28 * Math.PI) / 180, w / h, 0.05, 20)
-      const mvp = clMul(proj, clLookAt(eye, target))
+      // the original top-down → tilt intro, easing into the card framing
+      const { eye, mvp } = clView(k, drift, w / h)
       if (g && !g.gl.isContextLost()) {
         const gl = g.gl
         gl.viewport(0, 0, glCanvas.width, glCanvas.height)
@@ -547,20 +565,22 @@ export function EverestClimb({ steps, goalSteps = 53000, className }: EverestCli
       })
 
       // screen position of a route fraction
-      const at = (frac: number): [number, number, number] => {
+      const at = (frac: number): [number, number] => {
         for (let i = 1; i < scr.length; i++) {
           if (route.len[i] >= frac) {
             const f = (frac - route.len[i - 1]) / Math.max(1e-6, route.len[i] - route.len[i - 1])
-            return [scr[i - 1][0] + (scr[i][0] - scr[i - 1][0]) * f, scr[i - 1][1] + (scr[i][1] - scr[i - 1][1]) * f, i]
+            return [scr[i - 1][0] + (scr[i][0] - scr[i - 1][0]) * f, scr[i - 1][1] + (scr[i][1] - scr[i - 1][1]) * f]
           }
         }
         const last = scr[scr.length - 1]
-        return [last[0], last[1], scr.length - 1]
+        return [last[0], last[1]]
       }
 
       const drawn = reduce ? 1 : clDrawEase(Math.min(1, Math.max(0, (t - CL_T.draw) / CL_T.drawDur)))
       const base = baseRef.current
       const head = base * drawn
+      const alt = altRef.current
+      if (alt) alt.textContent = `${Math.round(head * CL_SUMMIT_M).toLocaleString('en-US')} m`
       if (ctx) {
         ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
         ctx.clearRect(0, 0, w, h)
@@ -573,9 +593,9 @@ export function EverestClimb({ steps, goalSteps = 53000, className }: EverestCli
           for (let i = 1; i < scr.length; i += 2) {
             if (route.len[i] <= head) continue
             const [x, y, cw] = scr[i]
-            ctx.fillStyle = `rgba(${MIST}, ${(hidden[i] ? 0.14 : 0.42) * reveal})`
+            ctx.fillStyle = `rgba(255, 214, 170, ${(hidden[i] ? 0.16 : 0.55) * reveal})`
             ctx.beginPath()
-            ctx.arc(x, y, 1.2 * width(cw), 0, Math.PI * 2)
+            ctx.arc(x, y, 1.3 * width(cw), 0, Math.PI * 2)
             ctx.fill()
           }
         }
@@ -584,17 +604,17 @@ export function EverestClimb({ steps, goalSteps = 53000, className }: EverestCli
         ctx.globalCompositeOperation = 'lighter'
         const pulse = reduce || t < CL_T.pin + 0.6 ? -1 : ((t - CL_T.pin - 0.6) % 3.6) / 2.4
         const passes: [number, string, number][] = [
-          [9, LIME, 0.07],
-          [4.6, LIME, 0.26],
-          [2.2, LIME_PALE, 0.88],
-          [0.9, LIME_WHITE, 0.9],
+          [9, '255, 120, 60', 0.09],
+          [4.6, '255, 150, 80', 0.32],
+          [2.2, '255, 196, 140', 0.9],
+          [0.9, '255, 246, 228', 0.95],
         ]
         for (const [lw, rgb, a] of passes) {
           for (let i = 1; i < scr.length; i++) {
             if (route.len[i - 1] >= head) break
             const sl = route.len[i]
             const trail = 0.45 + 0.55 * clSmooth(head - 0.2, head, sl)
-            const flow = pulse >= 0 && pulse <= 1 ? Math.exp(-Math.pow((sl / Math.max(0.001, head) - pulse) * 9, 2)) * 0.5 : 0
+            const flow = pulse >= 0 && pulse <= 1 ? Math.exp(-Math.pow((sl / Math.max(0.001, head) - pulse) * 9, 2)) * 0.6 : 0
             const shade = hidden[i] ? 0.22 : 1
             const [x0, y0, cw] = scr[i - 1]
             let [x1, y1] = scr[i]
@@ -619,9 +639,9 @@ export function EverestClimb({ steps, goalSteps = 53000, className }: EverestCli
           const glow = moving + 0.6 * flare * flare
           const br = 18 + 10 * flare
           const bloom = ctx.createRadialGradient(hx, hy, 0, hx, hy, br)
-          bloom.addColorStop(0, `rgba(${LIME_PALE}, ${0.5 * glow})`)
-          bloom.addColorStop(0.4, `rgba(${LIME}, ${0.16 * glow})`)
-          bloom.addColorStop(1, `rgba(${LIME}, 0)`)
+          bloom.addColorStop(0, `rgba(255, 190, 120, ${Math.min(1, 0.55 * glow)})`)
+          bloom.addColorStop(0.4, `rgba(255, 130, 60, ${0.18 * glow})`)
+          bloom.addColorStop(1, 'rgba(255, 110, 50, 0)')
           ctx.fillStyle = bloom
           ctx.beginPath()
           ctx.arc(hx, hy, br, 0, Math.PI * 2)
@@ -629,30 +649,27 @@ export function EverestClimb({ steps, goalSteps = 53000, className }: EverestCli
         }
         ctx.globalCompositeOperation = 'source-over'
 
-        // camp markers
-        if (reveal > 0) {
-          for (const f of CAMPS) {
-            const [cx, cy, i] = at(f)
-            const r = 2.3 * width(scr[i][2])
-            const passed = head >= f
-            ctx.globalAlpha = reveal * (hidden[i] ? 0.35 : 1)
-            ctx.beginPath()
-            ctx.arc(cx, cy, r, 0, Math.PI * 2)
-            ctx.fillStyle = passed ? `rgb(${LIME})` : '#111413'
-            ctx.fill()
-            ctx.lineWidth = 1
-            ctx.strokeStyle = passed ? `rgb(${LIME})` : `rgba(${MIST}, 0.55)`
-            ctx.stroke()
-          }
-          ctx.globalAlpha = 1
-        }
-
-        const hd = headRef.current
-        if (hd) hd.style.transform = `translate3d(${hx.toFixed(1)}px, ${hy.toFixed(1)}px, 0)`
+        // pins follow their anchors; each is nudged sideways to stay inside
+        // the card, and "You're here" drops below its dot when it would
+        // collide with the Everest pin or run off the top
+        const [sx, sy] = scr[scr.length - 1]
         const sum = summitRef.current
-        if (sum) {
-          const [sx, sy] = scr[scr.length - 1]
-          sum.style.transform = `translate3d(${sx.toFixed(1)}px, ${sy.toFixed(1)}px, 0)`
+        const hd = headRef.current
+        // measure both pills before writing any styles: one layout per frame
+        const halfW = (el: HTMLDivElement | null) => ((el?.firstElementChild as HTMLElement | null)?.offsetWidth ?? 0) / 2
+        const sumHalf = halfW(sum)
+        const hdHalf = halfW(hd)
+        const place = (el: HTMLDivElement | null, x: number, y: number, half: number) => {
+          if (!el) return
+          el.style.transform = `translate3d(${x.toFixed(1)}px, ${y.toFixed(1)}px, 0)`
+          const shift = Math.min(0, w - 6 - (x + half)) + Math.max(0, 6 - (x - half))
+          el.style.setProperty('--shift', `${shift.toFixed(1)}px`)
+        }
+        place(sum, sx, sy, sumHalf)
+        place(hd, hx, hy, hdHalf)
+        if (hd) {
+          const below = hy < 44 || (Math.abs(hy - sy) < 40 && Math.abs(hx - sx) < 150)
+          if ((hd.dataset.below === '1') !== below) hd.dataset.below = below ? '1' : ''
         }
       }
       raf = !reduce && visible ? requestAnimationFrame(draw) : 0
@@ -706,36 +723,22 @@ export function EverestClimb({ steps, goalSteps = 53000, className }: EverestCli
     transition: reduce ? { duration: 0 } : { delay, duration: 0.45, ease: [0.34, 1.4, 0.5, 1] as [number, number, number, number] },
   })
 
-  const flagDelay = reduce ? 0 : reachedOnMount ? CL_T.pin : LIVE_TWEEN_S
-
   return (
     <div ref={rootRef} className={`${s.root} ${noGl ? s.flat : ''} ${className ?? ''}`} aria-hidden="true">
       <canvas ref={glRef} className={s.layer} />
       <canvas ref={lineRef} className={s.layer} />
       <div ref={summitRef} className={s.anchor}>
-        {reached ? (
-          <motion.svg
-            key="flag"
-            className={s.flag}
-            viewBox="0 0 18 26"
-            initial={{ scale: 0, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={reduce ? { duration: 0 } : { delay: flagDelay, type: 'spring', stiffness: 400, damping: 18 }}
-          >
-            <line x1={1.5} y1={26} x2={1.5} y2={2} stroke="var(--text)" strokeWidth={1.5} />
-            <path d="M1.5,2 L17.5,7 L1.5,12 Z" fill="var(--accent)" />
-          </motion.svg>
-        ) : (
-          <motion.div key="pin" className={s.pin} {...pinIn(CL_T.tilt - 0.3)}>
-            Summit
-          </motion.div>
-        )}
+        <motion.div className={`${s.pin} ${s.pinSummit}`} {...pinIn(CL_T.tilt - 0.3)}>
+          <b>Everest</b>
+          <span>8,849 m</span>
+        </motion.div>
       </div>
       <div ref={headRef} className={s.anchor}>
-        <motion.div className={s.head} {...pinIn(CL_T.pin - 0.1)}>
-          <span className={s.halo} />
-          <i className={s.dot} />
+        <motion.div className={`${s.pin} ${s.pinHere}`} {...pinIn(CL_T.pin)}>
+          <b>You&rsquo;re here</b>
+          <span ref={altRef} />
         </motion.div>
+        <motion.i className={s.dot} {...pinIn(CL_T.pin - 0.1)} />
       </div>
     </div>
   )
