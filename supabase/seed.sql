@@ -223,7 +223,7 @@ select v.id::uuid, v.title, v.sport::public.event_sport, v.description, v.venue,
 from (values
   ('00000000-0000-4000-c000-000000000001', 'Futsal 5-a-side: Evening Kickoff', 'futsal',
    'Mixed-department 5-a-side. Scan the organiser''s QR at the turf, play, get verified.', 'Main Sports Complex, Turf 1',
-   now() - interval '20 minutes', now() + interval '100 minutes', 20, 50),
+   now() - interval '20 minutes', now() + interval '6 hours', 20, 50),
   ('00000000-0000-4000-c000-000000000002', 'Inter-department Futsal League', 'futsal',
    'League night: CSE vs ECE, ME vs CE.', 'Main Sports Complex, Turf 1',
    public.campus_day_start(public.campus_date() - 1) + interval '18 hours',
