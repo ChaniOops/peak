@@ -109,7 +109,8 @@ export function HomeScreen() {
         </Section>
       )}
 
-      <Section title="Campus, live">
+      {/* backend has no campus-wide feed yet; in Supabase mode this is your own ledger */}
+      <Section title={api.mode === 'mock' ? 'Campus, live' : 'Your latest'}>
         {feed.data ? <FeedList items={feed.data} /> : <Skeleton h={240} />}
       </Section>
     </div>
