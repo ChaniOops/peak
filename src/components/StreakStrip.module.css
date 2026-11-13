@@ -1,0 +1,64 @@
+.wrap {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.head {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.head svg {
+  align-self: center;
+}
+
+.flameOn {
+  color: var(--ember);
+}
+
+.flameOff {
+  color: var(--text-3);
+}
+
+.count {
+  font-size: 26px;
+  line-height: 1;
+}
+
+.days {
+  display: flex;
+  gap: 6px;
+}
+
+.day {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+}
+
+.mark {
+  width: 22px;
+  height: 22px;
+  border-radius: 7px;
+  background: var(--surface-3);
+  border: 1px solid var(--line);
+}
+
+.on {
+  background: var(--ember);
+  border-color: var(--ember);
+}
+
+.today {
+  box-shadow: 0 0 0 2px var(--bg), 0 0 0 3.5px var(--line-strong);
+}
+
+.dow {
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  color: var(--text-3);
+}

@@ -1,6 +1,8 @@
 import { NavLink, Outlet, useLocation } from 'react-router-dom'
-import { AnimatePresence, motion } from 'framer-motion'
+import { motion } from 'framer-motion'
 import { House, Footprints, Ticket, Trophy, CircleUser } from 'lucide-react'
+import { Toaster } from './Toaster'
+import { LivePill } from './LivePill'
 import styles from './AppShell.module.css'
 
 // Frozen navigation — do not reorder or add items.
@@ -12,26 +14,25 @@ const TABS = [
   { to: '/you', label: 'You', icon: CircleUser },
 ] as const
 
-export function AppShell({ overlay }: { overlay?: React.ReactNode }) {
+export function AppShell() {
   const location = useLocation()
   const section = '/' + (location.pathname.split('/')[1] ?? '')
 
   return (
     <div className={styles.frame}>
       <main className={styles.main}>
-        <AnimatePresence mode="wait" initial={false}>
-          <motion.div
-            key={section}
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -4 }}
-            transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
-          >
-            <Outlet />
-          </motion.div>
-        </AnimatePresence>
+        {/* enter-only transition: instant tab switches, no exit wait */}
+        <motion.div
+          key={section}
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.24, ease: [0.22, 1, 0.36, 1] }}
+        >
+          <Outlet />
+        </motion.div>
       </main>
-      {overlay}
+      <Toaster />
+      <LivePill />
       <nav className={styles.tabbar} aria-label="Primary">
         {TABS.map(({ to, label, icon: Icon }) => (
           <NavLink

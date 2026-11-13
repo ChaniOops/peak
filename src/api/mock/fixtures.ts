@@ -91,7 +91,7 @@ export interface MockDb {
   feed: FeedItem[]
 }
 
-export const DB_VERSION = 3
+export const DB_VERSION = 4
 
 const DEPARTMENTS = [
   { id: 'cse', name: 'Computer Science' },
@@ -169,7 +169,25 @@ export function seedDb(now = new Date()): MockDb {
     days[dayKey(d)] = { steps, distanceM, activeMin: Math.round(steps / 110), points: Math.round(steps / 100) }
     if (d >= weekStart) weekSoFar += steps
   }
-  const todaySteps = Math.max(2400, 41_260 - weekSoFar)
+  // Scale earlier days of this week so the weekly total is exactly 41,260 with ~5k today.
+  const WEEK_TOTAL = 41_260
+  let todaySteps: number
+  if (weekSoFar > 0) {
+    const todayTarget = 5_260
+    const factor = (WEEK_TOTAL - todayTarget) / weekSoFar
+    let scaled = 0
+    for (const [k, d] of Object.entries(days)) {
+      if (k < dayKey(weekStart)) continue
+      d.steps = Math.round(d.steps * factor)
+      d.distanceM = Math.round(d.steps * 0.74)
+      d.activeMin = Math.round(d.steps / 110)
+      d.points = Math.round(d.steps / 100)
+      scaled += d.steps
+    }
+    todaySteps = WEEK_TOTAL - scaled
+  } else {
+    todaySteps = 6_240 // Monday: the week has just started
+  }
   days[dayKey(now)] = {
     steps: todaySteps,
     distanceM: Math.round(todaySteps * 0.74),
