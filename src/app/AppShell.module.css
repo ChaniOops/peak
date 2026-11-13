@@ -1,0 +1,69 @@
+.frame {
+  position: relative;
+  max-width: var(--max-w);
+  min-height: 100%;
+  margin: 0 auto;
+  background: var(--bg);
+}
+
+@media (min-width: 520px) {
+  .frame {
+    border-left: 1px solid var(--line);
+    border-right: 1px solid var(--line);
+  }
+}
+
+.main {
+  padding: calc(var(--safe-top) + 12px) var(--gutter)
+    calc(var(--tabbar-h) + var(--safe-bottom) + 28px);
+}
+
+.tabbar {
+  position: fixed;
+  z-index: 40;
+  left: 50%;
+  bottom: 0;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: var(--max-w);
+  height: calc(var(--tabbar-h) + var(--safe-bottom));
+  padding: 0 8px var(--safe-bottom);
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  background: rgba(10, 12, 11, 0.86);
+  backdrop-filter: blur(18px) saturate(140%);
+  -webkit-backdrop-filter: blur(18px) saturate(140%);
+  border-top: 1px solid var(--line);
+}
+
+.tab {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  color: var(--text-3);
+  transition: color 0.2s var(--ease-out);
+}
+
+.tab.active {
+  color: var(--text);
+}
+
+.tabLabel {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.indicator {
+  position: absolute;
+  top: -1px;
+  width: 28px;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--accent);
+}
