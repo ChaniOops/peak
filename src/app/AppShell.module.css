@@ -6,6 +6,8 @@
 }
 
 .main {
+  position: relative;
+  z-index: 1;
   max-width: var(--max-w);
   margin: 0 auto;
   padding: calc(var(--safe-top) + 14px) var(--gutter) calc(var(--tabbar-h) + var(--safe-bottom) + 32px);
@@ -20,10 +22,7 @@
   right: 0;
   bottom: 0;
   padding-bottom: var(--safe-bottom);
-  background: rgba(8, 8, 8, 0.82);
-  backdrop-filter: blur(20px) saturate(160%);
-  -webkit-backdrop-filter: blur(20px) saturate(160%);
-  border-top: 1px solid var(--line);
+  /* material: .pg-bar (styles/glass.css) */
 }
 
 .brand,
@@ -47,19 +46,19 @@
   align-items: center;
   justify-content: center;
   gap: 3px;
-  color: var(--text-3);
+  color: var(--pg-ink-3);
   -webkit-tap-highlight-color: transparent;
   transition: color 0.2s var(--ease-out);
 }
 
 @media (hover: hover) {
   .tab:hover {
-    color: var(--text-2);
+    color: var(--pg-ink-2);
   }
 }
 
 .tab.active {
-  color: var(--text);
+  color: var(--pg-ink);
 }
 
 .icon {
@@ -79,7 +78,7 @@
   letter-spacing: 0;
 }
 
-/* soft capsule behind the active icon; slides between tabs */
+/* a pane of Peak glass behind the active icon; slides between tabs */
 .indicator {
   position: absolute;
   top: 7px;
@@ -88,8 +87,21 @@
   height: 28px;
   margin-left: -23px;
   border-radius: 10px;
-  background: rgba(255, 255, 255, 0.07);
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.06);
+  background:
+    radial-gradient(circle at 9px 7px, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0) 3px),
+    radial-gradient(120% 140% at 25% 0%, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0) 60%),
+    linear-gradient(180deg, rgba(60, 170, 170, 0.5), rgba(10, 58, 82, 0.6));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.3),
+    inset 0 0 0 1px rgba(190, 245, 235, 0.18),
+    0 6px 14px -8px rgba(2, 24, 40, 0.9);
+}
+
+.brandTile {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
 }
 
 /* ── tablet: a slightly wider content column ────────────────────────── */
@@ -123,11 +135,15 @@
     display: flex;
     flex-direction: column;
     gap: 28px;
-    background: var(--bg);
+    /* the rail never has content under it: static petrol glass, no blur */
+    background:
+      radial-gradient(140% 40% at 100% 0%, rgba(38, 204, 168, 0.14), rgba(38, 204, 168, 0) 70%),
+      linear-gradient(180deg, #0c3448 0%, #072133 46%, #050f18 100%);
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
-    border-top: 0;
-    border-right: 1px solid var(--line);
+    box-shadow:
+      inset -1px 0 0 rgba(170, 240, 228, 0.12),
+      inset 0 1px 0 rgba(190, 245, 235, 0.1);
   }
 
   .brand {
@@ -164,6 +180,16 @@
 
   .tabLabel {
     font-size: 14px;
+  }
+
+  .tab {
+    color: var(--pg-ink-3);
+  }
+
+  @media (hover: hover) {
+    .tab:hover {
+      color: var(--pg-ink-2);
+    }
   }
 
   .indicator {

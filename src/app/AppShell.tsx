@@ -27,6 +27,8 @@ export function AppShell() {
 
   return (
     <div className={styles.frame}>
+      {/* static aurora from the glass field: gradients only, never repainted */}
+      <div className="pg-atmosphere" aria-hidden="true" />
       <main className={styles.main}>
         {/* enter-only transition: instant tab switches, no exit wait */}
         <motion.div
@@ -41,9 +43,11 @@ export function AppShell() {
       <Toaster />
       <ConnectionBanner />
       <LivePill />
-      <nav className={styles.nav} aria-label="Primary">
+      <nav className={`${styles.nav} pg-bar`} aria-label="Primary">
         <div className={styles.brand}>
-          <PeakMark size={26} />
+          <span className={`pg-tile ${styles.brandTile}`}>
+            <PeakMark size={22} framed={false} />
+          </span>
           <span className={styles.wordmark}>Peak</span>
         </div>
         <div className={styles.tabs}>

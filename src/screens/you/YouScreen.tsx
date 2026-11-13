@@ -43,7 +43,7 @@ export function YouScreen() {
       )}
 
       {me.data && (
-        <div className={s.balance}>
+        <div className={`${s.balance} pg-hero`}>
           <div className={s.balanceMain}>
             <div className="label">MovePoints balance</div>
             <div className={`num ${s.balanceValue}`}>

@@ -279,10 +279,18 @@
 }
 
 /* for pills floating over maps/imagery */
+/* pills floating over maps/imagery: small teal glass (see styles/glass.css) */
 .glass {
-  background-color: rgba(8, 8, 8, 0.72);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  background-image: linear-gradient(180deg, rgba(22, 78, 96, 0.8), rgba(6, 36, 54, 0.88));
+  backdrop-filter: blur(10px) saturate(1.3);
+  -webkit-backdrop-filter: blur(10px) saturate(1.3);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.18),
+    inset 0 0 0 1px rgba(170, 240, 228, 0.18);
+}
+
+.glass.tone_neutral {
+  color: var(--pg-ink-2);
 }
 
 /* ── Data ───────────────────────────────────────────────────────────── */
@@ -352,15 +360,19 @@
   color: var(--text);
 }
 
+/* the selected segment is a small pane of Peak glass, sliding between tabs */
 .segmentThumb {
   position: absolute;
   inset: 0;
   border-radius: inherit;
-  background: var(--surface-3);
+  background:
+    radial-gradient(circle at 9px 7px, rgba(255, 255, 255, 0.75), rgba(255, 255, 255, 0) 3px),
+    radial-gradient(120% 140% at 25% 0%, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0) 60%),
+    linear-gradient(180deg, #1b5468, #0c3549);
   box-shadow:
-    inset 0 0 0 1px var(--line-strong),
-    inset 0 1px 0 rgba(255, 255, 255, 0.06),
-    0 1px 2px rgba(0, 0, 0, 0.4);
+    inset 0 1px 0 rgba(255, 255, 255, 0.26),
+    inset 0 0 0 1px rgba(170, 240, 228, 0.18),
+    0 4px 12px -6px rgba(2, 24, 40, 0.9);
 }
 
 .segmentLabel {

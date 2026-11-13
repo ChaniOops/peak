@@ -27,7 +27,7 @@ export function Toaster() {
           <motion.div
             key={n.id}
             layout
-            className={`${s.toast} ${s[n.tone]}`}
+            className={`${s.toast} ${s[n.tone]} pg-float`}
             initial={{ opacity: 0, y: -14, scale: 0.96 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -10, scale: 0.98, transition: { duration: 0.18 } }}

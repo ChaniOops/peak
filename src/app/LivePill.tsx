@@ -24,9 +24,9 @@ export function LivePill() {
           exit={{ opacity: 0, y: 12, transition: { duration: 0.18 } }}
           transition={SPRING_POP}
         >
-          <Link to="/track" className={s.pill}>
+          <Link to="/track" className={`${s.pill} pg-float`}>
             <span className={`${s.dot} ${st.phase === 'paused' ? s.paused : ''}`} />
-            <span className="label" style={{ color: 'var(--text-2)' }}>
+            <span className="label" style={{ color: 'var(--pg-ink-2)' }}>
               {ACTIVITY_LABEL[st.type]} {st.phase === 'paused' ? 'paused' : 'live'}
             </span>
             <span className={`num ${s.time}`}>{formatDuration(elapsedMs(st, now) / 1000)}</span>

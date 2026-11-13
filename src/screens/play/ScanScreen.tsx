@@ -53,7 +53,7 @@ export function ScanScreen() {
   return (
     <div className={s.scanPage}>
       <div className={s.scanHead}>
-        <Link to="/play" className={s.back} aria-label="Back to Play">
+        <Link to="/play" className={`${s.back} pg-tile`} aria-label="Back to Play">
           <ChevronLeft size={18} />
         </Link>
         <div>
@@ -95,7 +95,7 @@ export function ScanScreen() {
       )}
 
       {phase.kind === 'submitting' && (
-        <div className={s.result}>
+        <div className={`${s.result} pg-hero`}>
           <div className={`${s.resultIcon} ${s.pendingIcon}`}>
             <Hourglass size={30} />
           </div>
@@ -104,7 +104,7 @@ export function ScanScreen() {
       )}
 
       {phase.kind === 'error' && (
-        <div className={s.result}>
+        <div className={`${s.result} pg-hero`}>
           <div className={`${s.resultIcon} ${s.rejectedIcon}`}>
             <X size={32} />
           </div>
@@ -132,7 +132,7 @@ function CheckInStatus({ checkInId, eventId }: { checkInId: string; eventId: str
     <AnimatePresence mode="wait">
       <motion.div
         key={status}
-        className={s.result}
+        className={`${s.result} pg-hero`}
         initial={{ opacity: 0, scale: 0.96 }}
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.98 }}

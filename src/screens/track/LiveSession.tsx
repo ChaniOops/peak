@@ -76,7 +76,7 @@ export function LiveSession() {
         <div className="label">{primary.unit}</div>
       </div>
 
-      <div className={s.secondary}>
+      <div className={`${s.liveStats} pg-hero`}>
         {secondary.map((x) => (
           <div key={x.label} className={s.secondaryCell}>
             <div className={`num ${s.secondaryValue}`}>

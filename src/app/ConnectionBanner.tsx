@@ -37,7 +37,7 @@ export function ConnectionBanner() {
         {show && (
           <motion.div
             key={online ? 'on' : 'off'}
-            className={`${s.pill} ${online ? s.on : s.off}`}
+            className={`${s.pill} ${online ? s.on : s.off} pg-float`}
             initial={{ opacity: 0, y: -10, scale: 0.96 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -8, transition: { duration: 0.18 } }}

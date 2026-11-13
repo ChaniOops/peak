@@ -49,7 +49,7 @@ export function HomeScreen() {
       </header>
 
       {/* Today */}
-      <div className={s.today}>
+      <div className={`${s.today} pg-hero`}>
         {today.data ? (
           <>
             <div className={s.todayHead}>

@@ -54,19 +54,27 @@ export function Section({
   )
 }
 
-/** The one surface language: flat near-black, hairline border, top sheen. */
+/**
+ * The surface language. Default: flat near-black, hairline border, top sheen
+ * — for data. `glass`: the Peak glass hero pane (static, no backdrop blur)
+ * for the one or two surfaces per screen that carry the moment.
+ */
 export function Card({
   children,
   className = '',
   pad = true,
   interactive,
+  glass,
 }: {
   children: ReactNode
   className?: string
   pad?: boolean
   interactive?: boolean
+  glass?: boolean
 }) {
-  return <div className={cx(s.card, pad && s.pad, interactive && s.interactive, className)}>{children}</div>
+  return (
+    <div className={cx(glass ? 'pg-hero' : s.card, pad && s.pad, interactive && s.interactive, className)}>{children}</div>
+  )
 }
 
 /* ── Buttons ────────────────────────────────────────────────────────── */
