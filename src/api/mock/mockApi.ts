@@ -10,8 +10,8 @@
  * via BroadcastChannel, so the student view and the organiser route can run
  * side by side. Cross-device sync needs the real backend.
  */
-import type { Api } from '../client'
-import { ApiError } from '../client'
+import type { Api, OAuthProvider } from '../client'
+import { ApiError, OAUTH_LABEL } from '../client'
 import type {
   Activity,
   ActivitySaveResult,
@@ -277,6 +277,11 @@ export class MockApi implements Api {
 
   async signIn(): Promise<UserProfile> {
     throw new ApiError('Email sign-in needs the backend. Use the demo account for now.', 'not_available')
+  }
+
+  async signInWithOAuth(provider: OAuthProvider): Promise<void> {
+    await latency()
+    throw new ApiError(`${OAUTH_LABEL[provider]} sign-in needs the backend. Use the demo account for now.`, 'not_available')
   }
 
   async signOut() {

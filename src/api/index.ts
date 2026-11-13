@@ -10,5 +10,5 @@ const useMocks = import.meta.env.VITE_USE_MOCKS !== 'false' || !supabaseConfigur
 
 export const api: Api = useMocks ? new MockApi() : new SupabaseApi()
 
-export type { Api } from './client'
-export { ApiError } from './client'
+export type { Api, OAuthProvider } from './client'
+export { ApiError, OAUTH_LABEL } from './client'
