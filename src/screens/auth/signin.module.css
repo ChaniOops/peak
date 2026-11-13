@@ -1,69 +1,433 @@
+/*
+ * FeralUI Screenery Login / Email over the Peak glass field (black optical
+ * glass): the auth controls are panes of the same material.
+ */
 .page {
   position: relative;
-  max-width: var(--max-w);
   min-height: 100vh;
-  margin: 0 auto;
-  padding: calc(var(--safe-top) + 24px) var(--gutter) calc(var(--safe-bottom) + 28px);
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
+  min-height: 100dvh;
+  background: #0a0a0a;
   overflow: hidden;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
-.topo {
-  position: absolute;
-  inset: 0 0 auto;
-  width: 100%;
-  height: 70%;
-  color: rgba(226, 233, 228, 0.09);
-  pointer-events: none;
-  mask-image: linear-gradient(180deg, #000 40%, transparent);
+.field {
+  position: fixed;
+  inset: 0;
+}
+
+.scene {
+  position: relative;
+  max-width: 440px;
+  min-height: 100vh;
+  min-height: 100dvh;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* ── welcome ────────────────────────────── */
+
+.copy {
+  position: relative;
+  z-index: 1;
+  margin-top: clamp(56px, 15dvh, 150px);
+  padding: 0 30px;
+  align-self: stretch;
 }
 
 .brand {
   position: relative;
-  margin-top: 28vh;
+  display: grid;
+  place-items: center;
+  width: 60px;
+  height: 60px;
+  margin: 0 0 18px;
+  border-radius: 19%;
+  background:
+    radial-gradient(circle at 30% 24%, rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0.04) 55%, transparent 85%),
+    linear-gradient(180deg, rgba(233, 233, 233, 0.16), rgba(36, 36, 36, 0.28));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.35),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.16),
+    0 10px 24px -14px rgba(20, 20, 20, 0.8);
 }
 
-.word {
-  font-size: 128px;
-  line-height: 0.82;
-  margin-top: 8px;
+/* the field's specular dot */
+.brand::after {
+  content: '';
+  position: absolute;
+  left: 14%;
+  top: 9%;
+  width: 14%;
+  height: 14%;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0) 70%);
 }
 
-.tag {
-  margin-top: 12px;
-  font-size: 17px;
+.copy h1,
+.body h1 {
+  margin: 0;
+  font-weight: 650;
+  line-height: 1.12;
+  letter-spacing: -0.035em;
+}
+
+.copy h1 {
+  font-size: 30px;
+  text-shadow: 0 1px 14px rgba(26, 26, 26, 0.35);
+}
+
+.copy p {
+  margin-top: 9px;
+  font-size: 14.5px;
+  font-weight: 500;
+  line-height: 1.45;
+  color: rgba(244, 244, 244, 0.82);
+  text-shadow: 0 1px 10px rgba(26, 26, 26, 0.35);
+}
+
+.sheet {
+  position: relative;
+  z-index: 1;
+  align-self: stretch;
+  margin: auto 16px 16px;
+  padding: 14px;
+  border-radius: 28px;
+  background: linear-gradient(180deg, rgba(209, 209, 209, 0.16), rgba(34, 34, 34, 0.34));
+  -webkit-backdrop-filter: blur(14px) saturate(1.35);
+  backdrop-filter: blur(14px) saturate(1.35);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.22),
+    0 24px 48px -28px rgba(14, 14, 14, 0.9);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* the sheet carries its own blur; the generic .glass::before would double it */
+.sheet:global(.glass)::before {
+  display: none;
+}
+
+.btn {
+  appearance: none;
+  height: 52px;
+  border-radius: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  transition:
+    scale 0.22s var(--ease-press),
+    box-shadow 0.22s ease,
+    opacity 0.2s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.btn:active:not(:disabled) {
+  scale: 0.97;
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.btn svg {
+  flex: none;
+  width: 18px;
+  height: 18px;
+}
+
+/* Feral .lo-btn-google: warm white, near-black ink */
+.btnGoogle {
+  background: linear-gradient(180deg, #ffffff 0%, #f0f0f0 100%);
+  color: #1d1d1d;
+  box-shadow:
+    0 14px 28px -20px rgba(14, 14, 14, 0.9),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+
+/* Feral .lo-btn-apple: near-black with a top highlight */
+.btnGithub {
+  background: linear-gradient(180deg, rgba(27, 27, 27, 0.9), rgba(16, 16, 16, 0.94));
+  color: #ffffff;
+  box-shadow:
+    0 14px 28px -18px rgba(12, 12, 12, 0.9),
+    inset 0 1px 0 rgba(255, 255, 255, 0.16),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.07);
+}
+
+/* Feral .lo-email: the softer, translucent third action */
+.btnEmail {
+  appearance: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 44px;
+  padding: 0 12px;
+  border: 1px solid rgba(255, 255, 255, 0.55);
+  border-radius: 999px;
+  background: rgba(239, 239, 239, 0.55);
+  color: #242424;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  transition:
+    background 0.18s ease,
+    scale 0.2s var(--ease-press),
+    opacity 0.2s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+@media (hover: hover) {
+  .btnEmail:hover:not(:disabled) {
+    background: rgba(244, 244, 244, 0.66);
+  }
+}
+
+.btnEmail:active:not(:disabled) {
+  scale: 0.97;
+}
+
+.btnEmail:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.sheetError {
+  overflow: hidden;
+  padding: 0 6px;
+  font-size: 13px;
+  font-weight: 500;
+  text-align: center;
+  color: #e8b0a8;
+}
+
+/* tertiary actions under the panel */
+.below {
+  position: relative;
+  z-index: 1;
+  text-shadow: 0 1px 8px rgba(20, 20, 20, 0.7);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  margin: -6px 30px calc(var(--safe-bottom) + 18px);
+}
+
+.demo {
+  padding: 8px 12px;
+  font-size: 13px;
+  font-weight: 500;
+  color: rgba(244, 244, 244, 0.86);
+  text-decoration: underline;
+  text-decoration-color: rgba(244, 244, 244, 0.35);
+  text-underline-offset: 4px;
+  transition:
+    color 0.2s,
+    scale 0.2s var(--ease-press);
+}
+
+@media (hover: hover) {
+  .demo:hover:not(:disabled) {
+    color: #fff;
+  }
+}
+
+.demo:active:not(:disabled) {
+  scale: 0.97;
+}
+
+.demo:disabled {
+  opacity: 0.6;
+}
+
+.terms {
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(234, 234, 234, 0.5);
+}
+
+/* ── email ──────────────────────────────── */
+
+.back {
+  position: absolute;
+  z-index: 2;
+  top: calc(var(--safe-top) + 18px);
+  left: 18px;
+}
+
+.body {
+  position: relative;
+  z-index: 1;
+  flex: 1;
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  padding: calc(var(--safe-top) + 108px) 24px calc(var(--safe-bottom) + 28px);
+}
+
+.body h1 {
+  font-size: 27px;
+}
+
+.sub,
+.subError {
+  margin-top: 7px;
+  min-height: 1.45em;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.45;
+}
+
+.sub {
   color: var(--text-2);
 }
 
-.actions {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.form {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.input {
-  height: 48px;
-  padding: 0 16px;
-  border-radius: var(--r-pill);
-  background: var(--surface-1);
-  border: 1px solid var(--line-strong);
-  outline: none;
-}
-
-.input:focus {
-  border-color: var(--accent);
-}
-
-.error {
-  font-size: 13px;
+.subError {
   color: var(--danger);
+}
+
+.fieldGap {
+  margin-top: 20px;
+}
+
+.fieldGapSm {
+  margin-top: 12px;
+}
+
+.reveal {
+  color: var(--text-3);
+}
+
+.submit {
+  margin-top: 18px;
+  height: 52px;
+  border-radius: 26px;
+  font-size: 15.5px;
+  font-weight: 600;
+}
+
+
+.foot {
+  margin-top: auto;
+  padding-top: 16px;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-3);
+}
+
+.footLink {
+  margin: -10px 0;
+  padding: 12px 0;
+  color: var(--text);
+  transition: opacity 0.2s;
+}
+
+.footLink b {
+  font-weight: 600;
+}
+
+.footLink:disabled {
+  opacity: 0.6;
+}
+
+/*
+ * Desktop / landscape: the field's crest sits at one third of the height
+ * with a two-row window at its centre; the copy sits in that window (as the
+ * title does in the target) and the sheet rests on the glass below it.
+ */
+@media (min-width: 720px) and (orientation: landscape) {
+  .copy {
+    margin-top: calc(100dvh / 3 + 14px);
+    text-align: center;
+  }
+  .brand {
+    margin: 0 auto 16px;
+  }
+  .sheet {
+    margin-top: 26px;
+    margin-bottom: 14px;
+  }
+  .below {
+    margin-bottom: 28px;
+  }
+}
+
+/*
+ * Auth is approved as-is: pin the shared button primitives it uses to the
+ * exact look they had when it was approved (the app-wide glass button
+ * system must not restyle this screen).
+ */
+.back :global(button) {
+  background: #111111;
+  color: var(--text);
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.13),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+.reveal::before,
+.reveal::after,
+.submit::before,
+.submit::after {
+  display: none;
+}
+
+.reveal {
+  background: transparent;
+  box-shadow: none;
+}
+
+/* the back button keeps the global .glass bevel + blur; undo only what the
+   app-wide glass button layer adds to the same pseudo-elements */
+.back :global(button)::before {
+  background: none;
+  opacity: 1;
+}
+
+.back :global(button)::after {
+  inset: 0;
+  width: auto;
+  height: auto;
+  z-index: 1;
+  background: none;
+}
+
+.submit {
+  color: var(--accent-ink);
+  border-radius: 26px;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.45),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.12),
+    0 1px 2px rgba(0, 0, 0, 0.5);
+  background: var(--accent);
+}
+
+.submit:disabled:not([aria-busy]) {
+  opacity: 1;
+  background: var(--surface-3);
+  color: var(--text-3);
+  box-shadow: inset 0 0 0 1px var(--line);
+}
+
+.submit:not(:disabled) {
+  background: linear-gradient(180deg, #e6e6e6 0%, #d5d5d5 100%);
+  box-shadow:
+    0 14px 28px -16px rgba(222, 222, 222, 0.32),
+    0 2px 5px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.45);
 }

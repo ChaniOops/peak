@@ -1,78 +1,70 @@
+/* primary check-in CTA: same language as Home's Start moving */
 .scanCta {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  padding: 16px;
-  border-radius: var(--r-lg);
-  background: var(--accent);
-  color: var(--accent-ink);
+  justify-content: flex-start;
+  gap: 12px;
+  height: 64px;
+  padding: 0 18px 0 10px;
+  text-align: left;
 }
 
 .scanIcon {
   display: grid;
   place-items: center;
-  width: 48px;
-  height: 48px;
-  border-radius: 14px;
-  background: rgba(17, 22, 10, 0.12);
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  color: #eeeeee;
+  background:
+    radial-gradient(circle at 10px 8px, rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0) 3px),
+    linear-gradient(180deg, #232323 0%, #0e0e0e 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.22),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.08),
+    0 4px 10px -4px rgba(25, 25, 25, 0.6);
 }
 
 .scanText {
   flex: 1;
   display: flex;
   flex-direction: column;
+  min-width: 0;
+  line-height: 1.2;
   font-size: 12.5px;
-  line-height: 1.3;
+  font-weight: 450;
 }
 
 .scanText strong {
-  font-size: 17px;
-  font-weight: 800;
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
 }
 
-.checkins {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  border: 1px solid var(--line);
-  border-radius: var(--r-lg);
-  background: var(--surface-1);
+.scanText span {
+  opacity: 0.68;
+  white-space: nowrap;
   overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.checkin {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 12px 14px;
+.scanArrow {
+  flex: none;
+  transition: translate 0.3s var(--ease-press);
 }
 
-.checkin + .checkin {
-  border-top: 1px solid var(--line);
-}
-
-.ciTitle {
-  font-size: 14px;
-  font-weight: 650;
-}
-
-.ciMeta {
-  font-family: var(--font-mono);
-  font-size: 10.5px;
-  color: var(--text-3);
+@media (hover: hover) {
+  .scanCta:hover .scanArrow {
+    translate: 3px 0;
+  }
 }
 
 .events {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
 }
 
 .error {
   margin-bottom: 10px;
-  font-size: 13px;
-  color: var(--danger);
 }
 
 /* ── scan ─────────────────────────────── */
@@ -82,12 +74,31 @@
   gap: 16px;
 }
 
-.back {
-  display: inline-flex;
+.scanHead {
+  display: flex;
   align-items: center;
-  gap: 4px;
-  font-size: 14px;
-  color: var(--text-2);
+  gap: 12px;
+  padding: 6px 0 4px;
+}
+
+.scanTitle {
+  font-size: 26px;
+}
+
+.back {
+  /* material: .pg-tile */
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 38px;
+  height: 38px;
+  color: var(--pg-ink);
+  transition: scale 0.24s var(--ease-press);
+}
+
+.back:active {
+  scale: 0.88;
+  transition-duration: 0.08s;
 }
 
 .result {
@@ -95,49 +106,184 @@
   flex-direction: column;
   align-items: center;
   gap: 10px;
-  padding: 28px 18px;
+  padding: 32px 20px;
   text-align: center;
-  border-radius: var(--r-lg);
-  background: var(--surface-1);
-  border: 1px solid var(--line);
+  /* material: .pg-hero */
+}
+
+.result :global(.muted),
+.resultEvent {
+  color: var(--pg-ink-2);
 }
 
 .resultIcon {
   display: grid;
   place-items: center;
-  width: 76px;
-  height: 76px;
+  width: 68px;
+  height: 68px;
   border-radius: 50%;
 }
 
+.resultIconSlot {
+  display: grid;
+  place-items: center;
+  width: 72px;
+  height: 72px;
+}
+
 .pendingIcon {
-  background: var(--ember-soft);
+  position: relative;
   color: var(--ember);
+  background:
+    radial-gradient(circle at 30% 22%, rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0) 40%),
+    linear-gradient(180deg, rgba(175, 175, 175, 0.22), rgba(175, 175, 175, 0.08));
+  box-shadow: inset 0 0 0 1px rgba(175, 175, 175, 0.3);
+}
+
+/* waiting: a single comet arc orbiting the disc (transform only) */
+.pendingRing {
+  position: absolute;
+  inset: -5px;
+  border-radius: 50%;
+  background: conic-gradient(from 0deg, rgba(175, 175, 175, 0) 0deg, rgba(255, 255, 255, 0) 250deg, rgba(255, 255, 255, 0.85) 350deg, rgba(175, 175, 175, 0) 360deg);
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 2.5px), #000 calc(100% - 2px));
+  mask: radial-gradient(farthest-side, transparent calc(100% - 2.5px), #000 calc(100% - 2px));
+  animation: orbit 1.4s linear infinite;
+}
+
+@keyframes orbit {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .verifiedIcon {
   background: var(--ice);
-  color: var(--bg);
+  color: #121212;
+  box-shadow: 0 0 0 6px rgba(197, 197, 197, 0.1);
 }
 
 .rejectedIcon {
   background: var(--danger-soft);
   color: var(--danger);
+  box-shadow: inset 0 0 0 1px rgba(217, 105, 94, 0.22);
 }
 
 .resultTitle {
-  font-size: 34px;
+  font-size: 26px;
   margin-top: 6px;
 }
 
 .resultEvent {
-  font-weight: 650;
+  font-weight: 550;
 }
 
+/* verified points: the positive moment, carried by size and weight */
 .resultPoints {
-  font-size: 54px;
-  color: var(--ice);
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.resultPoints :global(.num) {
+  font-size: 40px;
   line-height: 1;
+  color: var(--accent);
+}
+
+.resultNote {
+  max-width: 280px;
+  font-size: 13.5px;
+}
+
+/* ── three-step check-in track ── */
+.steps {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  width: 100%;
+  max-width: 320px;
+  margin: 10px 0 2px;
+  padding: 0;
+  list-style: none;
+}
+
+.step {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.stepNode {
+  position: relative;
+  z-index: 1;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #262626;
+  box-shadow: inset 0 0 0 1.5px rgba(224, 224, 224, 0.28);
+  transition:
+    background 0.4s var(--ease-out),
+    box-shadow 0.4s var(--ease-out),
+    scale 0.4s var(--ease-press);
+}
+
+.stepLine {
+  position: absolute;
+  top: 5px;
+  right: 50%;
+  width: 100%;
+  height: 2px;
+  background: rgba(224, 224, 224, 0.16);
+  overflow: hidden;
+}
+
+.stepLine span {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, #b4b4b4, #d6d6d6);
+  transform-origin: left;
+  transition: transform 0.6s cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+.stepLabel {
+  font-size: 11.5px;
+  font-weight: 500;
+  color: var(--pg-ink-3);
+  transition: color 0.3s;
+}
+
+.stepDone .stepNode {
+  background: linear-gradient(180deg, #e3e3e3, #b1b1b1);
+  box-shadow: 0 0 0 3px rgba(177, 177, 177, 0.18);
+}
+
+.stepDone .stepLabel,
+.stepActive .stepLabel {
+  color: var(--pg-ink);
+}
+
+.stepActive .stepNode {
+  background: var(--ember);
+  box-shadow: 0 0 0 0 rgba(175, 175, 175, 0.5);
+  animation: stepPulse 1.6s ease-out infinite;
+}
+
+@keyframes stepPulse {
+  100% {
+    box-shadow: 0 0 0 9px rgba(175, 175, 175, 0);
+  }
+}
+
+.stepFailed .stepNode {
+  background: var(--danger);
+  box-shadow: 0 0 0 3px rgba(217, 105, 94, 0.18);
+}
+
+.stepFailed .stepLabel {
+  color: #e2a49c;
 }
 
 .dots {
@@ -181,18 +327,26 @@
 
 .input {
   flex: 1;
-  height: 44px;
+  min-width: 0;
+  height: 42px;
   padding: 0 14px;
-  border-radius: var(--r-pill);
-  background: var(--surface-1);
-  border: 1px solid var(--line-strong);
+  border-radius: 12px;
+  border: 0;
+  background: rgba(255, 255, 255, 0.025);
+  box-shadow:
+    inset 0 0 0 1px var(--line-strong),
+    inset 0 1px 2px rgba(0, 0, 0, 0.4);
   font-family: var(--font-mono);
-  font-size: 14px;
+  font-size: 16px;
+  letter-spacing: 0.04em;
   outline: none;
+  transition: box-shadow 0.2s;
 }
 
 .input:focus {
-  border-color: var(--accent);
+  box-shadow:
+    inset 0 0 0 1px var(--line-focus),
+    0 0 0 4px rgba(255, 255, 255, 0.05);
 }
 
 .linkish {
@@ -200,5 +354,11 @@
   font-size: 13px;
   color: var(--text-2);
   text-decoration: underline;
-  text-underline-offset: 3px;
+  text-decoration-color: var(--line-strong);
+  text-underline-offset: 4px;
+  transition: color 0.2s;
+}
+
+.linkish:hover {
+  color: var(--text);
 }

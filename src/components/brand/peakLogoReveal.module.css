@@ -1,0 +1,19 @@
+.root {
+  position: relative;
+  display: grid;
+  place-items: center;
+}
+
+/* the shader draws its own backdrop (#0a0a0a); feather the square into the page */
+.canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+  -webkit-mask-image: radial-gradient(closest-side, #000 72%, transparent);
+  mask-image: radial-gradient(closest-side, #000 72%, transparent);
+}
+
+.still {
+  display: grid;
+  place-items: center;
+}

@@ -2,7 +2,8 @@ import { useState } from 'react'
 import { api } from '../../api'
 import { useLive } from '../../api/useLive'
 import type { LeaderboardScope } from '../../api/types'
-import { ErrorNote, ScreenHeader, Section, Segmented, Skeleton } from '../../components/ui/ui'
+import { Flag } from 'lucide-react'
+import { EmptyState, ErrorNote, ScreenHeader, Section, Segmented, Skeleton } from '../../components/ui/ui'
 import { SummitCard } from '../../components/summit/SummitCard'
 import { ChallengeRow } from '../../components/ChallengeRow'
 import { Leaderboard } from '../../components/Leaderboard'
@@ -16,26 +17,35 @@ export function CompeteScreen() {
 
   return (
     <div>
-      <ScreenHeader eyebrow="This week" title="Compete" />
+      <ScreenHeader title="Compete" />
 
       {summit.data ? (
         <SummitCard summit={summit.data} />
       ) : summit.error ? (
         <ErrorNote error={summit.error} onRetry={summit.reload} />
       ) : (
-        <Skeleton h={380} />
+        <Skeleton h={420} />
       )}
 
       <Section title="Challenges">
         <div className={s.stack}>
-          {challenges.data?.map((c) => (
-            <ChallengeRow key={c.id} c={c} onJoin={(id) => void api.joinChallenge(id)} />
-          )) ?? <Skeleton h={140} />}
+          {challenges.data ? (
+            challenges.data.length ? (
+              challenges.data.map((c) => <ChallengeRow key={c.id} c={c} onJoin={(id) => void api.joinChallenge(id)} />)
+            ) : (
+              <EmptyState icon={<Flag size={18} />} title="No challenges this week" body="New challenges appear here when organisers post them." />
+            )
+          ) : challenges.error ? (
+            <ErrorNote error={challenges.error} onRetry={challenges.reload} />
+          ) : (
+            <Skeleton h={140} />
+          )}
         </div>
       </Section>
 
-      <Section title="Leaderboard · MovePoints this week">
+      <Section title="Leaderboard" meta={<span className="label">MovePoints · this week</span>}>
         <Segmented
+          label="Leaderboard scope"
           value={scope}
           onChange={setScope}
           options={[

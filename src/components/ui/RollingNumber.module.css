@@ -1,0 +1,31 @@
+.root {
+  display: inline-flex;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.col {
+  position: relative;
+  display: inline-block;
+  height: 1em;
+  overflow: hidden;
+}
+
+.strip {
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform;
+}
+
+.strip > span {
+  display: block;
+  height: 1em;
+  line-height: 1;
+}
+
+.static {
+  display: inline-block;
+  line-height: 1;
+}

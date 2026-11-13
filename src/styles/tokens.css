@@ -1,44 +1,81 @@
 :root {
   color-scheme: dark;
 
-  /* Surfaces — near-black with a faint moss tint, like shadowed rock */
-  --bg: #0a0c0b;
-  --surface-1: #111413;
-  --surface-2: #171b19;
-  --surface-3: #1f2421;
-  --line: rgba(226, 233, 228, 0.08);
-  --line-strong: rgba(226, 233, 228, 0.16);
+  /* Surfaces — black. No blue, green or teal tint anywhere. */
+  --bg: #090909;
+  --surface-1: #0d0d0d; /* card */
+  --surface-2: #141414; /* raised: inputs, nested panels */
+  --surface-3: #191919; /* hover, wells, tracks */
+  --surface-4: #202020;
+  --line: rgba(255, 255, 255, 0.08);
+  --line-strong: rgba(255, 255, 255, 0.14);
+  --line-focus: rgba(255, 255, 255, 0.34);
+  /* top-edge sheen that lifts flat cards off the background */
+  --highlight: inset 0 1px 0 rgba(255, 255, 255, 0.045);
 
   /* Text */
-  --text: #e9eee9;
-  --text-2: #a1aaa4;
-  --text-3: #69716c;
+  --text: #eeeeee;
+  --text-2: #a0a0a0;
+  --text-3: #666666;
 
-  /* Restrained accents: one primary, three semantic */
-  --accent: #c8f169; /* lichen — progress, primary action */
-  --accent-ink: #11160a;
-  --accent-soft: rgba(200, 241, 105, 0.12);
-  --ice: #8cd2f0; /* verified, info */
-  --ice-soft: rgba(140, 210, 240, 0.12);
-  --ember: #f5a25d; /* streaks, pending */
-  --ember-soft: rgba(245, 162, 93, 0.12);
-  --danger: #ff6f61;
-  --danger-soft: rgba(255, 111, 97, 0.12);
+  /*
+   * Emphasis is lightness, not hue. The old lime accent and the ice/ember
+   * semantics now resolve to whites and greys; colour is reserved for
+   * Everest, errors and external brand marks.
+   */
+  --accent: #eeeeee;
+  --accent-hover: #ffffff;
+  --accent-ink: #0a0a0a;
+  --accent-soft: rgba(255, 255, 255, 0.08);
+  --accent-line: rgba(255, 255, 255, 0.22);
+
+  --ice: #e6e6e6; /* verified: bright neutral */
+  --ice-soft: rgba(255, 255, 255, 0.08);
+  --ember: #9a9a9a; /* pending, streak: mid grey */
+  --ember-soft: rgba(255, 255, 255, 0.05);
+  --danger: #d9695e; /* muted red: errors and destructive only */
+  --danger-soft: rgba(217, 105, 94, 0.1);
+
+  /*
+   * Personality punctuation: three flat Peak colours, used locally and
+   * sparingly (≤ 1 per screen, 2 only in the Movement chart). Always flat,
+   * always with dark ink, never on buttons or large surfaces.
+   *   yellow     — you & reward: today, reward/points tags, completion,
+   *                redemption, your leaderboard marker and rank-ups
+   *   pink       — "best": the best day in the Movement chart
+   *   periwinkle — campus events: the sport tag on Play
+   */
+  --pk-yellow: #ffd23f;
+  --pk-pink: #ff9dc6;
+  --pk-periwinkle: #94a7ff;
+  --pk-ink: #0a0a0a;
 
   /* Type */
-  --font-body: 'Archivo', system-ui, -apple-system, 'Segoe UI', sans-serif;
-  --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+  --font-body: 'Geist', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  --font-mono: 'Geist Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+  /* display: screen titles, hero numbers, ranks — Peak's typographic voice */
+  --font-display: 'Space Grotesk', 'Geist', -apple-system, system-ui, sans-serif;
 
-  /* Shape & space */
-  --r-sm: 10px;
-  --r-md: 16px;
-  --r-lg: 22px;
+  /*
+   * Radius hierarchy: glass controls are pills; surfaces medium; data
+   * wells small; flat personality tags nearly square.
+   */
+  --r-tag: 3px;
+  --r-xs: 6px;
+  --r-sm: 8px;
+  --r-md: 12px;
+  --r-lg: 14px;
   --r-pill: 999px;
   --gutter: 16px;
-  --tabbar-h: 64px;
+  --tabbar-h: 60px;
   --max-w: 480px;
+  --content-w: 560px;
 
-  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  /* Motion (values from the FeralUI ClimbScreen source) */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-soft: cubic-bezier(0.22, 1, 0.3, 1);
+  --ease-press: cubic-bezier(0.34, 1.56, 0.64, 1);
+
   --safe-bottom: env(safe-area-inset-bottom, 0px);
   --safe-top: env(safe-area-inset-top, 0px);
 }

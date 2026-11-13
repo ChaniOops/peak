@@ -1,0 +1,43 @@
+.root {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background: #0d0d0d;
+  pointer-events: none;
+  contain: strict;
+}
+
+.light,
+.glass {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* the low-res light canvas is upscaled smoothly: that upscale is the blur */
+.light {
+  image-rendering: auto;
+}
+
+.grain {
+  position: absolute;
+  inset: 0;
+  background-size: 128px 128px;
+  mix-blend-mode: overlay;
+  opacity: 0.045;
+}
+
+/* calmer backdrop for text-heavy steps (e.g. the email form) */
+.dim {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(19, 19, 19, 0.55), rgba(14, 14, 14, 0.78));
+  opacity: 0;
+  transition: opacity 0.6s cubic-bezier(0.22, 1, 0.3, 1);
+}
+
+.dimOn {
+  opacity: 1;
+}

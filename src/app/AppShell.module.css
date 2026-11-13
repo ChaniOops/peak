@@ -1,39 +1,42 @@
 .frame {
+  --rail-w: 0px;
   position: relative;
-  max-width: var(--max-w);
   min-height: 100%;
-  margin: 0 auto;
   background: var(--bg);
 }
 
-@media (min-width: 520px) {
-  .frame {
-    border-left: 1px solid var(--line);
-    border-right: 1px solid var(--line);
-  }
-}
-
 .main {
-  padding: calc(var(--safe-top) + 12px) var(--gutter)
-    calc(var(--tabbar-h) + var(--safe-bottom) + 28px);
+  position: relative;
+  z-index: 1;
+  max-width: var(--max-w);
+  margin: 0 auto;
+  padding: calc(var(--safe-top) + 14px) var(--gutter) calc(var(--tabbar-h) + var(--safe-bottom) + 32px);
 }
 
-.tabbar {
+/* ── bottom tab bar (phones, tablets) ───────────────────────────────── */
+
+.nav {
   position: fixed;
   z-index: 40;
-  left: 50%;
+  left: 0;
+  right: 0;
   bottom: 0;
-  transform: translateX(-50%);
-  width: 100%;
-  max-width: var(--max-w);
-  height: calc(var(--tabbar-h) + var(--safe-bottom));
-  padding: 0 8px var(--safe-bottom);
+  padding-bottom: var(--safe-bottom);
+  /* material: .pg-bar (styles/glass.css) */
+}
+
+.brand,
+.railFoot {
+  display: none;
+}
+
+.tabs {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
-  background: rgba(10, 12, 11, 0.86);
-  backdrop-filter: blur(18px) saturate(140%);
-  -webkit-backdrop-filter: blur(18px) saturate(140%);
-  border-top: 1px solid var(--line);
+  max-width: var(--max-w);
+  height: var(--tabbar-h);
+  margin: 0 auto;
+  padding: 0 6px;
 }
 
 .tab {
@@ -42,28 +45,167 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 4px;
-  color: var(--text-3);
+  gap: 3px;
+  color: var(--pg-ink-3);
+  -webkit-tap-highlight-color: transparent;
   transition: color 0.2s var(--ease-out);
 }
 
+@media (hover: hover) {
+  .tab:hover {
+    color: var(--pg-ink-2);
+  }
+}
+
 .tab.active {
-  color: var(--text);
+  color: var(--pg-ink);
+}
+
+.icon {
+  position: relative;
+  transition:
+    scale 0.34s var(--ease-press),
+    translate 0.34s var(--ease-press);
+}
+
+/* the glass lens magnifies what it sits under */
+.tab.active .icon {
+  scale: 1.06;
+  translate: 0 -0.5px;
+}
+
+.tab:active .icon {
+  scale: 0.86;
+  transition-duration: 0.08s;
 }
 
 .tabLabel {
-  font-family: var(--font-mono);
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
+  position: relative;
+  font-size: 10.5px;
+  font-weight: 500;
+  letter-spacing: 0;
+  transition: color 0.2s;
 }
 
+/* a transparent smoked-glass lens behind the active icon; slides between tabs */
 .indicator {
   position: absolute;
-  top: -1px;
-  width: 28px;
-  height: 2px;
-  border-radius: 2px;
-  background: var(--accent);
+  top: 7px;
+  left: 50%;
+  width: 46px;
+  height: 28px;
+  margin-left: -23px;
+  border-radius: 10px;
+  background:
+    radial-gradient(circle at 9px 7px, rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0) 3px),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.03));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.2),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+}
+
+.brandTile {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+}
+
+/* ── tablet: a slightly wider content column ────────────────────────── */
+
+@media (min-width: 640px) {
+  .main {
+    max-width: var(--content-w);
+    padding-left: 24px;
+    padding-right: 24px;
+  }
+}
+
+/* ── desktop: left rail + centred column ────────────────────────────── */
+
+@media (min-width: 1024px) {
+  .frame {
+    --rail-w: 232px;
+    padding-left: var(--rail-w);
+  }
+
+  .main {
+    max-width: 640px;
+    padding: 56px 40px 96px;
+  }
+
+  .nav {
+    top: 0;
+    right: auto;
+    width: var(--rail-w);
+    padding: 22px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+    /* the rail never has content under it: plain black, a hairline, no blur */
+    background: var(--bg);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    box-shadow: inset -1px 0 0 var(--line);
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 0 8px;
+  }
+
+  .wordmark {
+    font-size: 17px;
+    font-weight: 600;
+    letter-spacing: -0.03em;
+  }
+
+  .tabs {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    height: auto;
+    max-width: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .tab {
+    flex-direction: row;
+    justify-content: flex-start;
+    gap: 10px;
+    height: 38px;
+    padding: 0 10px;
+    border-radius: 10px;
+  }
+
+  .tabLabel {
+    font-size: 14px;
+  }
+
+  .tab {
+    color: var(--pg-ink-3);
+  }
+
+  @media (hover: hover) {
+    .tab:hover {
+      color: var(--pg-ink-2);
+    }
+  }
+
+  .indicator {
+    inset: 0;
+    width: auto;
+    height: auto;
+    margin: 0;
+    border-radius: 10px;
+  }
+
+  .railFoot {
+    display: block;
+    margin-top: auto;
+    padding: 0 10px;
+  }
 }

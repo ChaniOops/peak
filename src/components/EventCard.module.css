@@ -1,92 +1,66 @@
 .card {
-  display: grid;
-  grid-template-columns: 74px 1fr;
+  display: flex;
+  flex-direction: column;
+  padding: 16px;
   border-radius: var(--r-lg);
   background: var(--surface-1);
   border: 1px solid var(--line);
-  overflow: hidden;
+  box-shadow: var(--highlight);
+  transition: border-color 0.25s;
 }
 
-/* Matchday-style ticket stub */
-.when {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 2px;
-  padding: 12px 6px;
-  background: var(--surface-2);
-  border-right: 1px dashed var(--line-strong);
-  text-align: center;
+@media (hover: hover) {
+  .card:hover {
+    border-color: var(--line-strong);
+  }
 }
 
-.when::before,
-.when::after {
-  content: '';
-  position: absolute;
-  right: -7px;
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  background: var(--bg);
-  border: 1px solid var(--line);
-}
-
-.when::before {
-  top: -7px;
-}
-
-.when::after {
-  bottom: -7px;
-}
-
-.day {
-  font-family: var(--font-mono);
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--accent);
-}
-
-.date {
-  font-size: 22px;
-  line-height: 1;
-}
-
-.main {
-  padding: 12px 14px 12px;
-  min-width: 0;
-}
-
-.meta {
+.top {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 10px;
+  min-height: 22px;
 }
 
 .reward {
-  font-family: var(--font-mono);
-  font-size: 10.5px;
-  font-weight: 600;
-  color: var(--ice);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-3);
+  white-space: nowrap;
 }
 
 .title {
-  margin: 4px 0 6px;
+  margin-top: 10px;
   font-size: 17px;
-  font-weight: 750;
-  line-height: 1.2;
-  letter-spacing: -0.01em;
+  font-weight: 600;
+  line-height: 1.25;
+  letter-spacing: -0.02em;
+}
+
+.lines {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 8px;
 }
 
 .line {
   display: flex;
   align-items: center;
-  gap: 5px;
-  font-size: 12.5px;
+  gap: 7px;
+  font-size: 13px;
   color: var(--text-2);
+}
+
+.line svg {
+  flex: none;
+  color: var(--text-3);
+}
+
+.line strong {
+  color: var(--text);
+  font-weight: 550;
 }
 
 .foot {
@@ -94,28 +68,46 @@
   justify-content: space-between;
   align-items: center;
   gap: 10px;
-  margin-top: 12px;
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+  min-height: 45px;
 }
 
 .capacity {
   display: flex;
   align-items: center;
-  gap: 6px;
-  font-family: var(--font-mono);
-  font-size: 11px;
+  gap: 7px;
+  font-size: 13px;
+  color: var(--text-3);
+}
+
+.capacity :global(.num) {
+  color: var(--text);
+  letter-spacing: -0.01em;
+}
+
+.capOf {
   color: var(--text-3);
 }
 
 .capBar {
-  width: 48px;
+  width: 52px;
   height: 3px;
   border-radius: 2px;
-  background: var(--surface-3);
+  background: var(--surface-4);
   overflow: hidden;
 }
 
 .capBar span {
   display: block;
   height: 100%;
+  border-radius: 2px;
   background: var(--text-2);
+}
+
+.sport {
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
 }

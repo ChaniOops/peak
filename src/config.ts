@@ -5,5 +5,8 @@ export const CAMPUS = {
   center: { lat: 26.1878, lng: 91.6916 },
 }
 
-/** Free vector tiles, no API key. */
-export const MAP_STYLE_URL = 'https://tiles.openfreemap.org/styles/dark'
+/**
+ * CARTO Dark Matter (free vector tiles, no API key; © CARTO, © OpenStreetMap):
+ * the crisp dark street map from the mapcn Store Locator reference.
+ */
+export const MAP_STYLE_URL = 'https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json'

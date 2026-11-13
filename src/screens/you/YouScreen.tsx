@@ -1,16 +1,18 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { motion } from 'framer-motion'
-import { Activity as RunIcon, Award, Bike, Footprints, Lock, LogOut, RotateCcw, Zap } from 'lucide-react'
+import { AnimatePresence, motion } from 'framer-motion'
+import { Activity as RunIcon, Award, Bike, Footprints, Gift, Lock, LogOut, RotateCcw, Zap, ExternalLink, X, Check } from 'lucide-react'
 import { api, ApiError } from '../../api'
 import { useLive } from '../../api/useLive'
 import type { Badge, Reward, TrackedActivityType } from '../../api/types'
-import { Button, Chip, Empty, ErrorNote, Section, Skeleton } from '../../components/ui/ui'
+import { Button, Chip, EmptyState, ErrorNote, IconButton, List, ListRow, Section, Skeleton } from '../../components/ui/ui'
+import { BlurReplace } from '../../components/ui/BlurReplace'
+import { RollingNumber } from '../../components/ui/RollingNumber'
 import { Avatar } from '../../components/ui/Avatar'
-import { AnimatedNumber } from '../../components/ui/AnimatedNumber'
 import { WeeklyChart } from '../../components/charts/WeeklyChart'
 import { useAuth } from '../../app/auth'
 import { ACTIVITY_LABEL, formatDistance, formatDuration, formatNumber, timeAgo } from '../../lib/format'
+import { EASE_OUT, SPRING_POP } from '../../lib/motion'
 import s from './you.module.css'
 
 const TYPE_ICON: Record<TrackedActivityType, typeof Footprints> = { walk: Footprints, run: RunIcon, cycle: Bike }
@@ -23,14 +25,16 @@ export function YouScreen() {
   const rewards = useLive('rewards', () => api.listRewards(), ['rewards'])
   const redemptions = useLive('redemptions', () => api.listRedemptions(), ['rewards'])
 
+  const earned = badges.data?.filter((b) => b.earnedAt).length
+
   return (
     <div>
       {me.data ? (
         <header className={s.profile}>
-          <Avatar name={me.data.displayName} size={60} highlight />
+          <Avatar name={me.data.displayName} size={56} />
           <div className={s.who}>
             <h1 className={`display ${s.name}`}>{me.data.displayName}</h1>
-            <div className="muted">{me.data.departmentName}</div>
+            <div className="label">{me.data.departmentName}</div>
           </div>
         </header>
       ) : me.error ? (
@@ -40,23 +44,32 @@ export function YouScreen() {
       )}
 
       {me.data && (
-        <div className={s.balance}>
-          <div>
-            <div className="label">MovePoints</div>
+        <div className={`${s.balance} pg-hero`}>
+          <div className={s.balanceMain}>
+            <div className="label">MovePoints balance</div>
             <div className={`num ${s.balanceValue}`}>
-              <Zap size={26} fill="currentColor" />
-              <AnimatedNumber value={me.data.movePoints} />
+              <Zap size={22} fill="currentColor" className={s.zap} />
+              <RollingNumber value={me.data.movePoints} />
             </div>
           </div>
-          <div className={s.streak}>
-            <span className="num">{me.data.streakDays}</span>
-            <span className="label">day streak</span>
+          <div className={s.balanceStats}>
+            <div className={s.balanceStat}>
+              <span className="num">{me.data.streakDays}</span>
+              <span className="label">Day streak</span>
+            </div>
+            <div className={s.balanceStat}>
+              <span className="num">
+                {earned ?? '–'}
+                {badges.data && <span className={s.of}>/{badges.data.length}</span>}
+              </span>
+              <span className="label">Badges</span>
+            </div>
           </div>
         </div>
       )}
 
       <Section title="Movement">
-        {weekly.data ? <WeeklyChart days={weekly.data} /> : <Skeleton h={220} />}
+        {weekly.data ? <WeeklyChart days={weekly.data} /> : weekly.error ? <ErrorNote error={weekly.error} onRetry={weekly.reload} /> : <Skeleton h={230} />}
       </Section>
 
       <Section title="Badges">
@@ -66,62 +79,77 @@ export function YouScreen() {
       <Section title="Recent activity">
         {activities.data ? (
           activities.data.length ? (
-            <ul className={s.list}>
+            <List>
               {activities.data.map((a) => {
                 const Icon = TYPE_ICON[a.type]
                 return (
-                  <li key={a.id} className={s.row}>
-                    <span className={s.rowIcon}>
-                      <Icon size={18} />
-                    </span>
-                    <div className={s.rowMain}>
-                      <div className={s.rowTitle}>
-                        {ACTIVITY_LABEL[a.type]} ·{' '}
-                        {a.type === 'walk' && a.steps ? `${formatNumber(a.steps)} steps` : formatDistance(a.distanceM)}
-                      </div>
-                      <div className={s.rowMeta}>
-                        {formatDuration(a.durationSec)} · {timeAgo(a.endedAt ?? a.startedAt)}
-                      </div>
-                    </div>
-                    <span className={`num ${s.rowPts}`}>+{a.pointsAwarded}</span>
-                  </li>
+                  <ListRow
+                    key={a.id}
+                    leading={<Icon size={17} strokeWidth={1.8} className={s.rowGlyph} />}
+                    title={
+                      <>
+                        {ACTIVITY_LABEL[a.type]}
+                        <span className={s.rowDetail}>
+                          {a.type === 'walk' && a.steps ? `${formatNumber(a.steps)} steps` : formatDistance(a.distanceM)}
+                        </span>
+                      </>
+                    }
+                    meta={`${formatDuration(a.durationSec)} · ${timeAgo(a.endedAt ?? a.startedAt)}`}
+                    trailing={<span className={`num ${s.rowPts}`}>+{a.pointsAwarded}</span>}
+                  />
                 )
               })}
-            </ul>
+            </List>
           ) : (
-            <Empty title="Nothing tracked yet" body="Start a walk, run or ride from Track." />
+            <EmptyState icon={<Footprints size={18} />} title="Nothing tracked yet" body="Start a walk, run or ride from Track." />
           )
         ) : (
           <Skeleton h={120} />
         )}
       </Section>
 
-      <Section title="Rewards">
+      <Section title="Rewards" meta={me.data && <span className="label">{formatNumber(me.data.movePoints)} pts to spend</span>}>
         {rewards.data ? (
-          <div className={s.rewards}>
-            {rewards.data.map((r) => (
-              <RewardRow key={r.id} r={r} />
-            ))}
-          </div>
+          rewards.data.length ? (
+            <List>
+              {rewards.data.map((r) => (
+                <RewardRow key={r.id} r={r} balance={me.data?.movePoints ?? 0} />
+              ))}
+            </List>
+          ) : (
+            <EmptyState icon={<Gift size={18} />} title="No rewards yet" body="Campus partners add rewards here." />
+          )
         ) : rewards.error ? (
           <ErrorNote error={rewards.error} onRetry={rewards.reload} />
         ) : (
           <Skeleton h={200} />
         )}
         {redemptions.data && redemptions.data.length > 0 && (
-          <ul className={s.list} style={{ marginTop: 12 }}>
-            {redemptions.data.map((r) => (
-              <li key={r.id} className={s.row}>
-                <div className={s.rowMain}>
-                  <div className={s.rowTitle}>{r.rewardTitle}</div>
-                  <div className={s.rowMeta}>
-                    {r.status} · {timeAgo(r.createdAt)}
-                  </div>
-                </div>
-                {r.code && <code className={s.code}>{r.code}</code>}
-              </li>
-            ))}
-          </ul>
+          <>
+            <div className={`label ${s.subhead}`}>Redeemed</div>
+            <List>
+              <AnimatePresence initial={false}>
+                {redemptions.data.map((r) => (
+                  <motion.li
+                    key={r.id}
+                    className={s.redeemedRow}
+                    layout="position"
+                    initial={{ opacity: 0, y: -8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.25, ease: EASE_OUT }}
+                  >
+                    <div className={s.redeemedMain}>
+                      <div className={s.redeemedTitle}>{r.rewardTitle}</div>
+                      <div className={s.redeemedMeta}>
+                        {r.status === 'fulfilled' ? 'Fulfilled' : 'Requested'} · {timeAgo(r.createdAt)}
+                      </div>
+                    </div>
+                    {r.code && <code className={s.code}>{r.code}</code>}
+                  </motion.li>
+                ))}
+              </AnimatePresence>
+            </List>
+          </>
         )}
       </Section>
 
@@ -133,31 +161,56 @@ export function YouScreen() {
 function BadgeGrid({ badges }: { badges: Badge[] }) {
   return (
     <div className={s.badges}>
-      {badges.map((b, i) => {
+      {badges.map((b) => {
         const earned = Boolean(b.earnedAt)
         return (
-          <motion.div
-            key={b.id}
-            className={`${s.badge} ${earned ? s.earned : ''}`}
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: i * 0.04 }}
-            title={b.description}
-          >
-            <span className={s.badgeIcon}>{earned ? <Award size={22} /> : <Lock size={18} />}</span>
+          <div key={b.id} className={`${s.badge} ${earned ? s.earned : ''}`} title={b.description}>
+            <span className={s.badgeIcon}>{earned ? <Award size={18} /> : <Lock size={14} />}</span>
             <span className={s.badgeName}>{b.name}</span>
-            <span className={s.badgeCat}>{b.category}</span>
-          </motion.div>
+            <span className={s.badgeCat}>{earned ? (b.category ?? 'Earned') : 'Locked'}</span>
+          </div>
         )
       })}
     </div>
   )
 }
 
-function RewardRow({ r }: { r: Reward }) {
+/** Affordability ring around the reward icon: balance against cost. */
+function CostRing({ progress }: { progress: number }) {
+  const r = 19
+  const c = 2 * Math.PI * r
+  return (
+    <svg className={s.ring} viewBox="0 0 44 44" aria-hidden>
+      <circle cx="22" cy="22" r={r} className={s.ringTrack} />
+      <circle
+        cx="22"
+        cy="22"
+        r={r}
+        className={s.ringFill}
+        strokeDasharray={c}
+        strokeDashoffset={c * (1 - Math.min(1, progress))}
+      />
+    </svg>
+  )
+}
+
+function RewardRow({ r, balance }: { r: Reward; balance: number }) {
   const [confirming, setConfirming] = useState(false)
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [justRedeemed, setJustRedeemed] = useState(false)
+  const short = Math.max(0, r.cost - balance)
+
+  useEffect(() => {
+    if (!justRedeemed) return
+    const t = window.setTimeout(() => setJustRedeemed(false), 2600)
+    return () => window.clearTimeout(t)
+  }, [justRedeemed])
+  useEffect(() => {
+    if (!confirming) return
+    const t = window.setTimeout(() => setConfirming(false), 4000)
+    return () => window.clearTimeout(t)
+  }, [confirming])
 
   async function redeem() {
     setBusy(true)
@@ -165,6 +218,7 @@ function RewardRow({ r }: { r: Reward }) {
     try {
       await api.redeemReward(r.id)
       setConfirming(false)
+      setJustRedeemed(true)
     } catch (e) {
       setError(e instanceof ApiError ? e.message : 'Could not redeem')
     } finally {
@@ -173,26 +227,68 @@ function RewardRow({ r }: { r: Reward }) {
   }
 
   return (
-    <div className={s.reward}>
-      <div className={s.rowMain}>
-        <div className={s.rowTitle}>{r.title}</div>
-        <div className={s.rowMeta}>{error ?? r.blockedReason ?? r.description}</div>
-      </div>
-      {confirming ? (
-        <div className={s.confirm}>
-          <Button size="sm" variant="ghost" onClick={() => setConfirming(false)} disabled={busy}>
-            Cancel
-          </Button>
-          <Button size="sm" onClick={() => void redeem()} disabled={busy}>
-            Spend {formatNumber(r.cost)}
-          </Button>
+    <li className={`${s.reward} ${r.canRedeem ? s.rewardReady : ''}`}>
+      {/* affordable: a flat light block; locked: a grey ring filling toward the cost */}
+      <span className={`${s.rewardIcon} ${r.canRedeem ? s.rewardIconReady : ''}`}>
+        {!r.canRedeem && <CostRing progress={balance / Math.max(1, r.cost)} />}
+        <Gift size={16} strokeWidth={r.canRedeem ? 2.2 : 1.8} />
+      </span>
+      <div className={s.rewardText}>
+        <div className={s.rewardTitle}>{r.title}</div>
+        <div className={`${s.rewardDesc} ${error ? s.rewardError : ''}`}>
+          <BlurReplace id={error ? 'err' : 'desc'} origin="left center">
+            {error ?? r.blockedReason ?? r.description}
+          </BlurReplace>
         </div>
-      ) : (
-        <Button size="sm" variant={r.canRedeem ? 'primary' : 'secondary'} disabled={!r.canRedeem} onClick={() => setConfirming(true)}>
-          <Zap size={13} fill="currentColor" /> {formatNumber(r.cost)}
-        </Button>
-      )}
-    </div>
+      </div>
+      <div className={s.rewardSide}>
+        {justRedeemed ? (
+          <motion.span
+            className="tag tag-yellow"
+            initial={{ opacity: 0, y: 4 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.2, ease: EASE_OUT }}
+          >
+            <Check size={11} strokeWidth={3} /> Redeemed
+          </motion.span>
+        ) : r.canRedeem ? (
+          <div className={s.redeemActions}>
+            <AnimatePresence initial={false}>
+              {confirming && (
+                <motion.span initial={{ opacity: 0, x: 8 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 8 }} transition={SPRING_POP}>
+                  <IconButton label="Cancel" variant="ghost" size={30} onClick={() => setConfirming(false)} disabled={busy}>
+                    <X size={14} />
+                  </IconButton>
+                </motion.span>
+              )}
+            </AnimatePresence>
+            <Button
+              size="sm"
+              variant="primary"
+              loading={busy}
+              onClick={() => (confirming ? void redeem() : setConfirming(true))}
+            >
+              <BlurReplace id={confirming ? 'c' : 'r'}>
+                {confirming ? (
+                  <>Confirm · {formatNumber(r.cost)}</>
+                ) : (
+                  <span className={s.costInline}>
+                    <Zap size={11} fill="currentColor" /> {formatNumber(r.cost)}
+                  </span>
+                )}
+              </BlurReplace>
+            </Button>
+          </div>
+        ) : (
+          <div className={s.locked}>
+            <span className={`num ${s.lockedCost}`}>
+              <Zap size={11} fill="currentColor" /> {formatNumber(r.cost)}
+            </span>
+            <span className={s.lockedGap}>{short > 0 ? `${formatNumber(short)} to go` : 'Unavailable'}</span>
+          </div>
+        )}
+      </div>
+    </li>
   )
 }
 
@@ -205,13 +301,13 @@ function AccountSection() {
         {api.mode === 'mock' && (
           <>
             <p className={s.demoNote}>
-              <Chip tone="ember">Mock data</Chip> Organiser views for the verification demo (open in another tab):
+              <Chip tone="ember">Mock data</Chip> Organiser views for the verification demo. Open in another tab.
             </p>
             <ul className={s.orgLinks}>
               {events.data?.map((e) => (
                 <li key={e.id}>
                   <Link to={`/organiser/event/${e.id}`} target="_blank">
-                    {e.title}
+                    {e.title} <ExternalLink size={12} />
                   </Link>
                 </li>
               ))}
@@ -221,7 +317,7 @@ function AccountSection() {
             </Button>
           </>
         )}
-        <Button variant="ghost" size="sm" onClick={() => void signOut()}>
+        <Button variant="ghost" size="sm" className={s.signOut} onClick={() => void signOut()}>
           <LogOut size={14} /> Sign out
         </Button>
       </div>

@@ -28,6 +28,9 @@ import type {
  * The only surface screens talk to. Implemented by the in-memory mock and by
  * the Supabase translation layer.
  */
+export type OAuthProvider = 'google' | 'github'
+export const OAUTH_LABEL: Record<OAuthProvider, string> = { google: 'Google', github: 'GitHub' }
+
 export interface Api {
   readonly mode: 'mock' | 'supabase'
 
@@ -37,6 +40,12 @@ export interface Api {
   readonly demoAvailable: boolean
   signInDemo(): Promise<UserProfile>
   signIn(email: string, password: string): Promise<UserProfile>
+  /**
+   * Starts provider sign-in. On success the browser leaves for the provider
+   * and returns to the app origin with a session; rejects (without leaving)
+   * when the provider can't be used.
+   */
+  signInWithOAuth(provider: OAuthProvider): Promise<void>
   signOut(): Promise<void>
 
   // me

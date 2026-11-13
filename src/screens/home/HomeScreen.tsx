@@ -1,16 +1,17 @@
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { Zap, ArrowUpRight, Footprints } from 'lucide-react'
+import { EASE_OUT } from '../../lib/motion'
+import { Zap, ArrowRight, Footprints, ChevronRight } from 'lucide-react'
 import { api } from '../../api'
 import { useLive } from '../../api/useLive'
 import { ErrorNote, Section, Skeleton } from '../../components/ui/ui'
-import { AnimatedNumber } from '../../components/ui/AnimatedNumber'
+import { buttonClass, glassLight } from '../../components/ui/buttonClass'
+import { RollingNumber } from '../../components/ui/RollingNumber'
 import { StreakStrip } from '../../components/StreakStrip'
 import { FeedList } from '../../components/FeedList'
 import { ChallengeRow } from '../../components/ChallengeRow'
-import { TopoLines } from '../../components/topo/TopoLines'
 import { SummitCard } from '../../components/summit/SummitCard'
-import { formatDistance, formatNumber } from '../../lib/format'
+import { formatDistance } from '../../lib/format'
 import { isLive, useSession } from '../../tracking/sessionStore'
 import s from './home.module.css'
 
@@ -33,41 +34,48 @@ export function HomeScreen() {
   return (
     <div>
       <header className={s.header}>
-        <div>
+        <div className={s.hello}>
           <div className="label">
-            {new Date().toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short' })}
+            {new Date().toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'short' })}
           </div>
-          <h1 className={`display ${s.hello}`}>
-            {greeting()}
-            {first ? `, ${first}` : ''}
+          <h1 className={`display ${s.helloText}`}>
+            <span className={s.helloGreeting}>{greeting()},</span>
+            {first && <span>{first}</span>}
           </h1>
         </div>
         <Link to="/you" className={s.balance} aria-label="MovePoints balance">
-          <Zap size={14} fill="currentColor" />
-          <span className="num">{me.data ? <AnimatedNumber value={me.data.movePoints} /> : '–'}</span>
+          <Zap size={13} fill="currentColor" className={s.balanceIcon} />
+          <span className="num">{me.data ? <RollingNumber value={me.data.movePoints} /> : '–'}</span>
+          <ChevronRight size={14} className={s.balanceChevron} />
         </Link>
       </header>
 
-      {/* Today */}
-      <div className={s.today}>
-        <TopoLines className={s.todayTopo} seed={3} rings={10} cx={330} cy={60} />
+      {/* Today: no card — precise numbers sitting on the atmosphere */}
+      <section className={s.today} aria-label="Today">
         {today.data ? (
           <>
-            <div className="label">Steps today</div>
-            <div className={`num ${s.todaySteps}`}>
-              <AnimatedNumber value={today.data.steps} />
+            <div className={s.todayHead}>
+              <span className="label">Steps today</span>
             </div>
-            <div className={s.todayStats}>
-              <div>
-                <span className="num">{formatDistance(today.data.distanceM)}</span>
-                <span className="label">distance</span>
+            <div className={`num ${s.todaySteps}`}>
+              <RollingNumber value={today.data.steps} />
+            </div>
+            <div className={s.metrics}>
+              <div className={s.metric}>
+                <span className={`num ${s.metricValue}`}>{formatDistance(today.data.distanceM)}</span>
+                <span className="label">Distance</span>
               </div>
-              <div>
-                <span className="num">{today.data.activeMinutes}</span>
-                <span className="label">active min</span>
+              <div className={s.metric}>
+                <span className={`num ${s.metricValue}`}>
+                  <RollingNumber value={today.data.activeMinutes} />
+                  <span className={s.metricUnit}>min</span>
+                </span>
+                <span className="label">Active</span>
               </div>
-              <div>
-                <span className="num">+{formatNumber(today.data.movePoints)}</span>
+              <div className={s.metric}>
+                <span className={`num ${s.metricValue} ${s.metricPositive}`}>
+                  +<RollingNumber value={today.data.movePoints} />
+                </span>
                 <span className="label">MovePoints</span>
               </div>
             </div>
@@ -82,18 +90,36 @@ export function HomeScreen() {
             <StreakStrip days={streak.data} streakDays={me.data.streakDays} />
           </div>
         )}
-      </div>
+      </section>
 
-      <motion.div whileTap={{ scale: 0.98 }}>
-        <Link to="/track" className={`${s.cta} ${live ? s.ctaLive : ''}`}>
-          <Footprints size={20} />
-          <span>{live ? 'Session recording: return' : 'Start moving'}</span>
-          <ArrowUpRight size={18} className={s.ctaArrow} />
-        </Link>
-      </motion.div>
+      <Link
+        to="/track"
+        className={buttonClass({ variant: live ? 'secondary' : 'primary', size: 'xl', block: true }, `${s.cta} ${live ? s.ctaLive : ''}`)}
+        {...glassLight}
+      >
+        <span className={s.ctaIcon}>
+          {live ? <span className={s.liveDot} aria-hidden /> : <Footprints size={19} strokeWidth={2} />}
+        </span>
+        <span className={s.ctaText}>
+          <span className={s.ctaTitle}>{live ? 'Session recording' : 'Start moving'}</span>
+          <span className={s.ctaSub}>{live ? 'Return to your live activity' : 'Walk, run or ride. Every step climbs.'}</span>
+        </span>
+        <ArrowRight size={18} className={s.ctaArrow} />
+      </Link>
 
       <Section title="Weekly summit" action={{ to: '/compete', label: 'Compete' }}>
-        {summit.data ? <SummitCard summit={summit.data} compact /> : <Skeleton h={180} />}
+        {summit.data ? (
+          <motion.div
+            initial={{ opacity: 0, y: 8 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: '0px 0px -10% 0px' }}
+            transition={{ duration: 0.3, ease: EASE_OUT }}
+          >
+            <SummitCard summit={summit.data} compact />
+          </motion.div>
+        ) : (
+          <Skeleton h={340} />
+        )}
       </Section>
 
       {challenges.data && challenges.data.some((c) => c.joined) && (

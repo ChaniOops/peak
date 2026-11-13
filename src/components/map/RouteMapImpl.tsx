@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { Map as MapLibreMap, LngLatBounds, setWorkerUrl, type GeoJSONSource, type LngLatLike } from 'maplibre-gl'
+import { Map as MapLibreMap, LngLatBounds, NavigationControl, setWorkerUrl, type GeoJSONSource, type LngLatLike } from 'maplibre-gl'
 import workerUrl from 'maplibre-gl/dist/maplibre-gl-worker.mjs?url'
 import type { Feature } from 'geojson'
 import 'maplibre-gl/dist/maplibre-gl.css'
@@ -18,7 +18,7 @@ export interface RouteMapProps {
 // dependency pre-bundling breaks. The worker file is self-contained, so point at it directly.
 setWorkerUrl(workerUrl)
 
-const ACCENT = '#c8f169'
+const ACCENT = '#eeeeee' // the route: white over the dark map
 
 function toGeoJSON(route: GeoPoint[]) {
   const coords = route.map((p) => [p.lng, p.lat])
@@ -56,6 +56,9 @@ export default function RouteMapImpl({ route, follow = false, emptyLabel = 'Wait
       dragRotate: false,
     })
     mapRef.current = map
+    // browsing a finished route: quiet zoom controls (mapcn-style); the live
+    // map follows the runner and stays chrome-free
+    if (!follow) map.addControl(new NavigationControl({ showCompass: false }), 'bottom-right')
 
     map.on('load', () => {
       map.addSource('route', { type: 'geojson', data: toGeoJSON([]) })
@@ -65,7 +68,7 @@ export default function RouteMapImpl({ route, follow = false, emptyLabel = 'Wait
         source: 'route',
         filter: ['==', ['get', 'kind'], 'line'],
         layout: { 'line-cap': 'round', 'line-join': 'round' },
-        paint: { 'line-color': '#0a0c0b', 'line-width': 9, 'line-opacity': 0.7 },
+        paint: { 'line-color': '#080808', 'line-width': 9, 'line-opacity': 0.7 },
       })
       map.addLayer({
         id: 'route-line',
@@ -82,8 +85,8 @@ export default function RouteMapImpl({ route, follow = false, emptyLabel = 'Wait
         filter: ['==', ['get', 'kind'], 'start'],
         paint: {
           'circle-radius': 5,
-          'circle-color': '#0a0c0b',
-          'circle-stroke-color': '#e9eee9',
+          'circle-color': '#080808',
+          'circle-stroke-color': '#f5f5f5',
           'circle-stroke-width': 2,
         },
       })
@@ -102,7 +105,7 @@ export default function RouteMapImpl({ route, follow = false, emptyLabel = 'Wait
         paint: {
           'circle-radius': 6.5,
           'circle-color': ACCENT,
-          'circle-stroke-color': '#0a0c0b',
+          'circle-stroke-color': '#080808',
           'circle-stroke-width': 2.5,
         },
       })

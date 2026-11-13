@@ -1,13 +1,27 @@
 .header {
   display: flex;
   justify-content: space-between;
-  align-items: flex-end;
-  padding: 8px 0 18px;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 10px 0 22px;
 }
 
 .hello {
-  font-size: 40px;
-  margin-top: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+}
+
+.helloText {
+  display: flex;
+  flex-direction: column;
+  font-size: 34px;
+  line-height: 1.05;
+}
+
+.helloGreeting {
+  color: var(--text-3);
 }
 
 .balance {
@@ -15,89 +29,202 @@
   align-items: center;
   gap: 6px;
   height: 34px;
-  padding: 0 12px;
+  margin-top: 2px;
+  padding: 0 8px 0 11px;
   border-radius: var(--r-pill);
-  background: var(--accent-soft);
-  color: var(--accent);
-  font-size: 17px;
+  /* a small static pane of Peak glass */
+  background: linear-gradient(180deg, #1c1c1c, #121212);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.24),
+    inset 0 0 0 1px rgba(224, 224, 224, 0.18),
+    0 8px 18px -10px rgba(20, 20, 20, 0.9);
+  color: var(--pg-ink);
+  font-size: 15px;
+  transition:
+    scale 0.24s var(--ease-press),
+    background 0.2s;
 }
+
+.balance:active {
+  scale: 0.95;
+  transition-duration: 0.08s;
+}
+
+@media (hover: hover) {
+  .balance:hover {
+    background: linear-gradient(180deg, #222, #161616);
+  }
+}
+
+.balanceIcon {
+  color: var(--text-2);
+}
+
+.balanceChevron {
+  color: var(--pg-ink-3);
+}
+
+/* ── today: no card, precise numbers on the atmosphere ── */
 
 .today {
-  position: relative;
-  padding: 18px 18px 16px;
-  border-radius: var(--r-lg);
-  background: var(--surface-1);
-  border: 1px solid var(--line);
-  overflow: hidden;
+  padding: 4px 2px 0;
 }
 
-.todayTopo {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  color: var(--line-strong);
-  pointer-events: none;
-  mask-image: linear-gradient(200deg, #000 10%, transparent 60%);
+.todayHead {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .todaySteps {
-  position: relative;
-  font-size: 84px;
-  line-height: 0.9;
-  margin: 6px 0 14px;
+  font-size: 68px;
+  line-height: 1;
+  margin: 10px 0 20px;
+  letter-spacing: -0.04em;
 }
 
-.todayStats {
-  position: relative;
+.metrics {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 8px;
+  border-top: 1px solid var(--line);
 }
 
-.todayStats > div {
+.metric {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 6px;
+  padding: 14px 0 2px 14px;
 }
 
-.todayStats :global(.num) {
+.metric:first-child {
+  padding-left: 0;
+}
+
+.metric + .metric {
+  border-left: 1px solid var(--line);
+}
+
+.metricValue {
   font-size: 20px;
+  line-height: 1;
+}
+
+/* points earned: same white as the rest; the + sign carries the meaning */
+.metricPositive {
+  color: var(--text);
+}
+
+.metricUnit {
+  margin-left: 3px;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0;
+  color: var(--text-3);
 }
 
 .streak {
-  position: relative;
-  margin-top: 16px;
+  margin-top: 14px;
   padding-top: 14px;
   border-top: 1px solid var(--line);
 }
 
+/* ── Start moving: the strongest glass control in the app ── */
+
 .cta {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  height: 56px;
-  margin-top: 12px;
-  padding: 0 18px;
-  border-radius: var(--r-lg);
-  background: var(--accent);
-  color: var(--accent-ink);
-  font-weight: 750;
-  font-size: 16px;
+  justify-content: flex-start;
+  gap: 12px;
+  margin-top: 22px;
+  height: 66px;
+  padding: 0 18px 0 10px;
+  text-align: left;
 }
 
-.ctaLive {
-  background: var(--surface-3);
-  color: var(--accent);
-  border: 1px solid var(--accent);
+.ctaIcon {
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  color: #eeeeee;
+  /* a smoked black tile set into the off-white glass */
+  background:
+    radial-gradient(circle at 10px 8px, rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0) 3px),
+    linear-gradient(180deg, #232323 0%, #0e0e0e 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.22),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.08),
+    0 4px 10px -4px rgba(0, 0, 0, 0.6);
+}
+
+.ctaText {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  line-height: 1.2;
+}
+
+.ctaTitle {
+  font-size: 16.5px;
+  font-weight: 620;
+  letter-spacing: -0.02em;
+}
+
+.ctaSub {
+  font-size: 12.5px;
+  font-weight: 460;
+  opacity: 0.66;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .ctaArrow {
-  margin-left: auto;
+  flex: none;
+  transition: translate 0.32s var(--ease-press);
+}
+
+@media (hover: hover) {
+  .cta:hover .ctaArrow {
+    translate: 4px 0;
+  }
+}
+
+.liveDot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 0 0 rgba(222, 222, 222, 0.5);
+  animation: livePulse 1.8s ease-out infinite;
+}
+
+@keyframes livePulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(222, 222, 222, 0.45);
+  }
+  100% {
+    box-shadow: 0 0 0 12px rgba(222, 222, 222, 0);
+  }
 }
 
 .stack {
   display: flex;
   flex-direction: column;
   gap: 10px;
+}
+
+
+/* live session: smoked glass with a white pulse as the only signal */
+.ctaLive .ctaTitle {
+  color: var(--pg-ink);
+}
+
+@media (min-width: 1024px) {
+  .helloText {
+    font-size: 42px;
+  }
+  .todaySteps {
+    font-size: 80px;
+  }
 }
