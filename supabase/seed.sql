@@ -366,6 +366,20 @@ begin
   end loop;
 end $$;
 
+-- ---------------------------------------------------------------------------
+-- Rewards (spending never changes leaderboard rank)
+-- ---------------------------------------------------------------------------
+insert into public.rewards (title, description, cost, stock, sort) values
+  ('Canteen chai & snack',       'One chai and a snack at the central canteen.',         150,  null, 10),
+  ('Gym slot priority (1 week)', 'Book gym slots a day before everyone else.',           250,  20,   20),
+  ('Sports store 15% off',       'One-time 15% discount at the campus sports store.',    400,  30,   30),
+  ('Peak water bottle',          'Insulated steel bottle.',                              600,  15,   40),
+  ('Peak dri-fit tee',           'Limited run of the Peak training tee.',                1200, 10,   50);
+
+insert into public.redemptions (user_id, reward_id, cost, status, created_at, fulfilled_at)
+select '00000000-0000-4000-a000-000000000001', r.id, r.cost, 'fulfilled', now() - interval '3 days', now() - interval '3 days'
+from public.rewards r where r.title = 'Canteen chai & snack';
+
 drop table seed_acts;
 drop table seed_users;
 select set_config('app.seeding', 'off', false);
