@@ -213,6 +213,77 @@ begin
   end loop;
 end $$;
 
+-- ---------------------------------------------------------------------------
+-- Events (organised by organiser@peak.test). The live futsal event's QR code is FUTSAL26
+-- (payload 'peak:checkin:FUTSAL26'); the demo account is registered but not checked in.
+-- ---------------------------------------------------------------------------
+insert into public.events (id, title, sport, description, venue, starts_at, ends_at, capacity, points, organiser_id)
+select v.id::uuid, v.title, v.sport::public.event_sport, v.description, v.venue, v.starts_at, v.ends_at, v.capacity, v.points,
+       '00000000-0000-4000-a000-000000000002'
+from (values
+  ('00000000-0000-4000-c000-000000000001', 'Futsal 5-a-side: Evening Kickoff', 'futsal',
+   'Mixed-department 5-a-side. Scan the organiser''s QR at the turf, play, get verified.', 'Main Sports Complex, Turf 1',
+   now() - interval '20 minutes', now() + interval '100 minutes', 20, 50),
+  ('00000000-0000-4000-c000-000000000002', 'Inter-department Futsal League', 'futsal',
+   'League night: CSE vs ECE, ME vs CE.', 'Main Sports Complex, Turf 1',
+   public.campus_day_start(public.campus_date() - 1) + interval '18 hours',
+   public.campus_day_start(public.campus_date() - 1) + interval '20 hours', 30, 50),
+  ('00000000-0000-4000-c000-000000000003', 'Pickleball Open Play', 'pickleball',
+   'Paddles provided. All levels welcome.', 'Indoor Court B',
+   public.campus_day_start(public.campus_date() + 1) + interval '7 hours',
+   public.campus_day_start(public.campus_date() + 1) + interval '9 hours', 16, 40),
+  ('00000000-0000-4000-c000-000000000004', 'Badminton Doubles Ladder', 'badminton',
+   'Bring a partner or get paired on court.', 'Badminton Hall',
+   public.campus_day_start(public.campus_date() + 2) + interval '17 hours 30 minutes',
+   public.campus_day_start(public.campus_date() + 2) + interval '19 hours 30 minutes', 24, 40),
+  ('00000000-0000-4000-c000-000000000005', 'Riverside Fun Run', 'other',
+   'Easy social 5 km along the riverfront. Verified attendance only.', 'Campus Main Gate',
+   public.campus_day_start(public.campus_date() + 5) + interval '6 hours 30 minutes',
+   public.campus_day_start(public.campus_date() + 5) + interval '8 hours', null, 60)
+) as v (id, title, sport, description, venue, starts_at, ends_at, capacity, points);
+
+update public.event_secrets set checkin_code = 'FUTSAL26' where event_id = '00000000-0000-4000-c000-000000000001';
+
+create temporary table seed_bg as
+select id, row_number() over (order by email) as n from seed_users where email like 'student%';
+
+-- Live futsal: demo registered; 4 checked in (pending organiser), 2 already verified.
+insert into public.event_participants (event_id, user_id, status, registered_at, checked_in_at)
+select '00000000-0000-4000-c000-000000000001'::uuid, '00000000-0000-4000-a000-000000000001'::uuid, 'registered'::public.participation_status, now() - interval '1 day', null::timestamptz
+union all
+select '00000000-0000-4000-c000-000000000001', id, 'checked_in', now() - interval '1 day', now() - interval '15 minutes' + make_interval(mins => n::int)
+from seed_bg where n between 1 and 6;
+
+-- Yesterday's league: 10 players, all checked in.
+insert into public.event_participants (event_id, user_id, status, registered_at, checked_in_at)
+select '00000000-0000-4000-c000-000000000002', id, 'checked_in', now() - interval '3 days',
+       public.campus_day_start(public.campus_date() - 1) + interval '17 hours 50 minutes'
+from seed_bg where n between 7 and 16;
+
+-- Upcoming registrations.
+insert into public.event_participants (event_id, user_id)
+select '00000000-0000-4000-c000-000000000003'::uuid, id from seed_bg where n % 5 = 0
+union all
+select '00000000-0000-4000-c000-000000000004', id from seed_bg where n % 6 = 1;
+
+-- Organiser verifications through the real engine.
+do $$
+declare r record;
+begin
+  for r in select user_id from public.event_participants
+            where event_id = '00000000-0000-4000-c000-000000000002' order by user_id loop
+    perform private.decide_participant('00000000-0000-4000-c000-000000000002', r.user_id, true,
+      '00000000-0000-4000-a000-000000000002', public.campus_day_start(public.campus_date() - 1) + interval '20 hours 5 minutes');
+  end loop;
+  for r in select ep.user_id from public.event_participants ep join seed_bg b on b.id = ep.user_id
+            where ep.event_id = '00000000-0000-4000-c000-000000000001' and b.n in (5, 6) loop
+    perform private.decide_participant('00000000-0000-4000-c000-000000000001', r.user_id, true,
+      '00000000-0000-4000-a000-000000000002', now() - interval '5 minutes');
+  end loop;
+end $$;
+
+drop table seed_bg;
+
 -- Department Step Summit: CSE sits 400 steps short (a demo walk completes it for the whole team);
 -- other departments get the same round target.
 do $$
