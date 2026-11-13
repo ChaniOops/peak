@@ -1,0 +1,115 @@
+.root {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 3 / 2;
+  overflow: hidden;
+  background: var(--surface-1);
+  user-select: none;
+  -webkit-user-select: none;
+  pointer-events: none;
+}
+
+/* WebGL unavailable or lost: a soft graphite glow behind the projected route */
+.flat {
+  background:
+    radial-gradient(70% 60% at 50% 38%, rgba(233, 238, 233, 0.07) 0%, rgba(233, 238, 233, 0) 70%),
+    radial-gradient(120% 80% at 50% 70%, var(--surface-3) 0%, var(--surface-1) 72%);
+}
+
+.flat canvas:first-child {
+  visibility: hidden;
+}
+
+.layer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.anchor {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 0;
+  height: 0;
+  will-change: transform;
+}
+
+.pin {
+  position: absolute;
+  left: 0;
+  bottom: 9px;
+  translate: -50% 0;
+  transform-origin: 50% 100%;
+  padding: 4px 8px 4px;
+  border-radius: var(--r-pill);
+  white-space: nowrap;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text);
+  background: rgba(10, 12, 11, 0.78);
+  box-shadow:
+    inset 0 0 0 1px var(--line-strong),
+    0 6px 16px -6px rgba(0, 0, 0, 0.6);
+}
+
+.flag {
+  position: absolute;
+  left: -1.5px;
+  bottom: 0;
+  width: 18px;
+  height: 26px;
+  overflow: visible;
+  transform-origin: 1.5px 26px;
+}
+
+.head {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 0;
+  height: 0;
+}
+
+.dot {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 11px;
+  height: 11px;
+  translate: -50% -50%;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow:
+    0 0 0 2.5px var(--bg),
+    0 2px 8px rgba(0, 0, 0, 0.5);
+}
+
+.halo {
+  position: absolute;
+  left: -13px;
+  top: -13px;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--accent);
+  opacity: 0;
+  animation: halo 2.2s ease-out infinite;
+}
+
+@keyframes halo {
+  0% {
+    transform: scale(0.5);
+    opacity: 0.35;
+  }
+  100% {
+    transform: scale(1.5);
+    opacity: 0;
+  }
+}
