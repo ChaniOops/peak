@@ -1,7 +1,14 @@
-import type { GeoPoint } from '../../api/types'
+import { lazy, Suspense } from 'react'
+import type { RouteMapProps } from './RouteMapImpl'
+import s from './RouteMap.module.css'
 
-/** Placeholder until MapLibre lands. */
-export function RouteMap(_props: { route: GeoPoint[]; follow?: boolean }) {
-  void _props
-  return <div style={{ width: '100%', height: '100%', background: 'var(--surface-2)' }} />
+// MapLibre is large; load it only when a map is actually shown.
+const Impl = lazy(() => import('./RouteMapImpl'))
+
+export function RouteMap(props: RouteMapProps) {
+  return (
+    <Suspense fallback={<div className={s.wrap} />}>
+      <Impl {...props} />
+    </Suspense>
+  )
 }

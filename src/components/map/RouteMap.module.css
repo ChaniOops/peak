@@ -1,0 +1,37 @@
+.wrap {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background:
+    radial-gradient(circle at 50% 60%, rgba(200, 241, 105, 0.05), transparent 60%),
+    var(--surface-2);
+}
+
+.map {
+  /* maplibre forces position: relative on its container, so size explicitly */
+  width: 100%;
+  height: 100%;
+}
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+  background: linear-gradient(180deg, transparent 40%, rgba(10, 12, 11, 0.55));
+}
+
+.wrap :global(.maplibregl-ctrl-attrib) {
+  background: rgba(10, 12, 11, 0.6) !important;
+  color: var(--text-3);
+  font-size: 10px;
+}
+
+.wrap :global(.maplibregl-ctrl-attrib a) {
+  color: var(--text-2);
+}
+
+.wrap :global(.maplibregl-ctrl-attrib-button) {
+  filter: invert(1);
+}
