@@ -24,7 +24,7 @@
   position: absolute;
   width: 34px;
   height: 34px;
-  border-color: var(--accent);
+  border-color: #6fdcc8;
   border-style: solid;
   border-width: 0;
 }
@@ -64,8 +64,8 @@
   right: 8%;
   height: 2px;
   border-radius: 2px;
-  background: var(--accent);
-  box-shadow: 0 0 14px 1px rgba(200, 241, 105, 0.45);
+  background: #8be6d4;
+  box-shadow: 0 0 14px 1px rgba(111, 220, 200, 0.5);
   animation: sweep 2.2s ease-in-out infinite alternate;
 }
 

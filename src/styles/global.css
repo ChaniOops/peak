@@ -66,8 +66,18 @@ p {
   line-height: 1.02;
 }
 
-/* Tiny metadata only: WEEKLY SUMMIT · 3 DAYS LEFT · +50 */
+/* Metadata: calm sentence-case sans ("Steps today", "Day streak") */
 .label {
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: -0.005em;
+  line-height: 1.3;
+  color: var(--text-3);
+}
+
+/* One per screen at most: the mono eyebrow above a title (LIVE ACTIVITY) */
+.eyebrow {
   font-family: var(--font-mono);
   font-size: 10.5px;
   font-weight: 500;
@@ -132,7 +142,7 @@ p {
 }
 
 :focus-visible {
-  outline: 2px solid var(--accent);
+  outline: 2px solid #8fe6d3;
   outline-offset: 2px;
 }
 

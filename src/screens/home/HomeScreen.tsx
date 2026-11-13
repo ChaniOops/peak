@@ -1,10 +1,12 @@
 import { Link } from 'react-router-dom'
-import { Zap, ArrowRight, Footprints, Radio, ChevronRight } from 'lucide-react'
+import { motion } from 'framer-motion'
+import { EASE_OUT } from '../../lib/motion'
+import { Zap, ArrowRight, Footprints, ChevronRight } from 'lucide-react'
 import { api } from '../../api'
 import { useLive } from '../../api/useLive'
 import { ErrorNote, Section, Skeleton } from '../../components/ui/ui'
-import { buttonClass } from '../../components/ui/buttonClass'
-import { AnimatedNumber } from '../../components/ui/AnimatedNumber'
+import { buttonClass, glassLight } from '../../components/ui/buttonClass'
+import { RollingNumber } from '../../components/ui/RollingNumber'
 import { StreakStrip } from '../../components/StreakStrip'
 import { FeedList } from '../../components/FeedList'
 import { ChallengeRow } from '../../components/ChallengeRow'
@@ -33,30 +35,30 @@ export function HomeScreen() {
     <div>
       <header className={s.header}>
         <div className={s.hello}>
-          <div className="label">
+          <div className="eyebrow">
             {new Date().toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'short' })}
           </div>
           <h1 className={`display ${s.helloText}`}>
-            <span className={s.helloGreeting}>{greeting()}</span>
+            <span className={s.helloGreeting}>{greeting()},</span>
             {first && <span>{first}</span>}
           </h1>
         </div>
         <Link to="/you" className={s.balance} aria-label="MovePoints balance">
           <Zap size={13} fill="currentColor" className={s.balanceIcon} />
-          <span className="num">{me.data ? <AnimatedNumber value={me.data.movePoints} /> : '–'}</span>
+          <span className="num">{me.data ? <RollingNumber value={me.data.movePoints} /> : '–'}</span>
           <ChevronRight size={14} className={s.balanceChevron} />
         </Link>
       </header>
 
-      {/* Today */}
-      <div className={`${s.today} pg-hero`}>
+      {/* Today: no card — precise numbers sitting on the atmosphere */}
+      <section className={s.today} aria-label="Today">
         {today.data ? (
           <>
             <div className={s.todayHead}>
               <span className="label">Steps today</span>
             </div>
             <div className={`num ${s.todaySteps}`}>
-              <AnimatedNumber value={today.data.steps} />
+              <RollingNumber value={today.data.steps} />
             </div>
             <div className={s.metrics}>
               <div className={s.metric}>
@@ -65,14 +67,14 @@ export function HomeScreen() {
               </div>
               <div className={s.metric}>
                 <span className={`num ${s.metricValue}`}>
-                  <AnimatedNumber value={today.data.activeMinutes} />
+                  <RollingNumber value={today.data.activeMinutes} />
                   <span className={s.metricUnit}>min</span>
                 </span>
                 <span className="label">Active</span>
               </div>
               <div className={s.metric}>
-                <span className={`num ${s.metricValue}`}>
-                  +<AnimatedNumber value={today.data.movePoints} />
+                <span className={`num ${s.metricValue} ${s.metricPositive}`}>
+                  +<RollingNumber value={today.data.movePoints} />
                 </span>
                 <span className="label">MovePoints</span>
               </div>
@@ -88,13 +90,16 @@ export function HomeScreen() {
             <StreakStrip days={streak.data} streakDays={me.data.streakDays} />
           </div>
         )}
-      </div>
+      </section>
 
       <Link
         to="/track"
         className={buttonClass({ variant: live ? 'secondary' : 'primary', size: 'xl', block: true }, `${s.cta} ${live ? s.ctaLive : ''}`)}
+        {...glassLight}
       >
-        <span className={s.ctaIcon}>{live ? <Radio size={18} /> : <Footprints size={18} />}</span>
+        <span className={s.ctaIcon}>
+          {live ? <span className={s.liveDot} aria-hidden /> : <Footprints size={19} strokeWidth={2} />}
+        </span>
         <span className={s.ctaText}>
           <span className={s.ctaTitle}>{live ? 'Session recording' : 'Start moving'}</span>
           <span className={s.ctaSub}>{live ? 'Return to your live activity' : 'Walk, run or ride. Every step climbs.'}</span>
@@ -103,7 +108,18 @@ export function HomeScreen() {
       </Link>
 
       <Section title="Weekly summit" action={{ to: '/compete', label: 'Compete' }}>
-        {summit.data ? <SummitCard summit={summit.data} compact /> : <Skeleton h={340} />}
+        {summit.data ? (
+          <motion.div
+            initial={{ opacity: 0, y: 14 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: '0px 0px -10% 0px' }}
+            transition={{ duration: 0.6, ease: EASE_OUT }}
+          >
+            <SummitCard summit={summit.data} compact />
+          </motion.div>
+        ) : (
+          <Skeleton h={340} />
+        )}
       </Section>
 
       {challenges.data && challenges.data.some((c) => c.joined) && (

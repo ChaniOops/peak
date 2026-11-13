@@ -1,4 +1,4 @@
-import { Clock, MapPin, Users } from 'lucide-react'
+import { Check, CircleDot, Clock, Hourglass, MapPin, Users, X } from 'lucide-react'
 import type { CampusEvent, MyEventStatus, SportKind } from '../api/types'
 import { formatEventTime } from '../lib/format'
 import { Button, Chip, type Tone } from './ui/ui'
@@ -12,11 +12,26 @@ const SPORT: Record<SportKind, string> = {
   other: 'Organised',
 }
 
-const STATUS: Record<Exclude<MyEventStatus, 'none'>, [Tone, string]> = {
-  joined: ['neutral', 'Registered'],
-  pending: ['ember', 'Pending verification'],
-  verified: ['ice', 'Verified'],
-  rejected: ['danger', 'Not approved'],
+const STATUS: Record<Exclude<MyEventStatus, 'none'>, [Tone, string, typeof Check]> = {
+  joined: ['neutral', 'Registered', CircleDot],
+  pending: ['ember', 'Pending verification', Hourglass],
+  verified: ['ice', 'Verified', Check],
+  rejected: ['danger', 'Not approved', X],
+}
+
+/** status pill: icon + label blur-swap together when realtime moves the state */
+function StatusPill({ status }: { status: Exclude<MyEventStatus, 'none'> }) {
+  const [tone, label, Icon] = STATUS[status]
+  return (
+    <Chip tone={tone}>
+      <BlurReplace id={status} origin="right center">
+        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5 }}>
+          <Icon size={11} strokeWidth={2.6} />
+          {label}
+        </span>
+      </BlurReplace>
+    </Chip>
+  )
 }
 
 /** "Tonight" reads better than "Today" for evening fixtures. Display only. */
@@ -31,13 +46,9 @@ export function EventCard({ e, onJoin, busy }: { e: CampusEvent; onJoin?: () => 
   return (
     <article className={s.card}>
       <div className={s.top}>
-        <span className="label">{SPORT[e.sport]}</span>
+        <span className="eyebrow">{SPORT[e.sport]}</span>
         {e.myStatus !== 'none' ? (
-          <Chip tone={STATUS[e.myStatus][0]} dot>
-            <BlurReplace id={e.myStatus} origin="right center">
-              {STATUS[e.myStatus][1]}
-            </BlurReplace>
-          </Chip>
+          <StatusPill status={e.myStatus} />
         ) : (
           <span className={s.reward}>+{e.pointsOnVerify} on verify</span>
         )}

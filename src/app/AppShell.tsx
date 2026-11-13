@@ -5,7 +5,7 @@ import { Toaster } from './Toaster'
 import { LivePill } from './LivePill'
 import { ConnectionBanner } from './ConnectionBanner'
 import { PeakMark } from '../components/brand/PeakMark'
-import { EASE_OUT, SPRING_SLIDE } from '../lib/motion'
+import { EASE_OUT, SPRING_LENS } from '../lib/motion'
 import styles from './AppShell.module.css'
 
 // Frozen navigation — do not reorder or add items.
@@ -60,7 +60,7 @@ export function AppShell() {
             >
               {({ isActive }) => (
                 <>
-                  {isActive && <motion.span layoutId="nav-active" className={styles.indicator} transition={SPRING_SLIDE} />}
+                  {isActive && <motion.span layoutId="nav-active" className={styles.indicator} transition={SPRING_LENS} />}
                   <Icon size={20} strokeWidth={isActive ? 2.1 : 1.7} className={styles.icon} />
                   <span className={styles.tabLabel}>{label}</span>
                 </>
@@ -69,7 +69,7 @@ export function AppShell() {
           ))}
         </div>
         <div className={styles.railFoot}>
-          <span className="label">FitConnect</span>
+          <span className="eyebrow">FitConnect</span>
         </div>
       </nav>
     </div>

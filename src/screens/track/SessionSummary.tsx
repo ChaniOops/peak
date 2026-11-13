@@ -1,10 +1,11 @@
 import { motion } from 'framer-motion'
-import { Award, Check, Mountain } from 'lucide-react'
+import { Award, Mountain } from 'lucide-react'
 import { useSession, elapsedMs } from '../../tracking/sessionStore'
 import { ACTIVITY_LABEL, formatDuration, formatKm, formatNumber, formatPace } from '../../lib/format'
 import { AnimatedNumber } from '../../components/ui/AnimatedNumber'
 import { Button, ButtonLink, Chip, Notice, Spinner } from '../../components/ui/ui'
 import { EASE_OUT } from '../../lib/motion'
+import { SuccessCheck } from '../../components/ui/SuccessCheck'
 import { RouteMap } from '../../components/map/RouteMap'
 import s from './track.module.css'
 
@@ -43,18 +44,24 @@ export function SessionSummary() {
   const result = st.result
   return (
     <div className={s.summary}>
-      <div className={s.summaryHead}>
-        <Chip tone="accent">
-          <Check size={11} strokeWidth={3} /> {ACTIVITY_LABEL[st.type]} saved
-        </Chip>
-        {st.simulated && <Chip tone="ember">Simulated</Chip>}
+      <div className={s.savedHead}>
+        <SuccessCheck size={52} />
+        <motion.div
+          className={s.savedTitle}
+          initial={{ opacity: 0, y: 6 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3, duration: 0.45, ease: EASE_OUT }}
+        >
+          {ACTIVITY_LABEL[st.type]} saved
+          {st.simulated && <Chip tone="ember">Simulated</Chip>}
+        </motion.div>
       </div>
 
       <motion.div
         className={`${s.pointsHero} pg-hero`}
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, ease: EASE_OUT }}
+        transition={{ delay: 0.45, duration: 0.5, ease: EASE_OUT }}
       >
         <div className={`num ${s.pointsValue}`}>
           +<AnimatedNumber value={result?.pointsAwarded ?? 0} from={0} duration={1.2} />

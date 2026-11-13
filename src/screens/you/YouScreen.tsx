@@ -1,13 +1,15 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { AnimatePresence, motion } from 'framer-motion'
-import { Activity as RunIcon, Award, Bike, Footprints, Gift, Lock, LogOut, RotateCcw, Ticket, Zap, ExternalLink } from 'lucide-react'
+import { Activity as RunIcon, Award, Bike, Footprints, Gift, Lock, LogOut, RotateCcw, Ticket, Zap, ExternalLink, X } from 'lucide-react'
 import { api, ApiError } from '../../api'
 import { useLive } from '../../api/useLive'
 import type { Badge, Reward, TrackedActivityType } from '../../api/types'
-import { Button, Chip, EmptyState, ErrorNote, List, ListRow, ProgressBar, Section, Skeleton } from '../../components/ui/ui'
+import { Button, Chip, EmptyState, ErrorNote, IconButton, List, ListRow, Section, Skeleton } from '../../components/ui/ui'
+import { BlurReplace } from '../../components/ui/BlurReplace'
+import { SuccessCheck } from '../../components/ui/SuccessCheck'
+import { RollingNumber } from '../../components/ui/RollingNumber'
 import { Avatar } from '../../components/ui/Avatar'
-import { AnimatedNumber } from '../../components/ui/AnimatedNumber'
 import { WeeklyChart } from '../../components/charts/WeeklyChart'
 import { useAuth } from '../../app/auth'
 import { ACTIVITY_LABEL, formatDistance, formatDuration, formatNumber, timeAgo } from '../../lib/format'
@@ -48,7 +50,7 @@ export function YouScreen() {
             <div className="label">MovePoints balance</div>
             <div className={`num ${s.balanceValue}`}>
               <Zap size={22} fill="currentColor" className={s.zap} />
-              <AnimatedNumber value={me.data.movePoints} />
+              <RollingNumber value={me.data.movePoints} />
             </div>
           </div>
           <div className={s.balanceStats}>
@@ -111,14 +113,14 @@ export function YouScreen() {
         )}
       </Section>
 
-      <Section title="Rewards" meta={me.data && <span className="label">{formatNumber(me.data.movePoints)} pts available</span>}>
+      <Section title="Rewards" meta={me.data && <span className="label">{formatNumber(me.data.movePoints)} pts to spend</span>}>
         {rewards.data ? (
           rewards.data.length ? (
-            <div className={s.rewards}>
+            <List>
               {rewards.data.map((r) => (
-                <RewardCard key={r.id} r={r} balance={me.data?.movePoints ?? 0} />
+                <RewardRow key={r.id} r={r} balance={me.data?.movePoints ?? 0} />
               ))}
-            </div>
+            </List>
           ) : (
             <EmptyState icon={<Gift size={18} />} title="No rewards yet" body="Campus partners add rewards here." />
           )
@@ -131,19 +133,29 @@ export function YouScreen() {
           <>
             <div className={`label ${s.subhead}`}>Redeemed</div>
             <List>
-              {redemptions.data.map((r) => (
-                <ListRow
-                  key={r.id}
-                  leading={
+              <AnimatePresence initial={false}>
+                {redemptions.data.map((r) => (
+                  <motion.li
+                    key={r.id}
+                    className={s.redeemedRow}
+                    layout="position"
+                    initial={{ opacity: 0, y: -8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.45, ease: EASE_OUT }}
+                  >
                     <span className={s.rowIcon}>
                       <Ticket size={16} />
                     </span>
-                  }
-                  title={r.rewardTitle}
-                  meta={`${r.status === 'fulfilled' ? 'Fulfilled' : 'Requested'} · ${timeAgo(r.createdAt)}`}
-                  trailing={r.code && <code className={s.code}>{r.code}</code>}
-                />
-              ))}
+                    <div className={s.redeemedMain}>
+                      <div className={s.redeemedTitle}>{r.rewardTitle}</div>
+                      <div className={s.redeemedMeta}>
+                        {r.status === 'fulfilled' ? 'Fulfilled' : 'Requested'} · {timeAgo(r.createdAt)}
+                      </div>
+                    </div>
+                    {r.code && <code className={s.code}>{r.code}</code>}
+                  </motion.li>
+                ))}
+              </AnimatePresence>
             </List>
           </>
         )}
@@ -178,11 +190,42 @@ function BadgeGrid({ badges }: { badges: Badge[] }) {
   )
 }
 
-function RewardCard({ r, balance }: { r: Reward; balance: number }) {
+/** Affordability ring around the reward icon: balance against cost. */
+function CostRing({ progress, ready }: { progress: number; ready: boolean }) {
+  const r = 19
+  const c = 2 * Math.PI * r
+  return (
+    <svg className={s.ring} viewBox="0 0 44 44" aria-hidden>
+      <circle cx="22" cy="22" r={r} className={s.ringTrack} />
+      <circle
+        cx="22"
+        cy="22"
+        r={r}
+        className={`${s.ringFill} ${ready ? s.ringReady : ''}`}
+        strokeDasharray={c}
+        strokeDashoffset={c * (1 - Math.min(1, progress))}
+      />
+    </svg>
+  )
+}
+
+function RewardRow({ r, balance }: { r: Reward; balance: number }) {
   const [confirming, setConfirming] = useState(false)
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [justRedeemed, setJustRedeemed] = useState(false)
   const short = Math.max(0, r.cost - balance)
+
+  useEffect(() => {
+    if (!justRedeemed) return
+    const t = window.setTimeout(() => setJustRedeemed(false), 2600)
+    return () => window.clearTimeout(t)
+  }, [justRedeemed])
+  useEffect(() => {
+    if (!confirming) return
+    const t = window.setTimeout(() => setConfirming(false), 4000)
+    return () => window.clearTimeout(t)
+  }, [confirming])
 
   async function redeem() {
     setBusy(true)
@@ -190,6 +233,7 @@ function RewardCard({ r, balance }: { r: Reward; balance: number }) {
     try {
       await api.redeemReward(r.id)
       setConfirming(false)
+      setJustRedeemed(true)
     } catch (e) {
       setError(e instanceof ApiError ? e.message : 'Could not redeem')
     } finally {
@@ -198,51 +242,63 @@ function RewardCard({ r, balance }: { r: Reward; balance: number }) {
   }
 
   return (
-    <article className={`${s.reward} ${r.canRedeem ? s.rewardReady : ''}`}>
-      <div className={s.rewardTop}>
-        <span className={s.rewardIcon}>
-          <Gift size={17} />
-        </span>
-        <div className={s.rewardText}>
-          <h3 className={s.rewardTitle}>{r.title}</h3>
-          <p className={s.rewardDesc}>{error ?? r.blockedReason ?? r.description}</p>
+    <li className={`${s.reward} ${r.canRedeem ? s.rewardReady : ''}`}>
+      <span className={s.rewardIcon}>
+        <CostRing progress={balance / Math.max(1, r.cost)} ready={r.canRedeem} />
+        <Gift size={16} />
+      </span>
+      <div className={s.rewardText}>
+        <div className={s.rewardTitle}>{r.title}</div>
+        <div className={`${s.rewardDesc} ${error ? s.rewardError : ''}`}>
+          <BlurReplace id={error ? 'err' : 'desc'} origin="left center">
+            {error ?? r.blockedReason ?? r.description}
+          </BlurReplace>
         </div>
-        <span className={s.cost}>
-          <Zap size={11} fill="currentColor" />
-          <span className="num">{formatNumber(r.cost)}</span>
-        </span>
       </div>
-
-      <div className={s.rewardFoot}>
-        {r.canRedeem ? (
-          <AnimatePresence mode="wait" initial={false}>
-            {confirming ? (
-              <motion.div key="confirm" className={s.confirm} initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={SPRING_POP}>
-                <span className={s.confirmText}>Spend {formatNumber(r.cost)} points?</span>
-                <Button size="sm" variant="ghost" onClick={() => setConfirming(false)} disabled={busy}>
-                  Cancel
-                </Button>
-                <Button size="sm" onClick={() => void redeem()} loading={busy}>
-                  Confirm
-                </Button>
-              </motion.div>
-            ) : (
-              <motion.div key="ready" className={s.confirm} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-                <span className={s.ready}>Ready to redeem</span>
-                <Button size="sm" onClick={() => setConfirming(true)}>
-                  Redeem
-                </Button>
-              </motion.div>
-            )}
-          </AnimatePresence>
+      <div className={s.rewardSide}>
+        {justRedeemed ? (
+          <span className={s.redeemed}>
+            <SuccessCheck size={26} />
+            Redeemed
+          </span>
+        ) : r.canRedeem ? (
+          <div className={s.redeemActions}>
+            <AnimatePresence initial={false}>
+              {confirming && (
+                <motion.span initial={{ opacity: 0, x: 8 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 8 }} transition={SPRING_POP}>
+                  <IconButton label="Cancel" variant="ghost" size={30} onClick={() => setConfirming(false)} disabled={busy}>
+                    <X size={14} />
+                  </IconButton>
+                </motion.span>
+              )}
+            </AnimatePresence>
+            <Button
+              size="sm"
+              variant="primary"
+              loading={busy}
+              onClick={() => (confirming ? void redeem() : setConfirming(true))}
+            >
+              <BlurReplace id={confirming ? 'c' : 'r'}>
+                {confirming ? (
+                  <>Confirm · {formatNumber(r.cost)}</>
+                ) : (
+                  <span className={s.costInline}>
+                    <Zap size={11} fill="currentColor" /> {formatNumber(r.cost)}
+                  </span>
+                )}
+              </BlurReplace>
+            </Button>
+          </div>
         ) : (
-          <div className={s.saving}>
-            <ProgressBar value={balance / r.cost} tone="neutral" />
-            <span className={s.savingText}>{short > 0 ? `${formatNumber(short)} more points` : 'Unavailable'}</span>
+          <div className={s.locked}>
+            <span className={`num ${s.lockedCost}`}>
+              <Zap size={11} fill="currentColor" /> {formatNumber(r.cost)}
+            </span>
+            <span className={s.lockedGap}>{short > 0 ? `${formatNumber(short)} to go` : 'Unavailable'}</span>
           </div>
         )}
       </div>
-    </article>
+    </li>
   )
 }
 

@@ -39,11 +39,29 @@
 
 .tip {
   padding: 8px 10px;
-  border-radius: 10px;
-  background: rgba(23, 23, 23, 0.95);
+  border-radius: 12px;
+  color: var(--pg-ink);
+  background: linear-gradient(180deg, rgba(22, 78, 96, 0.94), rgba(6, 36, 54, 0.96));
   box-shadow:
-    inset 0 0 0 1px var(--line-strong),
-    0 10px 30px -10px rgba(0, 0, 0, 0.9);
+    inset 0 1px 0 rgba(255, 255, 255, 0.2),
+    inset 0 0 0 1px rgba(170, 240, 228, 0.16),
+    0 12px 30px -10px rgba(0, 0, 0, 0.9);
+}
+
+.tip :global(.label) {
+  color: var(--pg-ink-3);
+}
+
+.avgLabel {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.avgLabel i {
+  width: 14px;
+  height: 0;
+  border-top: 1.5px dashed rgba(214, 240, 238, 0.4);
 }
 
 .tipValue {

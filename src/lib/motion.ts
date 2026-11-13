@@ -13,6 +13,10 @@ export const POP_EASE: [number, number, number, number] = [0.34, 1.4, 0.5, 1]
 export const SPRING_POP: Transition = { type: 'spring', stiffness: 420, damping: 30, mass: 0.8 }
 /** sliding indicators (tabs, segmented controls) */
 export const SPRING_SLIDE: Transition = { type: 'spring', stiffness: 520, damping: 42 }
+/** the nav lens: a touch looser than SLIDE so it lands with a hint of settle */
+export const SPRING_LENS: Transition = { type: 'spring', stiffness: 420, damping: 32, mass: 0.9 }
+/** Kinetics press/pop springs */
+export const SPRING_PRESS: Transition = { type: 'spring', stiffness: 320, damping: 24 }
 /** list re-ordering (leaderboard ranks) */
 export const SPRING_LAYOUT: Transition = { type: 'spring', stiffness: 380, damping: 36 }
 

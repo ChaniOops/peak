@@ -1,17 +1,33 @@
 import { motion } from 'framer-motion'
-import { PeakMark } from '../components/brand/PeakMark'
+import { PeakLogoReveal } from '../components/brand/PeakLogoReveal'
+import { EASE_OUT } from '../lib/motion'
+import s from './BootScreen.module.css'
 
-/** Shown for the instant the session is being restored. */
-export function BootScreen() {
+/**
+ * Boot: the signature Liquid Glass reveal of the Peak mark, once per browser
+ * session (AuthGate decides), over the midnight the reveal is lit for. The
+ * session restores underneath; the overlay fades away when both are done.
+ */
+export function BootScreen({ play, onDone }: { play: boolean; onDone: () => void }) {
   return (
-    <div style={{ minHeight: '100dvh', display: 'grid', placeItems: 'center' }}>
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: [0, 1, 0.55, 1] }}
-        transition={{ duration: 1.6, delay: 0.15, repeat: Infinity, repeatType: 'reverse' }}
-      >
-        <PeakMark size={36} />
-      </motion.div>
-    </div>
+    <motion.div
+      className={s.root}
+      initial={{ opacity: 1 }}
+      exit={{ opacity: 0, transition: { duration: 0.5, ease: EASE_OUT } }}
+      aria-label="Loading Peak"
+      role="status"
+    >
+      <div className={s.stack}>
+        {play ? <PeakLogoReveal size={112} onDone={onDone} /> : <div style={{ height: 213 }} />}
+        <motion.span
+          className={s.word}
+          initial={{ opacity: 0, y: 6 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: play ? 1.25 : 0.1, duration: 0.6, ease: EASE_OUT }}
+        >
+          Peak
+        </motion.span>
+      </div>
+    </motion.div>
   )
 }

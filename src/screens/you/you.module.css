@@ -161,55 +161,58 @@
   margin: 18px 0 10px;
 }
 
-/* ── rewards ───────────────────────────── */
-.rewards {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
+/* ── rewards: a flat list; affordability lives in the icon ring ── */
 .reward {
-  padding: 14px;
-  border-radius: var(--r-lg);
-  background: var(--surface-1);
-  border: 1px solid var(--line);
-  box-shadow: var(--highlight);
-  transition: border-color 0.25s;
-}
-
-.rewardReady {
-  border-color: rgba(200, 241, 105, 0.18);
-}
-
-@media (hover: hover) {
-  .reward:hover {
-    border-color: var(--line-strong);
-  }
-  .rewardReady:hover {
-    border-color: rgba(200, 241, 105, 0.3);
-  }
-}
-
-.rewardTop {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: 12px;
+  min-height: 64px;
+  padding: 10px 14px;
+}
+
+.reward + .reward {
+  border-top: 1px solid var(--line);
 }
 
 .rewardIcon {
+  position: relative;
   display: grid;
   place-items: center;
   flex: none;
-  width: 36px;
-  height: 36px;
-  border-radius: 10px;
-  background: var(--surface-3);
-  box-shadow: inset 0 0 0 1px var(--line-strong);
-  color: var(--text-2);
+  width: 40px;
+  height: 40px;
+  color: var(--text-3);
 }
 
 .rewardReady .rewardIcon {
-  color: var(--accent);
+  color: #9be8d8;
+}
+
+.ring {
+  position: absolute;
+  inset: -2px;
+  width: 44px;
+  height: 44px;
+  transform: rotate(-90deg);
+}
+
+.ringTrack {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.07);
+  stroke-width: 2.5;
+}
+
+.ringFill {
+  fill: none;
+  stroke: rgba(170, 240, 228, 0.5);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.ringReady {
+  stroke: #6fdcc8;
+  filter: drop-shadow(0 0 3px rgba(111, 220, 200, 0.6));
 }
 
 .rewardText {
@@ -218,77 +221,102 @@
 }
 
 .rewardTitle {
-  font-size: 15px;
-  font-weight: 600;
-  letter-spacing: -0.015em;
+  font-size: 14.5px;
+  font-weight: 560;
+  letter-spacing: -0.012em;
   line-height: 1.3;
 }
 
 .rewardDesc {
-  margin-top: 2px;
+  margin-top: 1px;
   font-size: 12.5px;
   color: var(--text-3);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.cost {
+.rewardError {
+  color: #ffa69b;
+}
+
+.rewardSide {
+  flex: none;
+  display: flex;
+  justify-content: flex-end;
+  min-width: 84px;
+}
+
+.redeemActions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.costInline {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  flex: none;
-  height: 24px;
-  padding: 0 8px;
-  border-radius: var(--r-pill);
-  background: rgba(255, 255, 255, 0.04);
-  box-shadow: inset 0 0 0 1px var(--line-strong);
-  font-size: 13px;
+  font-variant-numeric: tabular-nums;
 }
 
-.cost svg {
-  color: var(--accent);
-}
-
-.rewardFoot {
-  margin-top: 12px;
-  padding-top: 12px;
-  border-top: 1px solid var(--line);
-  min-height: 45px;
+.locked {
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 3px;
 }
 
-.confirm {
-  display: flex;
+.lockedCost {
+  display: inline-flex;
   align-items: center;
-  gap: 6px;
-  width: 100%;
-}
-
-.confirmText,
-.ready {
-  flex: 1;
-  font-size: 13px;
+  gap: 4px;
+  font-size: 14px;
   color: var(--text-2);
 }
 
-.ready {
-  color: var(--accent);
-  font-weight: 500;
+.lockedCost svg {
+  color: var(--text-3);
 }
 
-.saving {
+.lockedGap {
+  font-size: 11.5px;
+  color: var(--text-3);
+}
+
+.redeemed {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 560;
+  color: var(--accent);
+}
+
+.redeemedRow {
   display: flex;
   align-items: center;
   gap: 12px;
-  width: 100%;
+  min-height: 56px;
+  padding: 10px 14px;
 }
 
-.saving > :first-child {
+.redeemedRow + .redeemedRow {
+  border-top: 1px solid var(--line);
+}
+
+.redeemedMain {
   flex: 1;
+  min-width: 0;
 }
 
-.savingText {
-  flex: none;
-  font-size: 12.5px;
+.redeemedTitle {
+  font-size: 14px;
+  font-weight: 550;
+}
+
+.redeemedMeta {
+  font-size: 12px;
   color: var(--text-3);
 }
 

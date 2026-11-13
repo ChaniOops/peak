@@ -82,8 +82,8 @@
   color: var(--text-3);
 }
 
-.pct {
-  font-size: 13px;
+.toGo {
+  font-size: 12.5px;
   color: var(--text-2);
 }
 
@@ -92,8 +92,8 @@
   align-items: center;
   gap: 4px;
   font-size: 12.5px;
-  font-weight: 550;
-  color: var(--ice);
+  font-weight: 560;
+  color: var(--accent);
 }
 
 .join {

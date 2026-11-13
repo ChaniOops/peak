@@ -3,7 +3,7 @@ import { Link, type LinkProps } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { AlertCircle, ChevronRight, Loader2, RotateCcw } from 'lucide-react'
 import { SPRING_SLIDE } from '../../lib/motion'
-import { buttonClass, cx, type ButtonStyle, type ButtonVariant } from './buttonClass'
+import { buttonClass, cx, glassLight, type ButtonStyle, type ButtonVariant } from './buttonClass'
 import s from './ui.module.css'
 
 
@@ -13,7 +13,7 @@ export function ScreenHeader({ eyebrow, title, right }: { eyebrow?: string; titl
   return (
     <header className={s.header}>
       <div className={s.headerText}>
-        {eyebrow && <div className="label">{eyebrow}</div>}
+        {eyebrow && <div className="eyebrow">{eyebrow}</div>}
         <h1 className={`display ${s.title}`}>{title}</h1>
       </div>
       {right}
@@ -96,7 +96,13 @@ export function Button({
   ...rest
 }: ButtonHTMLAttributes<HTMLButtonElement> & ButtonStyle & { loading?: boolean }) {
   return (
-    <button className={buttonClass({ variant, size, block }, className)} disabled={disabled || loading} aria-busy={loading || undefined} {...rest}>
+    <button
+      className={buttonClass({ variant, size, block }, className)}
+      disabled={disabled || loading}
+      aria-busy={loading || undefined}
+      {...glassLight}
+      {...rest}
+    >
       {loading && <Loader2 size={16} className={s.spin} aria-hidden />}
       {children}
     </button>
@@ -104,7 +110,7 @@ export function Button({
 }
 
 export function ButtonLink({ variant, size, block, className = '', ...rest }: LinkProps & ButtonStyle) {
-  return <Link className={buttonClass({ variant, size, block }, className)} {...rest} />
+  return <Link className={buttonClass({ variant, size, block }, className)} {...glassLight} {...rest} />
 }
 
 export function IconButton({
@@ -121,6 +127,7 @@ export function IconButton({
       title={label}
       className={cx(s.iconBtn, s[variant], className)}
       style={{ width: size, height: size }}
+      {...glassLight}
       {...rest}
     >
       {children}
@@ -206,7 +213,7 @@ export function Segmented<T extends string>({
   )
 }
 
-export function ProgressBar({ value, tone = 'accent' }: { value: number; tone?: 'accent' | 'ice' | 'ember' | 'neutral' }) {
+export function ProgressBar({ value, tone = 'celadon' }: { value: number; tone?: 'accent' | 'celadon' | 'ice' | 'ember' | 'neutral' }) {
   const pct = Math.max(0, Math.min(1, value)) * 100
   return (
     <div className={s.bar} role="progressbar" aria-valuenow={Math.round(pct)} aria-valuemin={0} aria-valuemax={100}>

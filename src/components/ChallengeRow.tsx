@@ -2,7 +2,8 @@ import { Users, User, Building2, Check } from 'lucide-react'
 import type { Challenge } from '../api/types'
 import { formatNumber } from '../lib/format'
 import { useNow } from '../lib/useNow'
-import { AnimatedNumber } from './ui/AnimatedNumber'
+import { RollingNumber } from './ui/RollingNumber'
+import { BlurReplace } from './ui/BlurReplace'
 import { Button, ProgressBar } from './ui/ui'
 import s from './ChallengeRow.module.css'
 
@@ -17,7 +18,6 @@ export function ChallengeRow({ c, onJoin }: { c: Challenge; onJoin?: (id: string
   const now = useNow(60_000)
   const daysLeft = Math.max(0, Math.ceil((new Date(c.endsAt).getTime() - now) / 86_400_000))
   const { label, Icon } = SCOPE[c.scope]
-  const pct = Math.min(100, Math.round((c.progress / Math.max(1, c.target)) * 100))
   return (
     <article className={s.row}>
       <div className={s.top}>
@@ -34,22 +34,26 @@ export function ChallengeRow({ c, onJoin }: { c: Challenge; onJoin?: (id: string
           <div className={s.progress}>
             <span>
               <span className={`num ${s.progressValue}`}>
-                <AnimatedNumber value={c.progress} />
+                <RollingNumber value={c.progress} />
               </span>
               <span className={s.progressTarget}>
                 {' '}
                 / {formatNumber(c.target)} {c.unit}
               </span>
             </span>
-            {done ? (
-              <span className={s.done}>
-                <Check size={12} strokeWidth={2.6} /> Done
-              </span>
-            ) : (
-              <span className={`num ${s.pct}`}>{pct}%</span>
-            )}
+            <BlurReplace id={done ? 'done' : 'left'} origin="right center">
+              {done ? (
+                <span className={s.done}>
+                  <Check size={12} strokeWidth={2.6} /> Completed
+                </span>
+              ) : (
+                <span className={s.toGo}>
+                  {formatNumber(Math.max(0, c.target - c.progress))} {c.unit} to go
+                </span>
+              )}
+            </BlurReplace>
           </div>
-          <ProgressBar value={c.progress / c.target} tone={done ? 'ice' : 'accent'} />
+          <ProgressBar value={c.progress / c.target} tone={done ? 'accent' : 'celadon'} />
         </div>
       ) : (
         onJoin && (

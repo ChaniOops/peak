@@ -1,9 +1,12 @@
 import { AnimatePresence, motion } from 'framer-motion'
-import { Pause, Play, Square, Trash2 } from 'lucide-react'
+import { useEffect, useState, type ReactNode } from 'react'
+import { Check, Pause, Play, Square, Trash2 } from 'lucide-react'
 import { elapsedMs, useSession, USES } from '../../tracking/sessionStore'
 import { useNow } from '../../lib/useNow'
 import { ACTIVITY_LABEL, formatDuration, formatKm, formatNumber, formatPace, formatSpeed } from '../../lib/format'
-import { Chip, IconButton, Notice, type Tone } from '../../components/ui/ui'
+import { Button, Chip, IconButton, Notice, type Tone } from '../../components/ui/ui'
+import { RollingNumber } from '../../components/ui/RollingNumber'
+import { BlurReplace } from '../../components/ui/BlurReplace'
 import type { GpsStatus } from '../../sensors/geolocation'
 import type { MotionStatus } from '../../sensors/motion'
 import { RouteMap } from '../../components/map/RouteMap'
@@ -17,26 +20,28 @@ export function LiveSession() {
   const uses = USES[st.type]
   const paused = st.phase === 'paused'
 
+  // live numbers roll (transform-only odometer: no layout, no canvas work)
+  const roll = (n: number, f: (v: number) => string) => <RollingNumber value={n} format={f} />
   const primary =
     st.type === 'walk'
-      ? { value: formatNumber(st.steps), unit: 'steps' }
-      : { value: formatKm(st.distanceM), unit: 'km' }
+      ? { value: roll(st.steps, formatNumber), unit: 'steps' }
+      : { value: roll(st.distanceM, formatKm), unit: 'km' }
 
-  const secondary =
+  const secondary: Array<{ label: string; value: ReactNode; unit?: string }> =
     st.type === 'walk'
       ? [
-          { label: 'Time', value: formatDuration(sec) },
-          { label: 'Distance', value: formatKm(st.distanceM), unit: 'km' },
+          { label: 'Time', value: roll(sec, formatDuration) },
+          { label: 'Distance', value: roll(st.distanceM, formatKm), unit: 'km' },
           { label: 'Pace /km', value: formatPace(st.distanceM, sec) },
         ]
       : st.type === 'run'
         ? [
-            { label: 'Time', value: formatDuration(sec) },
+            { label: 'Time', value: roll(sec, formatDuration) },
             { label: 'Pace /km', value: formatPace(st.distanceM, sec) },
-            { label: 'Steps', value: formatNumber(st.steps) },
+            { label: 'Steps', value: roll(st.steps, formatNumber) },
           ]
         : [
-            { label: 'Time', value: formatDuration(sec) },
+            { label: 'Time', value: roll(sec, formatDuration) },
             { label: 'Avg speed', value: formatSpeed(st.distanceM, sec), unit: 'km/h' },
             { label: 'Points', value: String(st.route.length), unit: 'fixes' },
           ]
@@ -113,27 +118,57 @@ export function LiveSession() {
             </motion.div>
           )}
         </AnimatePresence>
-        {paused ? (
-          <IconButton label="Resume" variant="primary" size={80} className={s.ctlMain} onClick={st.resume}>
-            <Play size={26} fill="currentColor" />
-          </IconButton>
-        ) : (
-          <IconButton label="Pause" variant="contrast" size={80} className={s.ctlMain} onClick={st.pause}>
-            <Pause size={26} fill="currentColor" />
-          </IconButton>
-        )}
+        {/* one control that changes material: white glass to pause, live lime to resume */}
+        <IconButton
+          label={paused ? 'Resume' : 'Pause'}
+          variant={paused ? 'live' : 'contrast'}
+          size={80}
+          className={s.ctlMain}
+          onClick={paused ? st.resume : st.pause}
+        >
+          <BlurReplace id={paused ? 'play' : 'pause'}>
+            {paused ? <Play size={26} fill="currentColor" /> : <Pause size={26} fill="currentColor" />}
+          </BlurReplace>
+        </IconButton>
         <AnimatePresence initial={false}>
           {paused && (
             <motion.div key="finish" className={s.ctlSlot} {...sideIn(1)}>
-              <IconButton label="Finish" variant="contrast" size={56} onClick={() => void st.finish()}>
-                <Square size={17} fill="currentColor" />
-              </IconButton>
+              <FinishControl onFinish={() => void st.finish()} />
             </motion.div>
           )}
         </AnimatePresence>
       </div>
-      <p className={s.ctlHint}>{paused ? 'Resume, finish, or discard' : 'Pause to finish'}</p>
+      <p className={s.ctlHint}>
+        <BlurReplace id={paused ? 'p' : 'a'}>{paused ? 'Resume, finish, or discard' : 'Pause to finish'}</BlurReplace>
+      </p>
     </div>
+  )
+}
+
+/**
+ * Finish is two taps: the first turns the square into a "Finish?" check that
+ * waits three seconds, so one stray tap can't end a demo session.
+ */
+function FinishControl({ onFinish }: { onFinish: () => void }) {
+  const [armed, setArmed] = useState(false)
+  useEffect(() => {
+    if (!armed) return
+    const t = window.setTimeout(() => setArmed(false), 3000)
+    return () => window.clearTimeout(t)
+  }, [armed])
+  return (
+    <motion.div layout transition={SPRING_POP} className={s.finishWrap}>
+      {armed ? (
+        <Button variant="contrast" size="lg" className={s.finishArmed} onClick={onFinish} aria-label="Confirm finish">
+          <Check size={18} strokeWidth={2.6} />
+          <BlurReplace id="armed">Finish</BlurReplace>
+        </Button>
+      ) : (
+        <IconButton label="Finish" variant="contrast" size={56} onClick={() => setArmed(true)}>
+          <Square size={17} fill="currentColor" />
+        </IconButton>
+      )}
+    </motion.div>
   )
 }
 
@@ -157,7 +192,9 @@ function GpsChip({ status, accuracy }: { status: GpsStatus; accuracy: number | n
   const [tone, text] = map[status]
   return (
     <Chip tone={tone} dot glass>
-      {text}
+      <BlurReplace id={status} origin="left center">
+        {text}
+      </BlurReplace>
     </Chip>
   )
 }
@@ -173,7 +210,9 @@ function MotionChip({ status }: { status: MotionStatus }) {
   const [tone, text] = map[status]
   return (
     <Chip tone={tone} dot glass>
-      {text}
+      <BlurReplace id={status} origin="left center">
+        {text}
+      </BlurReplace>
     </Chip>
   )
 }

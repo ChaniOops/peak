@@ -17,7 +17,7 @@ const TYPES: Array<{ type: TrackedActivityType; label: string; hint: string; Ico
 ]
 
 const PLAN_TONE: Record<'primary' | 'bonus' | 'optional' | 'off', Tone> = {
-  primary: 'accent',
+  primary: 'ice',
   bonus: 'neutral',
   optional: 'neutral',
   off: 'neutral',

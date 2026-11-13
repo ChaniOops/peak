@@ -1,12 +1,16 @@
-import { Bar, BarChart, Cell, ResponsiveContainer, Tooltip, XAxis } from 'recharts'
+import { Bar, BarChart, Cell, ReferenceLine, Rectangle, ResponsiveContainer, Tooltip, XAxis } from 'recharts'
 import type { DailyStat } from '../../api/types'
 import { formatDistance, formatNumber } from '../../lib/format'
 import s from './WeeklyChart.module.css'
 
-const TODAY = '#c8f169'
-const OTHER = '#3a3a3a'
+const OTHER = '#24343b' // dark teal-grey: the week, quietly
+const ACTIVE = '#3b5560'
 
-/** Single series: steps per day, last 7 days. Today is accented and labelled. */
+/**
+ * One question: how does today compare with my week? Seven bars, today in
+ * celadon glass, a dashed average for the comparison, nothing else. Touch or
+ * hover lights a bar and shows its day.
+ */
 export function WeeklyChart({ days }: { days: DailyStat[] }) {
   const data = days.map((d, i) => ({
     ...d,
@@ -14,31 +18,57 @@ export function WeeklyChart({ days }: { days: DailyStat[] }) {
     isToday: i === days.length - 1,
   }))
   const total = days.reduce((t, d) => t + d.steps, 0)
+  const avg = total / Math.max(1, days.length)
 
   return (
     <div className={s.wrap}>
       <div className={s.head}>
         <div>
-          <div className="label">Steps · last 7 days</div>
+          <div className="label">Steps, last 7 days</div>
           <div className={`num ${s.total}`}>{formatNumber(total)}</div>
         </div>
         <div className={s.avg}>
-          <span className="num">{formatNumber(total / Math.max(1, days.length))}</span>
-          <span className="label">avg / day</span>
+          <span className="num">{formatNumber(avg)}</span>
+          <span className={`label ${s.avgLabel}`}>
+            <i aria-hidden /> Average / day
+          </span>
         </div>
       </div>
       <div className={s.chart}>
         <ResponsiveContainer width="100%" height={150}>
           <BarChart data={data} margin={{ top: 8, right: 0, bottom: 0, left: 0 }} barCategoryGap={6}>
+            <defs>
+              <linearGradient id="pk-today" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stopColor="#c9f5ea" />
+                <stop offset="0.35" stopColor="#6fdcc8" />
+                <stop offset="1" stopColor="#1f8f80" />
+              </linearGradient>
+            </defs>
             <XAxis
               dataKey="label"
-              axisLine={{ stroke: 'rgba(255,255,255,0.08)' }}
+              axisLine={false}
               tickLine={false}
-              tick={{ fill: '#666666', fontSize: 10, fontFamily: 'Geist Mono, ui-monospace, monospace' }}
               interval={0}
+              tick={({ x, y, payload }) => {
+                const today = payload.value === 'Today'
+                return (
+                  <text
+                    x={x}
+                    y={Number(y) + 10}
+                    textAnchor="middle"
+                    fontSize={11}
+                    fontWeight={today ? 600 : 450}
+                    fontFamily="Geist, system-ui, sans-serif"
+                    fill={today ? '#e6f7f4' : '#5f6a6d'}
+                  >
+                    {payload.value}
+                  </text>
+                )
+              }}
             />
+            <ReferenceLine y={avg} stroke="rgba(214,240,238,0.28)" strokeDasharray="3 4" ifOverflow="extendDomain" />
             <Tooltip
-              cursor={{ fill: 'rgba(255,255,255,0.04)' }}
+              cursor={false}
               content={({ active, payload }) => {
                 if (!active || !payload?.length) return null
                 const d = payload[0].payload as (typeof data)[number]
@@ -53,9 +83,19 @@ export function WeeklyChart({ days }: { days: DailyStat[] }) {
                 )
               }}
             />
-            <Bar dataKey="steps" radius={[5, 5, 1, 1]} isAnimationActive animationDuration={700}>
+            <Bar
+              dataKey="steps"
+              radius={[6, 6, 2, 2]}
+              isAnimationActive
+              animationDuration={650}
+              animationEasing="ease-out"
+              activeBar={(props: unknown) => {
+                const p = props as { payload: (typeof data)[number] } & Record<string, unknown>
+                return <Rectangle {...p} fill={p.payload.isToday ? 'url(#pk-today)' : ACTIVE} />
+              }}
+            >
               {data.map((d) => (
-                <Cell key={d.date} fill={d.isToday ? TODAY : OTHER} />
+                <Cell key={d.date} fill={d.isToday ? 'url(#pk-today)' : OTHER} />
               ))}
             </Bar>
           </BarChart>
