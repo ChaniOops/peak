@@ -12,7 +12,7 @@
   place-items: center;
   width: 46px;
   height: 46px;
-  border-radius: 14px;
+  border-radius: 50%;
   color: #eeeeee;
   background:
     radial-gradient(circle at 10px 8px, rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0) 3px),

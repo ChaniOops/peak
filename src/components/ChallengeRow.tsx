@@ -1,4 +1,4 @@
-import { Users, User, Building2, Check } from 'lucide-react'
+import { Check } from 'lucide-react'
 import type { Challenge } from '../api/types'
 import { formatNumber } from '../lib/format'
 import { useNow } from '../lib/useNow'
@@ -7,25 +7,20 @@ import { BlurReplace } from './ui/BlurReplace'
 import { Button, ProgressBar } from './ui/ui'
 import s from './ChallengeRow.module.css'
 
-const SCOPE = {
-  individual: { label: 'Solo', Icon: User },
-  department: { label: 'Department', Icon: Users },
-  campus: { label: 'Campus', Icon: Building2 },
-} as const
+const SCOPE = { individual: 'Solo', department: 'Department', campus: 'Campus' } as const
 
 export function ChallengeRow({ c, onJoin }: { c: Challenge; onJoin?: (id: string) => void }) {
   const done = c.progress >= c.target
   const now = useNow(60_000)
   const daysLeft = Math.max(0, Math.ceil((new Date(c.endsAt).getTime() - now) / 86_400_000))
-  const { label, Icon } = SCOPE[c.scope]
+  const label = SCOPE[c.scope]
   return (
     <article className={s.row}>
       <div className={s.top}>
-        <span className={s.scope}>
-          <Icon size={12} /> {label}
-        </span>
+        <span className={s.scope}>{label}</span>
         <span className="label">{done ? 'Complete' : `${daysLeft}d left`}</span>
-        <span className={s.reward}>+{c.rewardPoints}</span>
+        {/* the reward is the incentive: Peak's yellow tag */}
+        <span className={`tag tag-yellow ${s.reward}`}>+{c.rewardPoints}</span>
       </div>
       <h3 className={s.title}>{c.title}</h3>
       <p className={s.desc}>{c.description}</p>
@@ -43,8 +38,8 @@ export function ChallengeRow({ c, onJoin }: { c: Challenge; onJoin?: (id: string
             </span>
             <BlurReplace id={done ? 'done' : 'left'} origin="right center">
               {done ? (
-                <span className={s.done}>
-                  <Check size={12} strokeWidth={2.6} /> Completed
+                <span className="tag tag-yellow">
+                  <Check size={11} strokeWidth={3} /> Completed
                 </span>
               ) : (
                 <span className={s.toGo}>

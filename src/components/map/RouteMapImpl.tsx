@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { Map as MapLibreMap, LngLatBounds, setWorkerUrl, type GeoJSONSource, type LngLatLike } from 'maplibre-gl'
+import { Map as MapLibreMap, LngLatBounds, NavigationControl, setWorkerUrl, type GeoJSONSource, type LngLatLike } from 'maplibre-gl'
 import workerUrl from 'maplibre-gl/dist/maplibre-gl-worker.mjs?url'
 import type { Feature } from 'geojson'
 import 'maplibre-gl/dist/maplibre-gl.css'
@@ -56,6 +56,9 @@ export default function RouteMapImpl({ route, follow = false, emptyLabel = 'Wait
       dragRotate: false,
     })
     mapRef.current = map
+    // browsing a finished route: quiet zoom controls (mapcn-style); the live
+    // map follows the runner and stays chrome-free
+    if (!follow) map.addControl(new NavigationControl({ showCompass: false }), 'bottom-right')
 
     map.on('load', () => {
       map.addSource('route', { type: 'geojson', data: toGeoJSON([]) })

@@ -86,10 +86,10 @@ function Row({ e, unit, moved }: { e: LeaderboardEntry; unit: string; moved?: nu
             {moved ? (
               <motion.span
                 key={moved}
-                className={`${s.delta} ${moved > 0 ? s.up : s.down}`}
+                className={moved > 0 ? `tag tag-yellow ${s.delta}` : `${s.delta} ${s.down}`}
                 initial={{ opacity: 0, y: moved > 0 ? 6 : -6, scale: 0.8 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, transition: { duration: 0.3 } }}
+                exit={{ opacity: 0, transition: { duration: 0.18 } }}
                 transition={{ type: 'spring', stiffness: 420, damping: 26 }}
                 aria-label={`${moved > 0 ? 'up' : 'down'} ${Math.abs(moved)}`}
               >

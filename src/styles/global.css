@@ -58,11 +58,11 @@ p {
   color: var(--text);
 }
 
-/* Headings: clean editorial sans, tight tracking */
+/* Headings: Space Grotesk — confident, slightly quirky, still a grotesk */
 .display {
-  font-family: var(--font-body);
+  font-family: var(--font-display);
   font-weight: 600;
-  letter-spacing: -0.035em;
+  letter-spacing: -0.03em;
   line-height: 1.02;
 }
 
@@ -87,12 +87,45 @@ p {
   color: var(--text-3);
 }
 
-/* Values: same sans as body, tabular so live counts don't jitter */
+/* Values: display numerals, tabular so live counts don't jitter */
 .num {
-  font-family: var(--font-body);
+  font-family: var(--font-display);
   font-weight: 600;
   font-variant-numeric: tabular-nums;
-  letter-spacing: -0.035em;
+  letter-spacing: -0.025em;
+}
+
+/*
+ * Flat personality tag — Peak's one neo-brutalist object: a near-square
+ * block of flat colour with dark ink. Local and rare (see tokens.css).
+ */
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: var(--r-tag);
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  color: var(--pk-ink);
+  background: var(--text);
+}
+
+.tag-yellow {
+  background: var(--pk-yellow);
+}
+
+.tag-pink {
+  background: var(--pk-pink);
+}
+
+.tag-periwinkle {
+  background: var(--pk-periwinkle);
 }
 
 .muted {

@@ -155,7 +155,7 @@
 }
 
 .btn {
-  border-radius: 14px;
+  border-radius: var(--r-pill);
 }
 
 .btn:active:not(:disabled),
@@ -188,7 +188,6 @@
   height: 32px;
   padding: 0 12px;
   font-size: 13px;
-  border-radius: 11px;
 }
 .md {
   height: 42px;
@@ -199,13 +198,11 @@
   height: 50px;
   padding: 0 20px;
   font-size: 15.5px;
-  border-radius: 16px;
 }
 .xl {
   height: 58px;
   padding: 0 22px;
   font-size: 16px;
-  border-radius: 20px;
 }
 .block {
   width: 100%;
@@ -340,7 +337,7 @@
 }
 
 /* for pills floating over maps/imagery */
-/* pills floating over maps/imagery: small teal glass (see styles/glass.css) */
+/* pills floating over maps/imagery: small smoked glass (see styles/glass.css) */
 .glass {
   background-image: none;
   background-color: rgba(14, 14, 14, 0.78);
@@ -731,4 +728,14 @@
 
 .emptyAction {
   margin-top: 14px;
+}
+
+/* desktop: the same mobile-first column, presented with more scale */
+@media (min-width: 1024px) {
+  .title {
+    font-size: 38px;
+  }
+  .section {
+    margin-top: 40px;
+  }
 }

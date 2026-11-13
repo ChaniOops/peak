@@ -19,11 +19,10 @@ const BOX = 0.75
 
 export type LogoField = { canvas: HTMLCanvasElement; sdf: Float32Array }
 
-/** Peak mark: white massif + grey summit notch (matches PeakMark / favicon). */
+/** Peak mark: the stair summit (matches PeakMark / favicon). */
 const PEAK_SVG =
-  '<svg xmlns="http://www.w3.org/2000/svg" viewBox="5 10 22 14.5" width="1024" height="675">' +
-  '<path fill="#ffffff" d="M5 24.5 13 10l4.6 7.4 2.8-3.7 6.6 10.8z"/>' +
-  '<path fill="#8c8c8c" d="M13 10l-2.4 4.3 2.4-1.3 2 1.5z"/></svg>'
+  '<svg xmlns="http://www.w3.org/2000/svg" viewBox="5 7 22 18" width="1024" height="838">' +
+  '<path fill="#ffffff" d="M5 25V21.5h4V18h4v-3.5h3.2L19.5 7 27 25z"/></svg>'
 
 function loadImage(src: string) {
   return new Promise<HTMLImageElement>((resolve, reject) => {
@@ -137,7 +136,7 @@ let peakField: Promise<LogoField> | null = null
 /** Built once per page load and shared (≈ tens of ms at 512²). */
 export function peakLogoField(): Promise<LogoField> {
   peakField ??= loadImage('data:image/svg+xml;charset=utf-8,' + encodeURIComponent(PEAK_SVG)).then((img) => {
-    const canvas = fitToTexture(img, img.naturalWidth || 1024, img.naturalHeight || 675)
+    const canvas = fitToTexture(img, img.naturalWidth || 1024, img.naturalHeight || 838)
     return { canvas, sdf: buildSdf(canvas) }
   })
   return peakField

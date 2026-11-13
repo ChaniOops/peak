@@ -31,9 +31,9 @@ export function AppShell() {
         {/* enter-only transition: instant tab switches, no exit wait */}
         <motion.div
           key={section}
-          initial={{ opacity: 0, y: 6 }}
+          initial={{ opacity: 0, y: 4 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.36, ease: EASE_OUT }}
+          transition={{ duration: 0.22, ease: EASE_OUT }}
         >
           <Outlet />
         </motion.div>

@@ -110,10 +110,10 @@ export function HomeScreen() {
       <Section title="Weekly summit" action={{ to: '/compete', label: 'Compete' }}>
         {summit.data ? (
           <motion.div
-            initial={{ opacity: 0, y: 14 }}
+            initial={{ opacity: 0, y: 8 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: '0px 0px -10% 0px' }}
-            transition={{ duration: 0.6, ease: EASE_OUT }}
+            transition={{ duration: 0.3, ease: EASE_OUT }}
           >
             <SummitCard summit={summit.data} compact />
           </motion.div>

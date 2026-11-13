@@ -50,7 +50,7 @@ export function SessionSummary() {
           className={s.savedTitle}
           initial={{ opacity: 0, y: 6 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3, duration: 0.45, ease: EASE_OUT }}
+          transition={{ delay: 0.15, duration: 0.25, ease: EASE_OUT }}
         >
           {ACTIVITY_LABEL[st.type]} saved
           {st.simulated && <Chip tone="ember">Simulated</Chip>}
@@ -61,7 +61,7 @@ export function SessionSummary() {
         className={`${s.pointsHero} pg-hero`}
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.45, duration: 0.5, ease: EASE_OUT }}
+        transition={{ delay: 0.2, duration: 0.28, ease: EASE_OUT }}
       >
         <div className={`num ${s.pointsValue}`}>
           +<AnimatedNumber value={result?.pointsAwarded ?? 0} from={0} duration={1.2} />
@@ -117,7 +117,7 @@ export function SessionSummary() {
               className={s.badgeEarned}
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.6 + i * 0.12, duration: 0.45, ease: EASE_OUT }}
+              transition={{ delay: 0.3 + i * 0.06, duration: 0.25, ease: EASE_OUT }}
             >
               <span className={s.badgeIcon}>
                 <Award size={18} />

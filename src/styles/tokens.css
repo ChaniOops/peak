@@ -36,15 +36,35 @@
   --danger: #d9695e; /* muted red: errors and destructive only */
   --danger-soft: rgba(217, 105, 94, 0.1);
 
+  /*
+   * Personality punctuation: three flat Peak colours, used locally and
+   * sparingly (≤ 1 per screen, 2 only in the Movement chart). Always flat,
+   * always with dark ink, never on buttons or large surfaces.
+   *   yellow     — you & reward: today, reward/points tags, completion,
+   *                redemption, your leaderboard marker and rank-ups
+   *   pink       — "best": the best day in the Movement chart
+   *   periwinkle — campus events: the sport tag on Play
+   */
+  --pk-yellow: #ffd23f;
+  --pk-pink: #ff9dc6;
+  --pk-periwinkle: #94a7ff;
+  --pk-ink: #0a0a0a;
+
   /* Type */
   --font-body: 'Geist', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
   --font-mono: 'Geist Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+  /* display: screen titles, hero numbers, ranks — Peak's typographic voice */
+  --font-display: 'Space Grotesk', 'Geist', -apple-system, system-ui, sans-serif;
 
-  /* Shape & space */
-  --r-xs: 8px;
-  --r-sm: 10px;
-  --r-md: 14px;
-  --r-lg: 18px;
+  /*
+   * Radius hierarchy: glass controls are pills; surfaces medium; data
+   * wells small; flat personality tags nearly square.
+   */
+  --r-tag: 3px;
+  --r-xs: 6px;
+  --r-sm: 8px;
+  --r-md: 12px;
+  --r-lg: 14px;
   --r-pill: 999px;
   --gutter: 16px;
   --tabbar-h: 60px;

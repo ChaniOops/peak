@@ -6,7 +6,7 @@ import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
  * while the new content blurs in, instead of the text jumping. The live copy
  * is mirrored into a visually-hidden node so screen readers read it once.
  */
-const SWAP = { type: 'spring', duration: 0.35, bounce: 0 } as const
+const SWAP = { type: 'spring', duration: 0.25, bounce: 0 } as const
 const OUT = { opacity: 0, filter: 'blur(4px)', scale: 0.9 }
 const IN = { opacity: 1, filter: 'blur(0px)', scale: 1 }
 

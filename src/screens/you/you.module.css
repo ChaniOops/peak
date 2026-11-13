@@ -38,7 +38,7 @@
   gap: 8px;
   font-size: 44px;
   line-height: 1;
-  letter-spacing: -0.05em;
+  letter-spacing: -0.04em;
 }
 
 .zap {
@@ -181,8 +181,13 @@
   color: var(--text-3);
 }
 
-.rewardReady .rewardIcon {
-  color: #d6d6d6;
+.rewardIconReady {
+  width: 34px;
+  height: 34px;
+  margin: 3px;
+  border-radius: var(--r-tag);
+  background: var(--text);
+  color: var(--pk-ink);
 }
 
 .ring {
@@ -205,11 +210,6 @@
   stroke-width: 2.5;
   stroke-linecap: round;
   transition: stroke-dashoffset 0.9s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.ringReady {
-  stroke: #c3c3c3;
-  filter: drop-shadow(0 0 3px rgba(195, 195, 195, 0.6));
 }
 
 .rewardText {
@@ -367,4 +367,9 @@
 
 .signOut {
   margin-left: -8px;
+}
+
+.rowGlyph {
+  flex: none;
+  color: var(--text-3);
 }

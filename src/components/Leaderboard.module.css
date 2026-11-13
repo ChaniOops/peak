@@ -18,7 +18,7 @@
 }
 
 .hRank {
-  width: 22px;
+  width: 26px;
 }
 
 .hName {
@@ -52,7 +52,7 @@
   }
 }
 
-/* current user: a slightly brighter row and a thin white edge */
+/* current user: a slightly brighter row and Peak's yellow edge */
 .me,
 .me:hover {
   background: #121212;
@@ -64,16 +64,18 @@
   left: 0;
   top: 12px;
   bottom: 12px;
-  width: 2px;
-  border-radius: 0 2px 2px 0;
-  background: var(--text);
+  width: 3px;
+  border-radius: 0;
+  background: var(--pk-yellow);
 }
 
 .rank {
-  width: 22px;
+  width: 26px;
   display: inline-flex;
-  font-family: var(--font-mono);
-  font-size: 12px;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 15px;
+  letter-spacing: -0.02em;
   font-variant-numeric: tabular-nums;
   color: var(--text-3);
 }
@@ -168,17 +170,11 @@
   gap: 2px;
   flex: none;
   height: 16px;
-  padding: 0 5px;
-  border-radius: 5px;
-  font-family: var(--font-mono);
-  font-size: 10px;
-  font-weight: 500;
-}
-
-.up {
-  color: var(--text);
-  background: rgba(255, 255, 255, 0.08);
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.16);
+  padding: 0 4px;
+  border-radius: var(--r-tag);
+  font-family: var(--font-display);
+  font-size: 10.5px;
+  font-weight: 600;
 }
 
 .down {

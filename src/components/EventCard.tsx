@@ -1,4 +1,4 @@
-import { Check, CircleDot, Clock, Hourglass, MapPin, Users, X } from 'lucide-react'
+import { Check, CircleDot, Hourglass, MapPin, Users, X } from 'lucide-react'
 import type { CampusEvent, MyEventStatus, SportKind } from '../api/types'
 import { formatEventTime } from '../lib/format'
 import { Button, Chip, type Tone } from './ui/ui'
@@ -46,7 +46,7 @@ export function EventCard({ e, onJoin, busy }: { e: CampusEvent; onJoin?: () => 
   return (
     <article className={s.card}>
       <div className={s.top}>
-        <span className="eyebrow">{SPORT[e.sport]}</span>
+        <span className={`tag tag-periwinkle ${s.sport}`}>{SPORT[e.sport]}</span>
         {e.myStatus !== 'none' ? (
           <StatusPill status={e.myStatus} />
         ) : (
@@ -58,7 +58,6 @@ export function EventCard({ e, onJoin, busy }: { e: CampusEvent; onJoin?: () => 
 
       <div className={s.lines}>
         <div className={s.line}>
-          <Clock size={13} />
           <span>
             <strong>{dayLabel(t.day, e.startsAt)}</strong> · {t.date} · {t.time}
           </span>

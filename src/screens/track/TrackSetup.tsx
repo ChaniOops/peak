@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion'
-import { Footprints, Bike, Activity, Smartphone, Satellite, Sun, Play, FlaskConical } from 'lucide-react'
+import { Footprints, Bike, Activity, Sun, Play, FlaskConical } from 'lucide-react'
 import type { TrackedActivityType } from '../../api/types'
 import { api } from '../../api'
 import { useSession, USES } from '../../tracking/sessionStore'
@@ -46,9 +46,7 @@ export function TrackSetup() {
           return (
             <button key={t} role="radio" aria-checked={on} className={`${s.typeTile} ${on ? s.typeOn : ''}`} onClick={() => setType(t)}>
               {on && <motion.span layoutId="type-sel" className={s.typeSel} transition={SPRING_SLIDE} />}
-              <span className={s.typeIcon}>
-                <Icon size={18} strokeWidth={1.9} />
-              </span>
+              <Icon size={20} strokeWidth={1.8} className={s.typeIcon} />
               <span className={s.typeLabel}>{label}</span>
               <span className={`label ${s.typeHint}`}>{hint}</span>
             </button>
@@ -59,13 +57,11 @@ export function TrackSetup() {
       <List className={s.sensorPlan}>
         <ListRow
           className={motionState === 'off' ? s.sensorOff : ''}
-          leading={<span className={s.sensorIcon}><Smartphone size={16} strokeWidth={1.8} /></span>}
           title="Motion"
           meta={uses.motion ? 'Counts your steps' : 'Not used for cycling'}
           trailing={<span className={`label ${s.planState}`}>{PLAN_LABEL[motionState]}</span>}
         />
         <ListRow
-          leading={<span className={s.sensorIcon}><Satellite size={16} strokeWidth={1.8} /></span>}
           title="GPS"
           meta={uses.gpsPrimary ? 'Distance, pace and route' : 'Draws your route if allowed'}
           trailing={<span className={`label ${s.planState}`}>{PLAN_LABEL[gpsState]}</span>}

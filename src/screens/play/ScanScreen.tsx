@@ -144,7 +144,7 @@ function CheckInStatus({ checkInId, eventId }: { checkInId: string; eventId: str
       className={`${s.result} pg-hero`}
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4, ease: EASE_OUT }}
+      transition={{ duration: 0.25, ease: EASE_OUT }}
     >
       <div className={s.resultIconSlot}>
         <AnimatePresence mode="popLayout" initial={false}>
@@ -156,9 +156,9 @@ function CheckInStatus({ checkInId, eventId }: { checkInId: string; eventId: str
             <motion.span
               key="no"
               className={`${s.resultIcon} ${s.rejectedIcon}`}
-              initial={{ opacity: 0, scale: 0.5, filter: 'blur(4px)' }}
+              initial={{ opacity: 0, scale: 0.85, filter: 'blur(3px)' }}
               animate={{ opacity: 1, scale: 1, filter: 'blur(0px)', x: [0, -6, 5, -3, 0] }}
-              transition={{ duration: 0.45, ease: EASE_OUT }}
+              transition={{ duration: 0.28, ease: EASE_OUT }}
             >
               <X size={30} />
             </motion.span>
@@ -166,7 +166,7 @@ function CheckInStatus({ checkInId, eventId }: { checkInId: string; eventId: str
             <motion.span
               key="wait"
               className={`${s.resultIcon} ${s.pendingIcon}`}
-              exit={{ opacity: 0, scale: 0.6, filter: 'blur(6px)', transition: { duration: 0.2 } }}
+              exit={{ opacity: 0, scale: 0.85, filter: 'blur(4px)', transition: { duration: 0.16 } }}
             >
               <span className={s.pendingRing} aria-hidden />
               <Hourglass size={26} />
@@ -192,7 +192,7 @@ function CheckInStatus({ checkInId, eventId }: { checkInId: string; eventId: str
             className={s.resultPoints}
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.35, duration: 0.45, ease: EASE_OUT }}
+            transition={{ delay: 0.15, duration: 0.25, ease: EASE_OUT }}
           >
             <span className="num">
               +<RollingNumber value={event.data.pointsOnVerify} />

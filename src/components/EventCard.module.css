@@ -105,3 +105,9 @@
   border-radius: 2px;
   background: var(--text-2);
 }
+
+.sport {
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}

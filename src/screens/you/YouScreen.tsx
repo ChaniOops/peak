@@ -1,13 +1,12 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { AnimatePresence, motion } from 'framer-motion'
-import { Activity as RunIcon, Award, Bike, Footprints, Gift, Lock, LogOut, RotateCcw, Ticket, Zap, ExternalLink, X } from 'lucide-react'
+import { Activity as RunIcon, Award, Bike, Footprints, Gift, Lock, LogOut, RotateCcw, Zap, ExternalLink, X, Check } from 'lucide-react'
 import { api, ApiError } from '../../api'
 import { useLive } from '../../api/useLive'
 import type { Badge, Reward, TrackedActivityType } from '../../api/types'
 import { Button, Chip, EmptyState, ErrorNote, IconButton, List, ListRow, Section, Skeleton } from '../../components/ui/ui'
 import { BlurReplace } from '../../components/ui/BlurReplace'
-import { SuccessCheck } from '../../components/ui/SuccessCheck'
 import { RollingNumber } from '../../components/ui/RollingNumber'
 import { Avatar } from '../../components/ui/Avatar'
 import { WeeklyChart } from '../../components/charts/WeeklyChart'
@@ -86,11 +85,7 @@ export function YouScreen() {
                 return (
                   <ListRow
                     key={a.id}
-                    leading={
-                      <span className={s.rowIcon}>
-                        <Icon size={16} />
-                      </span>
-                    }
+                    leading={<Icon size={17} strokeWidth={1.8} className={s.rowGlyph} />}
                     title={
                       <>
                         {ACTIVITY_LABEL[a.type]}
@@ -141,11 +136,8 @@ export function YouScreen() {
                     layout="position"
                     initial={{ opacity: 0, y: -8 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.45, ease: EASE_OUT }}
+                    transition={{ duration: 0.25, ease: EASE_OUT }}
                   >
-                    <span className={s.rowIcon}>
-                      <Ticket size={16} />
-                    </span>
                     <div className={s.redeemedMain}>
                       <div className={s.redeemedTitle}>{r.rewardTitle}</div>
                       <div className={s.redeemedMeta}>
@@ -169,21 +161,14 @@ export function YouScreen() {
 function BadgeGrid({ badges }: { badges: Badge[] }) {
   return (
     <div className={s.badges}>
-      {badges.map((b, i) => {
+      {badges.map((b) => {
         const earned = Boolean(b.earnedAt)
         return (
-          <motion.div
-            key={b.id}
-            className={`${s.badge} ${earned ? s.earned : ''}`}
-            initial={{ opacity: 0, y: 6 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: i * 0.03, duration: 0.4, ease: EASE_OUT }}
-            title={b.description}
-          >
+          <div key={b.id} className={`${s.badge} ${earned ? s.earned : ''}`} title={b.description}>
             <span className={s.badgeIcon}>{earned ? <Award size={18} /> : <Lock size={14} />}</span>
             <span className={s.badgeName}>{b.name}</span>
             <span className={s.badgeCat}>{earned ? (b.category ?? 'Earned') : 'Locked'}</span>
-          </motion.div>
+          </div>
         )
       })}
     </div>
@@ -191,7 +176,7 @@ function BadgeGrid({ badges }: { badges: Badge[] }) {
 }
 
 /** Affordability ring around the reward icon: balance against cost. */
-function CostRing({ progress, ready }: { progress: number; ready: boolean }) {
+function CostRing({ progress }: { progress: number }) {
   const r = 19
   const c = 2 * Math.PI * r
   return (
@@ -201,7 +186,7 @@ function CostRing({ progress, ready }: { progress: number; ready: boolean }) {
         cx="22"
         cy="22"
         r={r}
-        className={`${s.ringFill} ${ready ? s.ringReady : ''}`}
+        className={s.ringFill}
         strokeDasharray={c}
         strokeDashoffset={c * (1 - Math.min(1, progress))}
       />
@@ -243,9 +228,10 @@ function RewardRow({ r, balance }: { r: Reward; balance: number }) {
 
   return (
     <li className={`${s.reward} ${r.canRedeem ? s.rewardReady : ''}`}>
-      <span className={s.rewardIcon}>
-        <CostRing progress={balance / Math.max(1, r.cost)} ready={r.canRedeem} />
-        <Gift size={16} />
+      {/* affordable: a flat light block; locked: a grey ring filling toward the cost */}
+      <span className={`${s.rewardIcon} ${r.canRedeem ? s.rewardIconReady : ''}`}>
+        {!r.canRedeem && <CostRing progress={balance / Math.max(1, r.cost)} />}
+        <Gift size={16} strokeWidth={r.canRedeem ? 2.2 : 1.8} />
       </span>
       <div className={s.rewardText}>
         <div className={s.rewardTitle}>{r.title}</div>
@@ -257,10 +243,14 @@ function RewardRow({ r, balance }: { r: Reward; balance: number }) {
       </div>
       <div className={s.rewardSide}>
         {justRedeemed ? (
-          <span className={s.redeemed}>
-            <SuccessCheck size={26} />
-            Redeemed
-          </span>
+          <motion.span
+            className="tag tag-yellow"
+            initial={{ opacity: 0, y: 4 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.2, ease: EASE_OUT }}
+          >
+            <Check size={11} strokeWidth={3} /> Redeemed
+          </motion.span>
         ) : r.canRedeem ? (
           <div className={s.redeemActions}>
             <AnimatePresence initial={false}>

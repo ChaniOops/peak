@@ -1,4 +1,4 @@
-import type { Transition, Variants } from 'framer-motion'
+import type { Transition } from 'framer-motion'
 
 /**
  * Peak motion system. Curves are the FeralUI ClimbScreen values:
@@ -15,24 +15,5 @@ export const SPRING_POP: Transition = { type: 'spring', stiffness: 420, damping:
 export const SPRING_SLIDE: Transition = { type: 'spring', stiffness: 520, damping: 42 }
 /** the nav lens: a touch looser than SLIDE so it lands with a hint of settle */
 export const SPRING_LENS: Transition = { type: 'spring', stiffness: 420, damping: 32, mass: 0.9 }
-/** Kinetics press/pop springs */
-export const SPRING_PRESS: Transition = { type: 'spring', stiffness: 320, damping: 24 }
 /** list re-ordering (leaderboard ranks) */
 export const SPRING_LAYOUT: Transition = { type: 'spring', stiffness: 380, damping: 36 }
-
-/** screen entrance: short rise + fade */
-export const enter = (delay = 0, y = 8): { initial: object; animate: object; transition: Transition } => ({
-  initial: { opacity: 0, y },
-  animate: { opacity: 1, y: 0 },
-  transition: { duration: 0.45, ease: EASE_OUT, delay },
-})
-
-/** parent/child stagger for screen sections */
-export const stagger: Variants = {
-  hidden: {},
-  show: { transition: { staggerChildren: 0.045, delayChildren: 0.02 } },
-}
-export const rise: Variants = {
-  hidden: { opacity: 0, y: 8 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.45, ease: EASE_OUT } },
-}

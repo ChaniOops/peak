@@ -16,10 +16,10 @@ export function TrackScreen() {
     <AnimatePresence mode="wait" initial={false}>
       <motion.div
         key={stage}
-        initial={{ opacity: 0, y: 10 }}
+        initial={{ opacity: 0, y: 6 }}
         animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: -6, transition: { duration: 0.16 } }}
-        transition={{ duration: 0.4, ease: EASE_OUT }}
+        exit={{ opacity: 0, y: -4, transition: { duration: 0.16 } }}
+        transition={{ duration: 0.22, ease: EASE_OUT }}
       >
         {stage === 'setup' ? <TrackSetup /> : stage === 'live' ? <LiveSession /> : <SessionSummary />}
       </motion.div>

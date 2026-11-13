@@ -19,7 +19,7 @@ export function FeedList({ items }: { items: FeedItem[] }) {
             // new realtime rows slide in and wash out a faint highlight
             initial={{ opacity: 0, y: -8, backgroundColor: 'rgba(255,255,255,0.05)' }}
             animate={{ opacity: 1, y: 0, backgroundColor: 'rgba(255,255,255,0)' }}
-            transition={{ duration: 0.45, ease: EASE_OUT, backgroundColor: { duration: 1.8 } }}
+            transition={{ duration: 0.25, ease: EASE_OUT, backgroundColor: { duration: 1.2 } }}
           >
             <Avatar name={f.actorName} size={32} />
             <div className={s.body}>

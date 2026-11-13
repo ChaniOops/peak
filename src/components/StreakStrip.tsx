@@ -1,4 +1,3 @@
-import { motion } from 'framer-motion'
 import { Flame } from 'lucide-react'
 import type { StreakDay } from '../api/types'
 import s from './StreakStrip.module.css'
@@ -18,12 +17,7 @@ export function StreakStrip({ days, streakDays }: { days: StreakDay[]; streakDay
           const today = i === days.length - 1
           return (
             <div key={d.date} className={s.day}>
-              <motion.span
-                className={`${s.mark} ${d.active ? s.on : ''} ${today ? s.today : ''}`}
-                initial={{ scale: 0.4, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                transition={{ delay: 0.1 + i * 0.035, type: 'spring', stiffness: 500, damping: 30 }}
-              />
+              <span className={`${s.mark} ${d.active ? s.on : ''} ${today ? s.today : ''}`} />
               <span className={`${s.dow} ${today ? s.dowToday : ''}`}>{date.toLocaleDateString('en-IN', { weekday: 'narrow' })}</span>
             </div>
           )

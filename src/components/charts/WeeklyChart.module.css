@@ -3,73 +3,82 @@
   border-radius: var(--r-lg);
   background: var(--surface-1);
   border: 1px solid var(--line);
-  box-shadow: var(--highlight);
 }
 
 .head {
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
+  gap: 12px;
 }
 
 .total {
-  font-size: 30px;
+  font-size: 34px;
   line-height: 1;
   margin-top: 8px;
 }
 
-.avg {
+/* a key, not a decoration: the two colours explain themselves */
+.legend {
   display: flex;
-  flex-direction: column;
-  align-items: flex-end;
+  gap: 12px;
+  padding-bottom: 3px;
+  font-size: 12px;
+  color: var(--text-2);
 }
 
-.avg {
-  gap: 6px;
-}
-
-.avg :global(.num) {
-  font-size: 16px;
-  line-height: 1;
-}
-
-.chart {
-  margin-top: 12px;
-}
-
-.tip {
-  padding: 8px 10px;
-  border-radius: 12px;
-  color: var(--pg-ink);
-  background: linear-gradient(180deg, rgba(67, 67, 67, 0.94), rgba(31, 31, 31, 0.96));
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.2),
-    inset 0 0 0 1px rgba(224, 224, 224, 0.16),
-    0 12px 30px -10px rgba(0, 0, 0, 0.9);
-}
-
-.tip :global(.label) {
-  color: var(--pg-ink-3);
-}
-
-.avgLabel {
+.legend span {
   display: inline-flex;
   align-items: center;
   gap: 6px;
 }
 
-.avgLabel i {
-  width: 14px;
-  height: 0;
-  border-top: 1.5px dashed rgba(234, 234, 234, 0.4);
+.legend i {
+  width: 9px;
+  height: 9px;
+  border-radius: 2px;
+}
+
+.keyToday {
+  background: var(--pk-yellow);
+}
+
+.keyBest {
+  background: var(--pk-pink);
+}
+
+.chart {
+  margin-top: 6px;
+}
+
+/* black glass with one hard-edged poster shadow */
+.tip {
+  padding: 8px 10px;
+  border-radius: 4px;
+  color: var(--text);
+  background: rgba(14, 14, 14, 0.96);
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.16),
+    3px 3px 0 var(--pk-yellow);
+}
+
+.tip :global(.label) {
+  color: var(--text-3);
 }
 
 .tipValue {
-  font-size: 16px;
+  font-size: 17px;
   margin-top: 4px;
 }
 
 .tipSub {
   font-size: 12px;
   color: var(--text-2);
+}
+
+.keyAvg {
+  width: 12px !important;
+  height: 0 !important;
+  border-radius: 0 !important;
+  border-top: 1.5px dashed rgba(255, 255, 255, 0.5);
 }

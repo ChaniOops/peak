@@ -25,10 +25,10 @@ export function LivePill() {
       {show && (
         <motion.div
           className={s.wrap}
-          initial={{ opacity: 0, y: 14, scale: 0.55, filter: 'blur(6px)' }}
+          initial={{ opacity: 0, y: 10, scale: 0.92, filter: 'blur(4px)' }}
           animate={{ opacity: 1, y: 0, scale: 1, filter: 'blur(0px)' }}
-          exit={{ opacity: 0, y: 10, scale: 0.7, filter: 'blur(4px)', transition: { duration: 0.2 } }}
-          transition={{ duration: 0.55, ease: [0.18, 1.25, 0.4, 1] }}
+          exit={{ opacity: 0, y: 8, scale: 0.94, filter: 'blur(3px)', transition: { duration: 0.18 } }}
+          transition={{ duration: 0.28, ease: [0.18, 1.25, 0.4, 1] }}
         >
           <Link to="/track" className={`${s.pill} pg-float`} aria-label="Return to live session">
             <span className={`${s.dot} ${paused ? s.paused : ''}`} />
