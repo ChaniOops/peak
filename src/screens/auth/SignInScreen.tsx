@@ -1,24 +1,152 @@
 import { useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
-import { ArrowRight, Eye, EyeOff } from 'lucide-react'
+import { ChevronLeft, Eye, EyeOff, Lock, Mail, UserRound } from 'lucide-react'
 import { api, ApiError } from '../../api'
 import { useAuth } from '../../app/auth'
-import { Button, Field, IconButton, Notice } from '../../components/ui/ui'
+import { Button, Field, IconButton } from '../../components/ui/ui'
+import { BlurReplace } from '../../components/ui/BlurReplace'
 import { PeakMark } from '../../components/brand/PeakMark'
-import { EASE_OUT, rise, stagger } from '../../lib/motion'
+import { POP_EASE, SOFT } from '../../lib/motion'
 import s from './signin.module.css'
 
+/**
+ * FeralUI Screenery Login → Email flow, re-themed for Peak's black + lime.
+ * Auth is unchanged: the same signIn(email, password) / signInDemo() calls.
+ */
+type Step = 'welcome' | 'email'
+
 export function SignInScreen() {
-  const { signInDemo, signIn } = useAuth()
+  const [step, setStep] = useState<Step>('welcome')
+  return (
+    <div className={s.page}>
+      <AnimatePresence mode="wait" initial={false}>
+        <motion.div
+          key={step}
+          className={s.scene}
+          exit={{ opacity: 0, y: -8, transition: { duration: 0.18, ease: SOFT } }}
+        >
+          {step === 'welcome' ? <Welcome onEmail={() => setStep('email')} /> : <EmailForm onBack={() => setStep('welcome')} />}
+        </motion.div>
+      </AnimatePresence>
+    </div>
+  )
+}
+
+/* ── Login (Feral LoginScreen) ────────────────────────────────────────── */
+
+function Welcome({ onEmail }: { onEmail: () => void }) {
+  const { signInDemo } = useAuth()
+  const [busy, setBusy] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+
+  async function demo() {
+    setBusy(true)
+    setError(null)
+    try {
+      await signInDemo()
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : 'Demo sign-in failed')
+      setBusy(false)
+    }
+  }
+
+  return (
+    <>
+      <motion.div
+        className={s.glow}
+        initial={{ opacity: 0, y: 90 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.1, duration: 1.1, ease: SOFT }}
+        aria-hidden="true"
+      />
+      <div className={s.copy}>
+        <motion.div
+          className={`${s.brand} glass`}
+          initial={{ opacity: 0, scale: 0.6, y: 12 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          transition={{ opacity: { delay: 0.1, duration: 0.15 }, default: { delay: 0.1, duration: 0.6, ease: POP_EASE } }}
+        >
+          <PeakMark size={40} framed={false} />
+        </motion.div>
+        <motion.h1 initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1, duration: 0.6, ease: SOFT }}>
+          Every step climbs.
+        </motion.h1>
+        <motion.p initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1, duration: 0.55, ease: SOFT }}>
+          Sign in to Peak. Move on campus, climb together.
+        </motion.p>
+      </div>
+
+      <motion.div
+        className={`${s.sheet} glass`}
+        initial={{ opacity: 0, y: 26 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ opacity: { delay: 0.18, duration: 0.16 }, default: { delay: 0.18, duration: 0.6, ease: SOFT } }}
+      >
+        <motion.button
+          type="button"
+          className={`${s.btn} ${s.btnLight}`}
+          onClick={onEmail}
+          disabled={busy}
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.18, duration: 0.45, ease: SOFT }}
+        >
+          <Mail size={18} strokeWidth={2} />
+          Sign in with email
+        </motion.button>
+        {api.demoAvailable && (
+          <motion.button
+            type="button"
+            className={`${s.btn} ${s.btnDark}`}
+            onClick={() => void demo()}
+            disabled={busy}
+            aria-busy={busy || undefined}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.18, duration: 0.45, ease: SOFT }}
+          >
+            <UserRound size={18} strokeWidth={2} />
+            <BlurReplace id={busy ? 'busy' : 'idle'}>{busy ? 'Signing in…' : 'Continue as demo student'}</BlurReplace>
+          </motion.button>
+        )}
+        <AnimatePresence initial={false}>
+          {error && (
+            <motion.p
+              className={s.sheetError}
+              role="alert"
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.3, ease: SOFT }}
+            >
+              {error}
+            </motion.p>
+          )}
+        </AnimatePresence>
+      </motion.div>
+
+      <motion.p className={s.terms} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.24, duration: 0.45 }}>
+        FitConnect · Campus movement
+      </motion.p>
+    </>
+  )
+}
+
+/* ── Email (Feral EmailScreen) ────────────────────────────────────────── */
+
+function EmailForm({ onBack }: { onBack: () => void }) {
+  const { signIn, signInDemo } = useAuth()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [showPw, setShowPw] = useState(false)
   const [busy, setBusy] = useState<'password' | 'demo' | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [attempt, setAttempt] = useState(0)
+  const ready = email.includes('@') && password.length > 0
 
   async function submit(e: React.FormEvent) {
     e.preventDefault()
+    if (!ready || busy) return
     setBusy('password')
     setError(null)
     try {
@@ -42,26 +170,49 @@ export function SignInScreen() {
     }
   }
 
-  return (
-    <div className={s.page}>
-      <div className={s.glow} aria-hidden />
-      <motion.header className={s.top} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.6, ease: EASE_OUT }}>
-        <PeakMark size={28} />
-        <span className={s.wordmark}>Peak</span>
-      </motion.header>
+  const rise = (delay: number, y = 12) => ({
+    initial: { opacity: 0, y },
+    animate: { opacity: 1, y: 0 },
+    transition: { opacity: { delay, duration: 0.14 }, default: { delay, duration: 0.5, ease: SOFT } },
+  })
 
-      <motion.main className={s.panel} variants={stagger} initial="hidden" animate="show">
-        <motion.div variants={rise} className={s.intro}>
-          <h1 className={`display ${s.title}`}>Sign in to Peak</h1>
-          <p className={s.tag}>Move on campus. Climb together.</p>
+  return (
+    <>
+      <motion.div
+        className={s.emGlow}
+        initial={{ opacity: 0, y: 60 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.08, duration: 0.9, ease: SOFT }}
+        aria-hidden="true"
+      />
+      <motion.div
+        className={s.back}
+        initial={{ opacity: 0, scale: 0.8 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ delay: 0.08, duration: 0.45, ease: SOFT }}
+      >
+        <IconButton label="Back" variant="secondary" size={38} className="glass" onClick={onBack} disabled={busy !== null}>
+          <ChevronLeft size={18} />
+        </IconButton>
+      </motion.div>
+
+      <form className={s.body} onSubmit={(e) => void submit(e)} noValidate>
+        <motion.h1 {...rise(0.08)}>Welcome back.</motion.h1>
+        <motion.div {...rise(0.08, 10)} className={error ? s.subError : s.sub} aria-live="polite">
+          <motion.span key={attempt} animate={error ? { x: [0, -5, 4, -2, 0] } : undefined} transition={{ duration: 0.4 }} style={{ display: 'block' }}>
+            <BlurReplace id={error ? `e${attempt}` : 'hello'} origin="left center" block>
+              {error ?? 'Sign in with your campus account.'}
+            </BlurReplace>
+          </motion.span>
         </motion.div>
 
-        <motion.form variants={rise} className={s.form} onSubmit={(e) => void submit(e)} noValidate>
+        <motion.div {...rise(0.15)} className={s.fieldGap}>
           <Field
             label="Email"
+            hideLabel
+            icon={<Mail size={18} strokeWidth={1.8} />}
             type="email"
-            required
-            placeholder="you@campus.edu"
+            placeholder="Email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             autoComplete="email"
@@ -69,13 +220,17 @@ export function SignInScreen() {
             autoCapitalize="off"
             spellCheck={false}
             enterKeyHint="next"
+            autoFocus
             error={Boolean(error)}
           />
+        </motion.div>
+        <motion.div {...rise(0.15)} className={s.fieldGapSm}>
           <Field
             label="Password"
+            hideLabel
+            icon={<Lock size={18} strokeWidth={1.8} />}
             type={showPw ? 'text' : 'password'}
-            required
-            placeholder="••••••••"
+            placeholder="Password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             autoComplete="current-password"
@@ -85,50 +240,32 @@ export function SignInScreen() {
               <IconButton
                 type="button"
                 variant="ghost"
-                size={36}
+                size={38}
                 className={s.reveal}
                 label={showPw ? 'Hide password' : 'Show password'}
                 onClick={() => setShowPw((v) => !v)}
               >
-                {showPw ? <EyeOff size={16} /> : <Eye size={16} />}
+                <BlurReplace id={showPw ? 'hide' : 'show'}>{showPw ? <EyeOff size={17} /> : <Eye size={17} />}</BlurReplace>
               </IconButton>
             }
           />
+        </motion.div>
 
-          <AnimatePresence initial={false}>
-            {error && (
-              <motion.div
-                key={attempt}
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: 'auto', x: [0, -6, 5, -3, 0] }}
-                exit={{ opacity: 0, height: 0 }}
-                transition={{ duration: 0.36, ease: EASE_OUT, x: { duration: 0.4 } }}
-              >
-                <Notice tone="danger">{error}</Notice>
-              </motion.div>
-            )}
-          </AnimatePresence>
-
-          <Button type="submit" size="lg" block loading={busy === 'password'} disabled={busy !== null || !email || !password}>
-            Sign in {busy !== 'password' && <ArrowRight size={16} />}
+        <motion.div {...rise(0.22, 10)}>
+          <Button type="submit" size="lg" block className={s.submit} loading={busy === 'password'} disabled={!ready || busy !== null}>
+            {busy === 'password' ? 'Signing in…' : 'Sign in'}
           </Button>
-        </motion.form>
+        </motion.div>
 
         {api.demoAvailable && (
-          <motion.div variants={rise} className={s.alt}>
-            <div className={s.or}>
-              <span>or</span>
-            </div>
-            <Button variant="secondary" size="lg" block loading={busy === 'demo'} disabled={busy !== null} onClick={() => void demo()}>
-              Continue as demo student
-            </Button>
-          </motion.div>
+          <motion.p className={s.foot} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.22, duration: 0.45 }}>
+            Just looking?{' '}
+            <button type="button" className={s.footLink} onClick={() => void demo()} disabled={busy !== null}>
+              <b>{busy === 'demo' ? 'Signing in…' : 'Continue as demo student'}</b>
+            </button>
+          </motion.p>
         )}
-      </motion.main>
-
-      <motion.footer className={s.foot} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.4, duration: 0.6 }}>
-        <span className="label">FitConnect · Campus movement</span>
-      </motion.footer>
-    </div>
+      </form>
+    </>
   )
 }

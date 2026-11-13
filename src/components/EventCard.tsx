@@ -2,6 +2,7 @@ import { Clock, MapPin, Users } from 'lucide-react'
 import type { CampusEvent, MyEventStatus, SportKind } from '../api/types'
 import { formatEventTime } from '../lib/format'
 import { Button, Chip, type Tone } from './ui/ui'
+import { BlurReplace } from './ui/BlurReplace'
 import s from './EventCard.module.css'
 
 const SPORT: Record<SportKind, string> = {
@@ -33,7 +34,9 @@ export function EventCard({ e, onJoin, busy }: { e: CampusEvent; onJoin?: () => 
         <span className="label">{SPORT[e.sport]}</span>
         {e.myStatus !== 'none' ? (
           <Chip tone={STATUS[e.myStatus][0]} dot>
-            {STATUS[e.myStatus][1]}
+            <BlurReplace id={e.myStatus} origin="right center">
+              {STATUS[e.myStatus][1]}
+            </BlurReplace>
           </Chip>
         ) : (
           <span className={s.reward}>+{e.pointsOnVerify} on verify</span>

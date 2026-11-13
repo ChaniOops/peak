@@ -1,4 +1,4 @@
-import { useId, type ButtonHTMLAttributes, type InputHTMLAttributes, type ReactNode } from 'react'
+import { useId, type ButtonHTMLAttributes, type InputHTMLAttributes, type ReactNode, type Ref } from 'react'
 import { Link, type LinkProps } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { AlertCircle, ChevronRight, Loader2, RotateCcw } from 'lucide-react'
@@ -240,24 +240,43 @@ export function ListRow({
 
 /* ── Forms ──────────────────────────────────────────────────────────── */
 
+/**
+ * FeralUI glass well: soft inset surface, leading icon that wakes on focus,
+ * accent ring when active. `hideLabel` keeps the label for screen readers
+ * only (placeholder-led layout, as in the Feral email screen).
+ */
 export function Field({
   label,
   hint,
   error,
+  icon,
+  hideLabel,
   className = '',
   trailing,
+  inputRef,
   ...input
-}: InputHTMLAttributes<HTMLInputElement> & { label: string; hint?: string; error?: boolean; trailing?: ReactNode }) {
+}: InputHTMLAttributes<HTMLInputElement> & {
+  label: string
+  hint?: string
+  error?: boolean
+  icon?: ReactNode
+  hideLabel?: boolean
+  trailing?: ReactNode
+  inputRef?: Ref<HTMLInputElement>
+}) {
   const id = useId()
   return (
-    <label className={cx(s.field, error && s.fieldError, className)} htmlFor={id}>
-      <span className={s.fieldLabel}>{label}</span>
-      <span className={s.inputWrap}>
-        <input id={id} className={s.input} aria-invalid={error || undefined} {...input} />
+    <div className={cx(s.field, error && s.fieldError, className)}>
+      <label className={hideLabel ? 'visually-hidden' : s.fieldLabel} htmlFor={id}>
+        {label}
+      </label>
+      <label className={s.inputWrap} htmlFor={id}>
+        {icon && <span className={s.fieldIcon}>{icon}</span>}
+        <input ref={inputRef} id={id} className={s.input} aria-invalid={error || undefined} {...input} />
         {trailing}
-      </span>
+      </label>
       {hint && <span className={s.fieldHint}>{hint}</span>}
-    </label>
+    </div>
   )
 }
 

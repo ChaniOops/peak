@@ -461,49 +461,82 @@
   position: relative;
   display: flex;
   align-items: center;
-  border-radius: 12px;
-  background: rgba(255, 255, 255, 0.025);
+  gap: 10px;
+  height: 52px;
+  padding: 0 6px 0 16px;
+  border-radius: 16px;
+  cursor: text;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.055), rgba(255, 255, 255, 0.03));
   box-shadow:
-    inset 0 0 0 1px var(--line-strong),
-    inset 0 1px 2px rgba(0, 0, 0, 0.4);
+    inset 0 1px 0 rgba(255, 255, 255, 0.07),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.08),
+    0 1px 2px rgba(0, 0, 0, 0.4),
+    0 12px 26px -20px rgba(0, 0, 0, 0.9);
   transition:
-    box-shadow 0.2s,
-    background 0.2s;
+    box-shadow 0.2s ease,
+    background 0.2s ease;
 }
 
 .inputWrap:focus-within {
-  background: rgba(255, 255, 255, 0.04);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.075), rgba(255, 255, 255, 0.045));
   box-shadow:
-    inset 0 0 0 1px var(--line-focus),
-    0 0 0 4px rgba(255, 255, 255, 0.05);
+    inset 0 1px 0 rgba(255, 255, 255, 0.09),
+    inset 0 0 0 1.5px rgba(200, 241, 105, 0.7),
+    0 1px 2px rgba(0, 0, 0, 0.4),
+    0 12px 26px -18px rgba(0, 0, 0, 0.95);
 }
 
-.fieldError .inputWrap {
+.fieldError .inputWrap,
+.fieldError .inputWrap:focus-within {
   box-shadow:
-    inset 0 0 0 1px rgba(255, 111, 97, 0.55),
-    0 0 0 4px rgba(255, 111, 97, 0.08);
+    inset 0 1px 0 rgba(255, 255, 255, 0.07),
+    inset 0 0 0 1.5px rgba(255, 111, 97, 0.6),
+    0 12px 26px -20px rgba(0, 0, 0, 0.9);
+}
+
+.fieldIcon {
+  display: grid;
+  place-items: center;
+  flex: none;
+  color: var(--text);
+  opacity: 0.42;
+  transition:
+    opacity 0.2s ease,
+    color 0.2s ease;
+}
+
+.inputWrap:focus-within .fieldIcon {
+  color: var(--accent);
+  opacity: 1;
+}
+
+.fieldError .fieldIcon {
+  color: var(--danger);
+  opacity: 0.8;
 }
 
 .input {
   flex: 1;
   min-width: 0;
-  height: 48px;
-  padding: 0 14px;
+  height: 100%;
+  padding: 0;
   border: 0;
   background: transparent;
   outline: none;
   font-size: 16px; /* ≥16px stops iOS zoom-on-focus */
+  font-weight: 500;
   letter-spacing: -0.01em;
 }
 
 .input::placeholder {
   color: var(--text-3);
+  font-weight: 450;
 }
 
 /* keep autofill on-theme instead of the browser's yellow */
 .input:-webkit-autofill {
   -webkit-text-fill-color: var(--text);
-  -webkit-box-shadow: 0 0 0 40px #0d0d0d inset;
+  -webkit-box-shadow: 0 0 0 40px #121212 inset;
   caret-color: var(--text);
 }
 

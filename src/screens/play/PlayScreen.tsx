@@ -5,6 +5,7 @@ import { api, ApiError } from '../../api'
 import { useLive } from '../../api/useLive'
 import { ErrorNote, ScreenHeader, Section, Skeleton, Chip, EmptyState, List, ListRow, Notice } from '../../components/ui/ui'
 import { buttonClass } from '../../components/ui/buttonClass'
+import { BlurReplace } from '../../components/ui/BlurReplace'
 import { EventCard } from '../../components/EventCard'
 import { timeAgo } from '../../lib/format'
 import s from './play.module.css'
@@ -51,19 +52,11 @@ export function PlayScreen() {
                 title={c.eventTitle}
                 meta={`Scanned ${timeAgo(c.scannedAt)}`}
                 trailing={
-                  c.status === 'pending' ? (
-                    <Chip tone="ember" dot>
-                      Pending verification
-                    </Chip>
-                  ) : c.status === 'verified' ? (
-                    <Chip tone="ice" dot>
-                      Verified
-                    </Chip>
-                  ) : (
-                    <Chip tone="danger" dot>
-                      Not approved
-                    </Chip>
-                  )
+                  <Chip tone={c.status === 'pending' ? 'ember' : c.status === 'verified' ? 'ice' : 'danger'} dot>
+                    <BlurReplace id={c.status} origin="right center">
+                      {c.status === 'pending' ? 'Pending verification' : c.status === 'verified' ? 'Verified' : 'Not approved'}
+                    </BlurReplace>
+                  </Chip>
                 }
               />
             ))}
