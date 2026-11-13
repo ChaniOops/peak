@@ -156,13 +156,6 @@
   color: var(--accent);
 }
 
-.sim {
-  font-family: var(--font-mono);
-  font-size: 9px;
-  text-transform: uppercase;
-  color: var(--ember);
-}
-
 .code {
   font-family: var(--font-mono);
   font-size: 13px;

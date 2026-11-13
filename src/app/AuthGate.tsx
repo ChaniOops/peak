@@ -39,8 +39,10 @@ export function AuthGate() {
         setUser(u)
         setStatus('signed-in')
       },
-      async signInWithEmail(email) {
-        await api.signInWithEmail(email)
+      async signIn(email, password) {
+        const u = await api.signIn(email, password)
+        setUser(u)
+        setStatus('signed-in')
       },
       async signOut() {
         await api.signOut()

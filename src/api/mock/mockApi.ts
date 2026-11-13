@@ -23,7 +23,8 @@ import type {
   FeedItem,
   LeaderboardEntry,
   LeaderboardScope,
-  NewActivity,
+  LiveActivityHandle,
+  LiveTotals,
   Notice,
   RealtimeEvent,
   Redemption,
@@ -32,6 +33,7 @@ import type {
   SummitProgress,
   TodaySummary,
   Topic,
+  TrackedActivityType,
   UserProfile,
 } from '../types'
 import { DB_VERSION, SUMMIT_TARGET_STEPS, seedDb, type MockDb, type MockUser } from './fixtures'
@@ -63,9 +65,9 @@ function load(): MockDb {
   return seedDb()
 }
 
-/** MOCK RULE — stand-in for the backend points engine. */
-function mockPointsFor(a: NewActivity): number {
-  if (a.durationSec < 60) return 0
+/** MOCK RULE — stand-in for the backend points engine (sessions under 2 min earn 0). */
+function mockPointsFor(a: { type: TrackedActivityType; steps: number | null; distanceM: number; activeSec: number }): number {
+  if (a.activeSec < 120) return 0
   const km = a.distanceM / 1000
   let pts = 0
   if (a.type === 'walk') pts = (a.steps ?? a.distanceM / 0.75) / 100
@@ -76,6 +78,7 @@ function mockPointsFor(a: NewActivity): number {
 
 export class MockApi implements Api {
   readonly mode = 'mock' as const
+  readonly demoAvailable = true
   private db: MockDb = load()
   private listeners = new Set<Listener>()
   private channel: BroadcastChannel | null =
@@ -248,16 +251,7 @@ export class MockApi implements Api {
     const type = (['walk', 'run', 'cycle'] as const)[Math.floor(Math.random() * 3)]
     const distanceM = type === 'cycle' ? 5000 + Math.random() * 9000 : 1500 + Math.random() * 4000
     const steps = type === 'walk' ? Math.round(distanceM / 0.75) : null
-    const pts = mockPointsFor({
-      type,
-      distanceM,
-      steps,
-      durationSec: 1200,
-      startedAt: '',
-      endedAt: '',
-      route: [],
-      sources: { motion: true, gps: true, simulated: true },
-    })
+    const pts = mockPointsFor({ type, distanceM, steps, activeSec: 1200 })
     this.award(u.id, pts)
     u.weekSteps += steps ?? 0
     const notices: Notice[] = []
@@ -281,7 +275,7 @@ export class MockApi implements Api {
     return this.profile()
   }
 
-  async signInWithEmail(): Promise<void> {
+  async signIn(): Promise<UserProfile> {
     throw new ApiError('Email sign-in needs the backend. Use the demo account for now.', 'not_available')
   }
 
@@ -317,10 +311,11 @@ export class MockApi implements Api {
   async getToday(): Promise<TodaySummary> {
     await latency()
     const t = this.db.days[dayKey(new Date())]
+    const live = this.db.live
     return {
-      steps: t?.steps ?? 0,
-      distanceM: t?.distanceM ?? 0,
-      activeMinutes: t?.activeMin ?? 0,
+      steps: (t?.steps ?? 0) + (live?.steps ?? 0),
+      distanceM: (t?.distanceM ?? 0) + (live?.distanceM ?? 0),
+      activeMinutes: (t?.activeMin ?? 0) + Math.floor((live?.activeSec ?? 0) / 60),
       movePoints: t?.points ?? 0,
     }
   }
@@ -341,7 +336,7 @@ export class MockApi implements Api {
     return {
       weekStart: start.toISOString(),
       weekEnd: end.toISOString(),
-      steps: this.weekSteps(),
+      steps: this.weekSteps() + (this.db.live?.steps ?? 0),
       targetSteps: SUMMIT_TARGET_STEPS,
     }
   }
@@ -359,49 +354,104 @@ export class MockApi implements Api {
     return clone(this.db.activities.slice(0, limit))
   }
 
-  async saveActivity(input: NewActivity): Promise<ActivitySaveResult> {
+  async startActivity(type: TrackedActivityType): Promise<LiveActivityHandle> {
+    await latency()
+    if (this.db.live) await this.finishLive(this.db.live.id, null) // like the backend: auto-complete a lingering session
+    this.db.live = { id: uid('a-'), type, startedAt: new Date().toISOString(), steps: 0, distanceM: 0, activeSec: 0 }
+    this.commit(['today', 'summit'])
+    return { id: this.db.live.id }
+  }
+
+  async pushActivity(id: string, totals: LiveTotals): Promise<void> {
+    const live = this.db.live
+    if (!live || live.id !== id) return
+    // cumulative, never decreasing
+    live.steps = Math.max(live.steps, totals.steps ?? 0)
+    live.distanceM = Math.max(live.distanceM, Math.round(totals.distanceM))
+    live.activeSec = Math.max(live.activeSec, Math.round(totals.activeSec))
+    this.commit(['today', 'summit'])
+  }
+
+  async finishActivity(id: string, totals: LiveTotals): Promise<ActivitySaveResult> {
     await sleep(500)
+    const result = await this.finishLive(id, totals)
+    if (!result) throw new ApiError('This session is no longer live', 'activity_not_live')
+    return result
+  }
+
+  async discardActivity(id: string): Promise<void> {
+    if (this.db.live?.id !== id) return
+    this.db.live = null
+    this.commit(['today', 'summit'])
+  }
+
+  private async finishLive(id: string, totals: LiveTotals | null): Promise<ActivitySaveResult | null> {
+    const live = this.db.live
+    if (!live || live.id !== id) return null
+    if (totals) {
+      live.steps = Math.max(live.steps, totals.steps ?? 0)
+      live.distanceM = Math.max(live.distanceM, Math.round(totals.distanceM))
+      live.activeSec = Math.max(live.activeSec, Math.round(totals.activeSec))
+    }
+    this.db.live = null
+
     const notices: Notice[] = []
     const badgesEarned: Badge[] = []
     const prevBest = Math.max(0, ...this.db.activities.map((a) => a.distanceM))
     const summitBefore = this.weekSteps()
-
-    const pointsAwarded = mockPointsFor(input)
-    const activity: Activity = { ...clone(input), id: uid('a-'), pointsAwarded }
+    const steps = live.type === 'cycle' ? null : live.steps
+    const pointsAwarded = mockPointsFor({ ...live, steps })
+    const activity: Activity = {
+      id: live.id,
+      type: live.type,
+      startedAt: live.startedAt,
+      endedAt: new Date().toISOString(),
+      durationSec: live.activeSec,
+      steps,
+      distanceM: live.distanceM,
+      pointsAwarded,
+    }
     this.db.activities.unshift(activity)
 
     const day = this.today()
-    day.steps += input.steps ?? 0
-    day.distanceM += Math.round(input.distanceM)
-    day.activeMin += Math.round(input.durationSec / 60)
+    day.steps += steps ?? 0
+    day.distanceM += live.distanceM
+    day.activeMin += Math.round(live.activeSec / 60)
     this.award(this.db.meId, pointsAwarded)
-    this.me.weekSteps += input.steps ?? 0
+    this.me.weekSteps += steps ?? 0
 
-    const label = input.type === 'walk' && input.steps ? `${formatSteps(input.steps)} steps` : formatDistance(input.distanceM)
-    this.pushFeed(this.me.name, 'activity', `${activityVerb(input.type)} ${label}`, pointsAwarded)
-    notices.push({
-      id: uid('n-'),
-      title: 'Activity saved',
-      body: label,
-      points: pointsAwarded,
-      tone: 'accent',
-    })
+    const label = live.type === 'walk' && steps ? `${formatSteps(steps)} steps` : formatDistance(live.distanceM)
+    this.pushFeed(this.me.name, 'activity', `${activityVerb(live.type)} ${label}`, pointsAwarded)
 
     const maybe = (b: Badge | null) => b && badgesEarned.push(b)
     if (this.db.activities.length === 1) maybe(this.earnBadge('b-first', notices))
-    if (input.distanceM > prevBest && prevBest > 0) maybe(this.earnBadge('b-pb', notices))
+    if (live.distanceM > prevBest && prevBest > 0) maybe(this.earnBadge('b-pb', notices))
     if (summitBefore < SUMMIT_TARGET_STEPS && this.weekSteps() >= SUMMIT_TARGET_STEPS)
       maybe(this.earnBadge('b-summit', notices))
     if (this.streakDays() >= 3) maybe(this.earnBadge('b-streak3', notices))
 
+    const before = this.db.movePoints
+    const completed = this.db.challenges.filter((c) => !c.completed)
     this.bumpChallenges('sessions', 1, notices)
-    this.bumpChallenges('deptDistanceKm', input.distanceM / 1000, notices)
+    this.bumpChallenges('deptDistanceKm', live.distanceM / 1000, notices)
+    const completedChallenges = completed.filter((c) => c.completed).map((c) => c.title)
+    const challengePoints = this.db.movePoints - before
 
     this.commit(
       ['profile', 'today', 'summit', 'activities', 'feed', 'challenges', 'leaderboard', 'badges', 'rewards'],
       notices,
     )
-    return { activity: clone(activity), pointsAwarded, badgesEarned }
+    const breakdown = [
+      { label: 'Activity', points: pointsAwarded },
+      { label: 'Challenges', points: challengePoints },
+    ].filter((x) => x.points > 0)
+    return {
+      activity: clone(activity),
+      pointsAwarded: pointsAwarded + challengePoints,
+      breakdown,
+      completedChallenges,
+      badgesEarned,
+    }
   }
 
   // ───────────────────────── social
@@ -521,11 +571,13 @@ export class MockApi implements Api {
     return clone(this.db.checkIns.filter((c) => c.userId === this.db.meId)).reverse()
   }
 
-  async getEventQrPayload(eventId: string) {
+  async getEventCheckInCode(eventId: string) {
     await latency()
     const e = this.db.events.find((x) => x.id === eventId)
     if (!e) throw new ApiError('Event not found', 'not_found')
-    return `${window.location.origin}/play/scan?code=${encodeURIComponent(`${e.id}.${e.qrToken}`)}`
+    const code = `${e.id}.${e.qrToken}`
+    // mock QR is a deep link so a phone's own camera app can open the check-in
+    return { payload: `${window.location.origin}/play/scan?code=${encodeURIComponent(code)}`, code }
   }
 
   async listEventCheckIns(eventId: string) {

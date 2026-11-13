@@ -35,27 +35,35 @@ export interface GeoPoint {
   accuracy?: number
 }
 
-export interface NewActivity {
+/** Cumulative totals since the session started (the backend expects totals, not deltas). */
+export interface LiveTotals {
+  steps: number | null
+  distanceM: number
+  /** moving time, pauses excluded */
+  activeSec: number
+}
+
+export interface LiveActivityHandle {
+  id: string
+}
+
+export interface Activity {
+  id: string
   type: TrackedActivityType
   startedAt: ISODate
-  endedAt: ISODate
-  /** moving time, pauses excluded */
+  endedAt: ISODate | null
   durationSec: number
   steps: number | null
   distanceM: number
-  route: GeoPoint[]
-  /** sensor sources actually used, so the backend can apply its own verification */
-  sources: { motion: boolean; gps: boolean; simulated: boolean }
-}
-
-export interface Activity extends NewActivity {
-  id: string
   pointsAwarded: number
 }
 
 export interface ActivitySaveResult {
   activity: Activity
   pointsAwarded: number
+  /** display-only breakdown of the API's award, zero lines omitted */
+  breakdown: Array<{ label: string; points: number }>
+  completedChallenges: string[]
   badgesEarned: Badge[]
 }
 
@@ -80,7 +88,7 @@ export interface SummitProgress {
   targetSteps: number
 }
 
-export type ChallengeScope = 'individual' | 'department'
+export type ChallengeScope = 'individual' | 'department' | 'campus'
 
 export interface Challenge {
   id: string
@@ -117,7 +125,7 @@ export interface CampusEvent {
   startsAt: ISODate
   endsAt: ISODate
   organiserName: string
-  capacity: number
+  capacity: number | null
   joinedCount: number
   pointsOnVerify: number
   myStatus: MyEventStatus
@@ -141,7 +149,7 @@ export interface Badge {
   id: string
   name: string
   description: string
-  category: BadgeCategory
+  category: BadgeCategory | null
   earnedAt: ISODate | null
 }
 
@@ -173,6 +181,13 @@ export interface FeedItem {
   text: string
   points: number | null
   createdAt: ISODate
+}
+
+export interface EventCheckInCode {
+  /** render this as the QR */
+  payload: string
+  /** short code people can type */
+  code: string
 }
 
 export interface DailyStat {

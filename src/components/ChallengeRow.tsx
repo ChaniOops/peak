@@ -13,8 +13,8 @@ export function ChallengeRow({ c, onJoin }: { c: Challenge; onJoin?: (id: string
     <div className={s.row}>
       <div className={s.top}>
         <span className={s.scope}>
-          {c.scope === 'department' ? <Users size={13} /> : <User size={13} />}
-          {c.scope === 'department' ? 'Team' : 'Solo'}
+          {c.scope === 'individual' ? <User size={13} /> : <Users size={13} />}
+          {c.scope === 'individual' ? 'Solo' : c.scope === 'department' ? 'Team' : 'Campus'}
         </span>
         <span className="label">
           {done ? 'Complete' : `${daysLeft}d left`} · +{c.rewardPoints}

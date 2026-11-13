@@ -7,22 +7,20 @@ import { TopoLines } from '../../components/topo/TopoLines'
 import s from './signin.module.css'
 
 export function SignInScreen() {
-  const { signInDemo, signInWithEmail } = useAuth()
+  const { signInDemo, signIn } = useAuth()
   const [email, setEmail] = useState('')
-  const [sent, setSent] = useState(false)
+  const [password, setPassword] = useState('')
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  async function sendLink(e: React.FormEvent) {
+  async function submit(e: React.FormEvent) {
     e.preventDefault()
     setBusy(true)
     setError(null)
     try {
-      await signInWithEmail(email.trim())
-      setSent(true)
+      await signIn(email.trim(), password)
     } catch (err) {
-      setError(err instanceof ApiError ? err.message : 'Could not send the link')
-    } finally {
+      setError(err instanceof ApiError ? err.message : 'Sign-in failed')
       setBusy(false)
     }
   }
@@ -53,29 +51,34 @@ export function SignInScreen() {
       </motion.div>
 
       <div className={s.actions}>
-        {api.mode === 'mock' && (
+        {api.demoAvailable && (
           <Button size="lg" block onClick={() => void demo()} disabled={busy}>
             Continue as demo student
           </Button>
         )}
-        {sent ? (
-          <p className={s.sent}>Check {email} for your sign-in link.</p>
-        ) : (
-          <form className={s.form} onSubmit={(e) => void sendLink(e)}>
-            <input
-              type="email"
-              required
-              className={s.input}
-              placeholder="you@campus.edu"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              autoComplete="email"
-            />
-            <Button type="submit" variant="secondary" disabled={busy || !email}>
-              Email link
-            </Button>
-          </form>
-        )}
+        <form className={s.form} onSubmit={(e) => void submit(e)}>
+          <input
+            type="email"
+            required
+            className={s.input}
+            placeholder="you@campus.edu"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            autoComplete="email"
+          />
+          <input
+            type="password"
+            required
+            className={s.input}
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            autoComplete="current-password"
+          />
+          <Button type="submit" variant="secondary" size="lg" block disabled={busy || !email || !password}>
+            Sign in
+          </Button>
+        </form>
         {error && <p className={s.error}>{error}</p>}
       </div>
     </div>

@@ -5,7 +5,7 @@ export interface AuthState {
   status: 'loading' | 'signed-in' | 'signed-out'
   user: UserProfile | null
   signInDemo(): Promise<void>
-  signInWithEmail(email: string): Promise<void>
+  signIn(email: string, password: string): Promise<void>
   signOut(): Promise<void>
 }
 

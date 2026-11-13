@@ -20,7 +20,7 @@ const STATUS: Record<Exclude<MyEventStatus, 'none'>, [Tone, string]> = {
 
 export function EventCard({ e, onJoin, busy }: { e: CampusEvent; onJoin?: () => void; busy?: boolean }) {
   const t = formatEventTime(e.startsAt, e.endsAt)
-  const fill = Math.min(1, e.joinedCount / e.capacity)
+  const full = e.capacity !== null && e.joinedCount >= e.capacity
   return (
     <article className={s.card}>
       <div className={s.when}>
@@ -41,16 +41,19 @@ export function EventCard({ e, onJoin, busy }: { e: CampusEvent; onJoin?: () => 
           <div className={s.capacity}>
             <Users size={13} />
             <span>
-              {e.joinedCount}/{e.capacity}
+              {e.joinedCount}
+              {e.capacity !== null ? `/${e.capacity}` : ' going'}
             </span>
-            <span className={s.capBar}>
-              <span style={{ width: `${fill * 100}%` }} />
-            </span>
+            {e.capacity !== null && (
+              <span className={s.capBar}>
+                <span style={{ width: `${Math.min(1, e.joinedCount / e.capacity) * 100}%` }} />
+              </span>
+            )}
           </div>
           {e.myStatus === 'none' ? (
             onJoin && (
-              <Button size="sm" onClick={onJoin} disabled={busy || e.joinedCount >= e.capacity}>
-                {e.joinedCount >= e.capacity ? 'Full' : 'Join'}
+              <Button size="sm" onClick={onJoin} disabled={busy || full}>
+                {full ? 'Full' : 'Join'}
               </Button>
             )
           ) : (

@@ -78,10 +78,9 @@ export function YouScreen() {
                       <div className={s.rowTitle}>
                         {ACTIVITY_LABEL[a.type]} ·{' '}
                         {a.type === 'walk' && a.steps ? `${formatNumber(a.steps)} steps` : formatDistance(a.distanceM)}
-                        {a.sources.simulated && <span className={s.sim}>sim</span>}
                       </div>
                       <div className={s.rowMeta}>
-                        {formatDuration(a.durationSec)} · {timeAgo(a.endedAt)}
+                        {formatDuration(a.durationSec)} · {timeAgo(a.endedAt ?? a.startedAt)}
                       </div>
                     </div>
                     <span className={`num ${s.rowPts}`}>+{a.pointsAwarded}</span>

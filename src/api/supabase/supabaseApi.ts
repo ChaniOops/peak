@@ -18,10 +18,11 @@ const notWired = (what: string) => () =>
 
 export class SupabaseApi implements Api {
   readonly mode = 'supabase' as const
+  readonly demoAvailable = false
 
   getSession = notWired('getSession')
   signInDemo = notWired('signInDemo')
-  signInWithEmail = notWired('signInWithEmail')
+  signIn = notWired('signIn')
   signOut = notWired('signOut')
   getMe = notWired('getMe')
   getToday = notWired('getToday')
@@ -29,7 +30,10 @@ export class SupabaseApi implements Api {
   getSummit = notWired('getSummit')
   getWeekly = notWired('getWeekly')
   listActivities = notWired('listActivities')
-  saveActivity = notWired('saveActivity')
+  startActivity = notWired('startActivity')
+  pushActivity = notWired('pushActivity')
+  finishActivity = notWired('finishActivity')
+  discardActivity = notWired('discardActivity')
   getFeed = notWired('getFeed')
   listChallenges = notWired('listChallenges')
   joinChallenge = notWired('joinChallenge')
@@ -39,7 +43,7 @@ export class SupabaseApi implements Api {
   joinEvent = notWired('joinEvent')
   checkIn = notWired('checkIn')
   listMyCheckIns = notWired('listMyCheckIns')
-  getEventQrPayload = notWired('getEventQrPayload')
+  getEventCheckInCode = notWired('getEventCheckInCode')
   listEventCheckIns = notWired('listEventCheckIns')
   decideCheckIn = notWired('decideCheckIn')
   listBadges = notWired('listBadges')

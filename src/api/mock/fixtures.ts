@@ -1,7 +1,7 @@
 /**
  * Seed data for the in-memory mock backend. Purely illustrative campus data.
  */
-import type { Badge, CheckIn, FeedItem, Redemption, SportKind, TrackedActivityType } from '../types'
+import type { Activity, Badge, CheckIn, FeedItem, Redemption, SportKind, TrackedActivityType } from '../types'
 import { dayKey, startOfWeek } from '../../lib/dates'
 
 export const SUMMIT_TARGET_STEPS = 53_000
@@ -52,17 +52,13 @@ export interface MockChallenge {
   completed: boolean
 }
 
-export interface MockActivity {
+export interface MockLive {
   id: string
   type: TrackedActivityType
   startedAt: string
-  endedAt: string
-  durationSec: number
-  steps: number | null
+  steps: number
   distanceM: number
-  route: { lat: number; lng: number; t: number; accuracy?: number }[]
-  sources: { motion: boolean; gps: boolean; simulated: boolean }
-  pointsAwarded: number
+  activeSec: number
 }
 
 export interface MockReward {
@@ -81,7 +77,9 @@ export interface MockDb {
   departments: { id: string; name: string }[]
   users: MockUser[]
   days: Record<string, MockDay>
-  activities: MockActivity[]
+  activities: Activity[]
+  /** in-progress session, counted live into today + summit */
+  live: MockLive | null
   events: MockEvent[]
   checkIns: CheckIn[]
   challenges: MockChallenge[]
@@ -91,7 +89,7 @@ export interface MockDb {
   feed: FeedItem[]
 }
 
-export const DB_VERSION = 4
+export const DB_VERSION = 5
 
 const DEPARTMENTS = [
   { id: 'cse', name: 'Computer Science' },
@@ -340,6 +338,7 @@ export function seedDb(now = new Date()): MockDb {
     users,
     days,
     activities: [],
+    live: null,
     events,
     checkIns: [
       seedCheckIn('ci-seed-1', 'u-1', 'Arjun Kalita', 'Mechanical', -6),

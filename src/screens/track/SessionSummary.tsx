@@ -11,7 +11,6 @@ import s from './track.module.css'
 export function SessionSummary() {
   const st = useSession()
   const sec = elapsedMs(st) / 1000
-  const activity = st.result?.activity
 
   if (st.phase === 'saving') {
     return (
@@ -38,7 +37,8 @@ export function SessionSummary() {
   }
 
   // saved
-  const route = activity?.route ?? st.route
+  const route = st.route
+  const result = st.result
   return (
     <div className={s.summary}>
       <div className={s.summaryHead}>
@@ -53,10 +53,32 @@ export function SessionSummary() {
         transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
       >
         <div className={`num ${s.pointsValue}`}>
-          +<AnimatedNumber value={st.result?.pointsAwarded ?? 0} from={0} duration={1.2} />
+          +<AnimatedNumber value={result?.pointsAwarded ?? 0} from={0} duration={1.2} />
         </div>
         <div className="label">MovePoints awarded</div>
+        {result && result.breakdown.length > 1 && (
+          <div className={s.breakdown}>
+            {result.breakdown.map((b) => (
+              <span key={b.label}>
+                {b.label} <strong>+{b.points}</strong>
+              </span>
+            ))}
+          </div>
+        )}
+        {result && result.pointsAwarded === 0 && (
+          <p className={s.zeroNote}>Short sessions don’t earn points. Keep moving a little longer next time.</p>
+        )}
       </motion.div>
+
+      {result && result.completedChallenges.length > 0 && (
+        <div className={s.completed}>
+          {result.completedChallenges.map((t) => (
+            <Chip key={t} tone="accent">
+              Completed · {t}
+            </Chip>
+          ))}
+        </div>
+      )}
 
       <div className={s.secondary}>
         <Cell label="Time" value={formatDuration(sec)} />
@@ -76,9 +98,9 @@ export function SessionSummary() {
         </div>
       )}
 
-      {st.result && st.result.badgesEarned.length > 0 && (
+      {result && result.badgesEarned.length > 0 && (
         <div className={s.badgesEarned}>
-          {st.result.badgesEarned.map((b, i) => (
+          {result.badgesEarned.map((b, i) => (
             <motion.div
               key={b.id}
               className={s.badgeEarned}

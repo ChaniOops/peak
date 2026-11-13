@@ -46,13 +46,12 @@
 
 .form {
   display: flex;
+  flex-direction: column;
   gap: 8px;
 }
 
 .input {
-  flex: 1;
-  min-width: 0;
-  height: 44px;
+  height: 48px;
   padding: 0 16px;
   border-radius: var(--r-pill);
   background: var(--surface-1);
@@ -62,11 +61,6 @@
 
 .input:focus {
   border-color: var(--accent);
-}
-
-.sent {
-  font-size: 14px;
-  color: var(--ice);
 }
 
 .error {

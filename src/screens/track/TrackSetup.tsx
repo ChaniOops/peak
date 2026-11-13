@@ -19,9 +19,12 @@ export function TrackSetup() {
   const type = useSession((st) => st.type)
   const setType = useSession((st) => st.setType)
   const start = useSession((st) => st.start)
+  const phase = useSession((st) => st.phase)
+  const startError = useSession((st) => st.startError)
   const uses = USES[type]
   const sensorsMissing = !window.isSecureContext || !motionSupported() || !geolocationSupported()
-  const offerSimulation = api.mode === 'mock' || sensorsMissing
+  // Simulated sessions never reach the real backend.
+  const offerSimulation = api.mode === 'mock'
 
   return (
     <div>
@@ -66,11 +69,14 @@ export function TrackSetup() {
           whileTap={{ scale: 0.94 }}
           onClick={() => void start()}
           aria-label={`Start ${type}`}
+          disabled={phase === 'starting'}
         >
           <span className={s.startPulse} />
-          <span className="display">Start</span>
+          <span className="display">{phase === 'starting' ? '…' : 'Start'}</span>
         </motion.button>
       </div>
+
+      {startError && <p className={s.startError}>{startError}</p>}
 
       <p className={s.wakeNote}>
         <Sun size={14} /> Keep the screen on while tracking. Phones pause sensors in the browser when the screen

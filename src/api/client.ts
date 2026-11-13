@@ -6,10 +6,13 @@ import type {
   Challenge,
   CheckIn,
   DailyStat,
+  EventCheckInCode,
   FeedItem,
+  GeoPoint,
   LeaderboardEntry,
   LeaderboardScope,
-  NewActivity,
+  LiveActivityHandle,
+  LiveTotals,
   RealtimeEvent,
   Redemption,
   Reward,
@@ -17,6 +20,7 @@ import type {
   SummitProgress,
   TodaySummary,
   Topic,
+  TrackedActivityType,
   UserProfile,
 } from './types'
 
@@ -29,8 +33,10 @@ export interface Api {
 
   // session
   getSession(): Promise<UserProfile | null>
+  /** Seeded demo account. `demoAvailable` says whether this works in the current mode. */
+  readonly demoAvailable: boolean
   signInDemo(): Promise<UserProfile>
-  signInWithEmail(email: string): Promise<void>
+  signIn(email: string, password: string): Promise<UserProfile>
   signOut(): Promise<void>
 
   // me
@@ -40,7 +46,13 @@ export interface Api {
   getSummit(): Promise<SummitProgress>
   getWeekly(): Promise<DailyStat[]>
   listActivities(limit?: number): Promise<Activity[]>
-  saveActivity(input: NewActivity): Promise<ActivitySaveResult>
+
+  // live tracking: start → push cumulative totals every ~5 s → finish | discard
+  startActivity(type: TrackedActivityType): Promise<LiveActivityHandle>
+  /** `newRoute` = only GPS samples not sent before. Lost/duplicate pushes are harmless. */
+  pushActivity(id: string, totals: LiveTotals, newRoute: GeoPoint[]): Promise<void>
+  finishActivity(id: string, totals: LiveTotals, newRoute: GeoPoint[]): Promise<ActivitySaveResult>
+  discardActivity(id: string): Promise<void>
 
   // social
   getFeed(limit?: number): Promise<FeedItem[]>
@@ -57,7 +69,7 @@ export interface Api {
   listMyCheckIns(): Promise<CheckIn[]>
 
   // organiser (hidden demo route)
-  getEventQrPayload(eventId: string): Promise<string>
+  getEventCheckInCode(eventId: string): Promise<EventCheckInCode>
   listEventCheckIns(eventId: string): Promise<CheckIn[]>
   decideCheckIn(checkInId: string, decision: 'verified' | 'rejected'): Promise<void>
 

@@ -19,7 +19,7 @@ export function OrganiserEventScreen() {
   const { eventId = '' } = useParams()
   const event = useLive(`event:${eventId}`, () => api.getEvent(eventId), ['events'])
   const checkIns = useLive(`event-checkins:${eventId}`, () => api.listEventCheckIns(eventId), ['checkins'])
-  const payload = useLive(`event-qr:${eventId}`, () => api.getEventQrPayload(eventId), [])
+  const qr = useLive(`event-qr:${eventId}`, () => api.getEventCheckInCode(eventId), [])
 
   const pending = checkIns.data?.filter((c) => c.status === 'pending') ?? []
   const decided = checkIns.data?.filter((c) => c.status !== 'pending') ?? []
@@ -43,8 +43,8 @@ export function OrganiserEventScreen() {
       <div className={s.grid}>
         <section className={s.qrCard}>
           <div className="label">Students scan to check in</div>
-          {payload.data ? <QrImage text={payload.data} /> : <Skeleton h={240} />}
-          {payload.data && <code className={s.code}>{codeFrom(payload.data)}</code>}
+          {qr.data ? <QrImage text={qr.data.payload} /> : qr.error ? <ErrorNote error={qr.error} /> : <Skeleton h={240} />}
+          {qr.data && <code className={s.code}>{qr.data.code}</code>}
         </section>
 
         <section>
@@ -147,12 +147,4 @@ function QrImage({ text }: { text: string }) {
     }
   }, [text])
   return src ? <img src={src} alt="Event check-in QR code" className={s.qr} /> : <Skeleton h={240} />
-}
-
-function codeFrom(payload: string) {
-  try {
-    return new URL(payload).searchParams.get('code') ?? payload
-  } catch {
-    return payload
-  }
 }
