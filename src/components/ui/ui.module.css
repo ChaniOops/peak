@@ -1,0 +1,248 @@
+.header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 0 18px;
+}
+
+.title {
+  font-size: 44px;
+  margin-top: 4px;
+}
+
+.section {
+  margin-top: 26px;
+}
+
+.sectionHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.sectionAction {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  font-size: 13px;
+  color: var(--text-2);
+}
+
+.card {
+  position: relative;
+  background: var(--surface-1);
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  overflow: hidden;
+}
+
+.pad {
+  padding: 16px;
+}
+
+/* Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border-radius: var(--r-pill);
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  transition:
+    transform 0.15s var(--ease-out),
+    background 0.2s,
+    opacity 0.2s;
+  white-space: nowrap;
+}
+
+.btn:active:not(:disabled) {
+  transform: scale(0.97);
+}
+
+.btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.sm {
+  height: 32px;
+  padding: 0 14px;
+  font-size: 13px;
+}
+.md {
+  height: 44px;
+  padding: 0 20px;
+  font-size: 15px;
+}
+.lg {
+  height: 56px;
+  padding: 0 26px;
+  font-size: 16px;
+}
+.block {
+  width: 100%;
+}
+
+.primary {
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+.secondary {
+  background: var(--surface-3);
+  color: var(--text);
+  border: 1px solid var(--line-strong);
+}
+.ghost {
+  color: var(--text-2);
+}
+.danger {
+  background: var(--danger-soft);
+  color: var(--danger);
+}
+
+/* Chips */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 24px;
+  padding: 0 10px;
+  border-radius: var(--r-pill);
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+}
+.tone_neutral {
+  background: var(--surface-3);
+  color: var(--text-2);
+}
+.tone_accent {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+.tone_ice {
+  background: var(--ice-soft);
+  color: var(--ice);
+}
+.tone_ember {
+  background: var(--ember-soft);
+  color: var(--ember);
+}
+.tone_danger {
+  background: var(--danger-soft);
+  color: var(--danger);
+}
+
+/* Stats */
+.stat {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.statValue {
+  font-size: 26px;
+  line-height: 1;
+}
+.statBig {
+  font-size: 64px;
+  line-height: 0.9;
+}
+.unit {
+  margin-left: 4px;
+  font-size: 0.45em;
+  font-weight: 600;
+  color: var(--text-2);
+}
+
+/* Segmented */
+.segmented {
+  display: grid;
+  grid-auto-columns: 1fr;
+  grid-auto-flow: column;
+  padding: 4px;
+  gap: 4px;
+  background: var(--surface-1);
+  border: 1px solid var(--line);
+  border-radius: var(--r-pill);
+}
+.segment {
+  height: 34px;
+  border-radius: var(--r-pill);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-2);
+  transition:
+    background 0.2s,
+    color 0.2s;
+}
+.segmentOn {
+  background: var(--surface-3);
+  color: var(--text);
+}
+
+/* Progress */
+.bar {
+  height: 6px;
+  border-radius: 3px;
+  background: var(--surface-3);
+  overflow: hidden;
+}
+.barFill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.8s var(--ease-out);
+}
+.fill_accent {
+  background: var(--accent);
+}
+.fill_ice {
+  background: var(--ice);
+}
+.fill_ember {
+  background: var(--ember);
+}
+
+.skeleton {
+  border-radius: var(--r-lg);
+  background: linear-gradient(90deg, var(--surface-1), var(--surface-2), var(--surface-1));
+  background-size: 200% 100%;
+  animation: shimmer 1.4s linear infinite;
+}
+@keyframes shimmer {
+  to {
+    background-position: -200% 0;
+  }
+}
+
+.errorNote {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  color: var(--danger);
+  font-size: 14px;
+}
+
+.empty {
+  padding: 28px 16px;
+  text-align: center;
+  border: 1px dashed var(--line-strong);
+  border-radius: var(--r-lg);
+  font-size: 14px;
+}
+.emptyTitle {
+  font-weight: 700;
+  margin-bottom: 4px;
+}

@@ -1,2 +1,7 @@
 docs/
 *.local.md
+node_modules/
+dist/
+*.tsbuildinfo
+.env.local
+.env.*.local

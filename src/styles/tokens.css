@@ -1,0 +1,44 @@
+:root {
+  color-scheme: dark;
+
+  /* Surfaces — near-black with a faint moss tint, like shadowed rock */
+  --bg: #0a0c0b;
+  --surface-1: #111413;
+  --surface-2: #171b19;
+  --surface-3: #1f2421;
+  --line: rgba(226, 233, 228, 0.08);
+  --line-strong: rgba(226, 233, 228, 0.16);
+
+  /* Text */
+  --text: #e9eee9;
+  --text-2: #a1aaa4;
+  --text-3: #69716c;
+
+  /* Restrained accents: one primary, three semantic */
+  --accent: #c8f169; /* lichen — progress, primary action */
+  --accent-ink: #11160a;
+  --accent-soft: rgba(200, 241, 105, 0.12);
+  --ice: #8cd2f0; /* verified, info */
+  --ice-soft: rgba(140, 210, 240, 0.12);
+  --ember: #f5a25d; /* streaks, pending */
+  --ember-soft: rgba(245, 162, 93, 0.12);
+  --danger: #ff6f61;
+  --danger-soft: rgba(255, 111, 97, 0.12);
+
+  /* Type */
+  --font-body: 'Archivo', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+
+  /* Shape & space */
+  --r-sm: 10px;
+  --r-md: 16px;
+  --r-lg: 22px;
+  --r-pill: 999px;
+  --gutter: 16px;
+  --tabbar-h: 64px;
+  --max-w: 480px;
+
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-top: env(safe-area-inset-top, 0px);
+}

@@ -1,0 +1,69 @@
+.page {
+  position: relative;
+  max-width: var(--max-w);
+  min-height: 100vh;
+  margin: 0 auto;
+  padding: calc(var(--safe-top) + 24px) var(--gutter) calc(var(--safe-bottom) + 28px);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  overflow: hidden;
+}
+
+.topo {
+  position: absolute;
+  inset: 0 0 auto;
+  width: 100%;
+  height: 70%;
+  color: rgba(226, 233, 228, 0.09);
+  pointer-events: none;
+  mask-image: linear-gradient(180deg, #000 40%, transparent);
+}
+
+.brand {
+  position: relative;
+  margin-top: 28vh;
+}
+
+.word {
+  font-size: 128px;
+  line-height: 0.82;
+  margin-top: 8px;
+}
+
+.tag {
+  margin-top: 12px;
+  font-size: 17px;
+  color: var(--text-2);
+}
+
+.actions {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.input {
+  height: 48px;
+  padding: 0 16px;
+  border-radius: var(--r-pill);
+  background: var(--surface-1);
+  border: 1px solid var(--line-strong);
+  outline: none;
+}
+
+.input:focus {
+  border-color: var(--accent);
+}
+
+.error {
+  font-size: 13px;
+  color: var(--danger);
+}
