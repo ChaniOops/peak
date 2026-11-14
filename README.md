@@ -55,6 +55,9 @@ src/screens/                     Home · Track · Play · Compete · You (+ hidd
 **Supabase (phone + laptop):** follow the backend handoff (re-seed shortly before). Phone signs in
 as the demo student, laptop opens `/organiser/event/<event-id>` signed in as the organiser. Scan with
 the in-app scanner: the backend QR payload is `peak:checkin:CODE`, which phone camera apps won't open as a link.
+Two events are live for ~6 h after a re-seed, so one can back up the other (organiser `organiser@peak.test`):
+Futsal `/organiser/event/00000000-0000-4000-c000-000000000001` (`FUTSAL26`) and
+Pickleball `/organiser/event/00000000-0000-4000-c000-000000000003` (`PICKLE26`).
 
 ## Known limitations
 

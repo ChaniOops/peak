@@ -214,8 +214,10 @@ begin
 end $$;
 
 -- ---------------------------------------------------------------------------
--- Events (organised by organiser@peak.test). The live futsal event's QR code is FUTSAL26
--- (payload 'peak:checkin:FUTSAL26'); the demo account is registered but not checked in.
+-- Events (organised by organiser@peak.test). Two QR demo events are live for ~6 hours after a
+-- reset (check-in runs starts_at - 30 min .. ends_at + 30 min), so one is always a backup:
+--   Futsal     ...c000-000000000001  payload 'peak:checkin:FUTSAL26'  (demo registered, not checked in)
+--   Pickleball ...c000-000000000003  payload 'peak:checkin:PICKLE26'  (demo not registered)
 -- ---------------------------------------------------------------------------
 insert into public.events (id, title, sport, description, venue, starts_at, ends_at, capacity, points, organiser_id)
 select v.id::uuid, v.title, v.sport::public.event_sport, v.description, v.venue, v.starts_at, v.ends_at, v.capacity, v.points,
@@ -230,8 +232,7 @@ from (values
    public.campus_day_start(public.campus_date() - 1) + interval '20 hours', 30, 50),
   ('00000000-0000-4000-c000-000000000003', 'Pickleball Open Play', 'pickleball',
    'Paddles provided. All levels welcome.', 'Indoor Court B',
-   public.campus_day_start(public.campus_date() + 1) + interval '7 hours',
-   public.campus_day_start(public.campus_date() + 1) + interval '9 hours', 16, 40),
+   now() - interval '15 minutes', now() + interval '6 hours', 16, 40),
   ('00000000-0000-4000-c000-000000000004', 'Badminton Doubles Ladder', 'badminton',
    'Bring a partner or get paired on court.', 'Badminton Hall',
    public.campus_day_start(public.campus_date() + 2) + interval '17 hours 30 minutes',
@@ -243,6 +244,7 @@ from (values
 ) as v (id, title, sport, description, venue, starts_at, ends_at, capacity, points);
 
 update public.event_secrets set checkin_code = 'FUTSAL26' where event_id = '00000000-0000-4000-c000-000000000001';
+update public.event_secrets set checkin_code = 'PICKLE26' where event_id = '00000000-0000-4000-c000-000000000003';
 
 create temporary table seed_bg as
 select id, row_number() over (order by email) as n from seed_users where email like 'student%';
@@ -260,7 +262,7 @@ select '00000000-0000-4000-c000-000000000002', id, 'checked_in', now() - interva
        public.campus_day_start(public.campus_date() - 1) + interval '17 hours 50 minutes'
 from seed_bg where n between 7 and 16;
 
--- Upcoming registrations.
+-- Other registrations (live pickleball + upcoming badminton), not yet checked in.
 insert into public.event_participants (event_id, user_id)
 select '00000000-0000-4000-c000-000000000003'::uuid, id from seed_bg where n % 5 = 0
 union all
